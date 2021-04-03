@@ -12,6 +12,8 @@
     'display':isEmpty?'none':'block'}"
     :draggable="false"
     v-on:mousedown="setDragging (true)"
+    v-on:mouseenter="setOver(true)"
+    v-on:mouseleave="setOver(false)"
     :src="url"/>
 
   <div id="scale">
@@ -28,6 +30,7 @@ export default {
   data () {
     return {
       isEmpty: true,
+      isOver: false,
       isDragging: false,
       mouse: {
         x: 0,
@@ -66,6 +69,11 @@ export default {
     window.onmousemove = function (e) {
       if (that.isDragging) {
         that.dragImg(e)
+      } else {
+        if (that.isOver) {
+          that.mouse.x = e.clientX
+          that.mouse.y = e.clientY
+        }
       }
     }
     window.onmousewheel = function (e) {
@@ -113,24 +121,32 @@ export default {
     },
     scaleImg (e) {
       const isDown = e.deltaY > 0
-      // TODO 鼠标在图片上时，锚定鼠标位置
-      // const mouseX = e.clientX
-      // const mouseY = e.clientY
       let newScale
       if (isDown) {
         newScale = (this.scale - 0.05).toFixed(2)
+        // 缩放下限
+        if (newScale < 0.01) {
+          newScale = 0.01
+        }
       } else {
         newScale = (this.scale + 0.05).toFixed(2)
+        // 缩放上限
+        if (newScale > 5) {
+          newScale = 5
+        }
       }
       const deltaX = this.originWidth * newScale - this.width
       const deltaY = this.originHeight * newScale - this.height
-      this.left -= deltaX / 2
-      this.top -= deltaY / 2
+      this.left -= deltaX * (this.mouse.x - this.left) / this.width
+      this.top -= deltaY * (this.mouse.y - this.top) / this.height
       this.width += deltaX
       this.height += deltaY
     },
     setDragging (bool) {
       this.isDragging = bool
+    },
+    setOver (bool) {
+      this.isOver = bool
     }
   }
 }
