@@ -11,10 +11,11 @@
     'top':top+'px',
     'display':isEmpty?'none':'block'}"
     :draggable="false"
+    class="image"
     v-on:mousedown="setDragging (true)"
-    v-on:mouseenter="setOver(true)"
-    v-on:mouseleave="setOver(false)"
-    :src="url"/>
+    v-on:mouseenter="setHover(true)"
+    v-on:mouseleave="setHover(false)"
+    :src="require('C:/Users/22364/OneDrive/桌面/Never Settle/' + 'Husky.jpg')"/>
 
   <transition name="fade">
     <div v-show="scaleInfo.showScale" class="scale-info">
@@ -34,34 +35,36 @@ export default {
   data () {
     return {
       isEmpty: true,
-      isOver: false,
+      isHover: false,
       isDragging: false,
       scaleInfo: {
         showScale: false,
         timer: null
       },
-      // 动画
-      tweenScale: 0,
       // 系统
       mouse: {
         x: 0,
         y: 0
       },
       // 图片
-      url: 'https://www.bing.com/th?id=OHR.BrazilSandDunes_ZH-CN2924749051_1920x1080.jpg&rf=LaDigue_1920x1080.jpg&pid=HpEdgeAn',
-      width: 0,
-      height: 0,
+      url: 'C:/Users/22364/OneDrive/桌面/Never Settle/Husky.jpg',
+      scale: 1,
       originWidth: 1920,
       originHeight: 1080,
       left: 0,
       top: 0,
       originLeft: 0,
-      originTop: 0
+      originTop: 0,
+      // 动画
+      tweenScale: 1
     }
   },
   computed: {
-    scale: function () {
-      return this.width / this.originWidth
+    width: function () {
+      return this.originWidth * this.scale
+    },
+    height: function () {
+      return this.originHeight * this.scale
     },
     animatedScale: function () {
       return (this.tweenScale * 100).toFixed(0) + '%'
@@ -92,7 +95,7 @@ export default {
         if (that.isDragging) {
           that.dragImg(e)
         } else {
-          if (that.isOver) {
+          if (that.isHover) {
             that.mouse.x = e.clientX
             that.mouse.y = e.clientY
           }
@@ -117,25 +120,19 @@ export default {
       if (ratio >= windowWidth / windowHeight) {
         // 小图片不进行放大
         if (this.originWidth < windowWidth) {
-          this.width = this.originWidth
-          this.height = this.originHeight
           return
         }
         // 大图片根据长边缩小
-        this.width = windowWidth - 1
-        this.height = windowWidth / ratio
+        this.scale = (windowWidth - 1) / this.originWidth
         this.left = 0
         this.top = (windowHeight - this.height) / 2
       } else {
         // 小图片不进行放大
         if (this.originHeight < windowHeight) {
-          this.width = this.originWidth
-          this.height = this.originHeight
           return
         }
         // 大图片根据宽边缩小
-        this.height = windowHeight - 1
-        this.width = windowHeight * ratio
+        this.scale = (windowHeight - 1) / this.originHeight
         this.top = 0
         this.left = (windowWidth - this.width) / 2
       }
@@ -156,13 +153,13 @@ export default {
       const isDown = e.deltaY > 0
       let newScale
       if (isDown) {
-        newScale = (this.scale - 0.05).toFixed(2)
+        newScale = parseFloat((this.scale - 0.05).toFixed(2))
         // 缩放下限
         if (newScale < 0.01) {
           newScale = 0.01
         }
       } else {
-        newScale = (this.scale + 0.05).toFixed(2)
+        newScale = parseFloat((this.scale + 0.05).toFixed(2))
         // 缩放上限
         if (newScale > 5) {
           newScale = 5
@@ -170,16 +167,20 @@ export default {
       }
       const deltaX = this.originWidth * newScale - this.width
       const deltaY = this.originHeight * newScale - this.height
-      this.left -= deltaX * (this.mouse.x - this.left) / this.width
-      this.top -= deltaY * (this.mouse.y - this.top) / this.height
-      this.width += deltaX
-      this.height += deltaY
+      if (this.isHover) {
+        this.left -= deltaX * (this.mouse.x - this.left) / this.width
+        this.top -= deltaY * (this.mouse.y - this.top) / this.height
+      } else {
+        this.left -= deltaX / 2
+        this.top -= deltaY / 2
+      }
+      this.scale = newScale
     },
     setDragging (bool) {
       this.isDragging = bool
     },
-    setOver (bool) {
-      this.isOver = bool
+    setHover (bool) {
+      this.isHover = bool
     },
     setShowScale (bool) {
       this.scaleInfo.showScale = bool
@@ -232,5 +233,9 @@ export default {
   opacity: 0.6;
   /* 鼠标穿透 */
   pointer-events: none;
+}
+
+.image {
+  box-shadow: 0 2px 4px rgba(0, 0, 0, .12), 0 0 6px rgba(0, 0, 0, .04);
 }
 </style>
