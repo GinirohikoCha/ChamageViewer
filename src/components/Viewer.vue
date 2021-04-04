@@ -5,17 +5,17 @@
 
   <el-image
     :style="{
-    'width':width+'px',
-    'height':height+'px',
-    'left':left+'px',
-    'top':top+'px',
+    'width':tweenWidth+'px',
+    'height':tweenHeight+'px',
+    'left':tweenLeft+'px',
+    'top':tweenTop+'px',
     'display':isEmpty?'none':'block'}"
     :draggable="false"
-    class="image"
+    class="image-shadow"
     v-on:mousedown="setDragging (true)"
     v-on:mouseenter="setHover(true)"
     v-on:mouseleave="setHover(false)"
-    :src="require('C:/Users/22364/OneDrive/桌面/Never Settle/' + 'Husky.jpg')"/>
+    :src="require('C:/Users/22364/OneDrive/桌面/Never Settle/' + 'Goat.jpg')"/>
 
   <transition name="fade">
     <div v-show="scaleInfo.showScale" class="scale-info">
@@ -56,7 +56,11 @@ export default {
       originLeft: 0,
       originTop: 0,
       // 动画
-      tweenScale: 1
+      tweenScale: null,
+      tweenWidth: null,
+      tweenHeight: null,
+      tweenLeft: null,
+      tweenTop: null
     }
   },
   computed: {
@@ -72,7 +76,39 @@ export default {
   },
   watch: {
     scale (newValue) {
-      gsap.to(this.$data, { duration: 0.5, tweenScale: newValue })
+      if (this.tweenScale == null) {
+        this.tweenScale = newValue
+      } else {
+        gsap.to(this.$data, { duration: 0.5, tweenScale: newValue })
+      }
+    },
+    width (newValue) {
+      if (this.tweenWidth == null) {
+        this.tweenWidth = newValue
+      } else {
+        gsap.to(this.$data, { duration: 0.5, tweenWidth: newValue })
+      }
+    },
+    height (newValue) {
+      if (this.tweenHeight == null) {
+        this.tweenHeight = newValue
+      } else {
+        gsap.to(this.$data, { duration: 0.5, tweenHeight: newValue })
+      }
+    },
+    left (newValue) {
+      if (this.tweenLeft == null) {
+        this.tweenLeft = newValue
+      } else {
+        gsap.to(this.$data, { duration: 0.5, tweenLeft: newValue })
+      }
+    },
+    top (newValue) {
+      if (this.tweenTop == null) {
+        this.tweenTop = newValue
+      } else {
+        gsap.to(this.$data, { duration: 0.5, tweenTop: newValue })
+      }
     }
   },
   mounted () {
@@ -114,9 +150,16 @@ export default {
       this.isEmpty = false
     },
     initImg () {
+      this.tweenScale = null
+      this.tweenWidth = null
+      this.tweenHeight = null
+      this.tweenLeft = null
+      this.tweenTop = null
+
       const ratio = this.originWidth / this.originHeight
       const windowWidth = document.documentElement.clientWidth
       const windowHeight = document.documentElement.clientHeight
+
       if (ratio >= windowWidth / windowHeight) {
         // 小图片不进行放大
         if (this.originWidth < windowWidth) {
@@ -235,7 +278,7 @@ export default {
   pointer-events: none;
 }
 
-.image {
-  box-shadow: 0 2px 4px rgba(0, 0, 0, .12), 0 0 6px rgba(0, 0, 0, .04);
+.image-shadow {
+  box-shadow: 0 3px 12px rgba(0, 0, 0, 0.23), 0 3px 12px rgba(0, 0, 0, 0.16);
 }
 </style>
