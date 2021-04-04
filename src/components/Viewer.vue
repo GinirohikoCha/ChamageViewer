@@ -24,6 +24,8 @@
 </template>
 
 <script>
+import { gsap } from 'gsap'
+
 export default {
   name: 'Viewer',
   props: {
@@ -38,10 +40,14 @@ export default {
         showScale: false,
         timer: null
       },
+      // 动画
+      tweenScale: 0,
+      // 系统
       mouse: {
         x: 0,
         y: 0
       },
+      // 图片
       url: 'https://www.bing.com/th?id=OHR.BrazilSandDunes_ZH-CN2924749051_1920x1080.jpg&rf=LaDigue_1920x1080.jpg&pid=HpEdgeAn',
       width: 0,
       height: 0,
@@ -58,7 +64,12 @@ export default {
       return this.width / this.originWidth
     },
     animatedScale: function () {
-      return (this.scale * 100).toFixed(0) + '%'
+      return (this.tweenScale * 100).toFixed(0) + '%'
+    }
+  },
+  watch: {
+    scale (newValue) {
+      gsap.to(this.$data, { duration: 0.5, tweenScale: newValue })
     }
   },
   mounted () {
