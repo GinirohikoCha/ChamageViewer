@@ -1,5 +1,5 @@
 <template>
-  <el-empty description="未选择图片" v-show="isEmpty">
+  <el-empty description="未选择图片" v-show="isEmpty" class="empty">
     <el-button type="primary" v-on:click="openImg">打开图片</el-button>
   </el-empty>
 
@@ -202,6 +202,15 @@ export default {
 .fade-enter-from,
 .fade-leave-to {
   opacity: 0 !important;
+}
+
+.empty {
+  position: fixed;
+  left: 50%;
+  top: 50%;
+  transform: translate(-50%,-50%);
+  -ms-transform: translate(-50%,-50%);
+  -webkit-transform: translate(-50%,-50%);
 }
 
 .scale-info {
