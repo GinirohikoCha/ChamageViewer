@@ -16,9 +16,11 @@
     v-on:mouseleave="setOver(false)"
     :src="url"/>
 
-  <div id="scale">
-    {{ animatedScale }}
-  </div>
+  <transition name="fade">
+    <div v-show="scaleInfo.showScale" class="scale-info">
+      {{ animatedScale }}
+    </div>
+  </transition>
 </template>
 
 <script>
@@ -32,6 +34,10 @@ export default {
       isEmpty: true,
       isOver: false,
       isDragging: false,
+      scaleInfo: {
+        showScale: false,
+        timer: null
+      },
       mouse: {
         x: 0,
         y: 0
@@ -58,26 +64,34 @@ export default {
   mounted () {
     const that = this
     window.onmousedown = function (e) {
-      that.mouse.x = e.clientX
-      that.mouse.y = e.clientY
-      that.originLeft = that.left
-      that.originTop = that.top
+      if (!that.isEmpty) {
+        that.mouse.x = e.clientX
+        that.mouse.y = e.clientY
+        that.originLeft = that.left
+        that.originTop = that.top
+      }
     }
     window.onmouseup = function (e) {
-      that.setDragging(false)
+      if (!that.isEmpty) {
+        that.setDragging(false)
+      }
     }
     window.onmousemove = function (e) {
-      if (that.isDragging) {
-        that.dragImg(e)
-      } else {
-        if (that.isOver) {
-          that.mouse.x = e.clientX
-          that.mouse.y = e.clientY
+      if (!that.isEmpty) {
+        if (that.isDragging) {
+          that.dragImg(e)
+        } else {
+          if (that.isOver) {
+            that.mouse.x = e.clientX
+            that.mouse.y = e.clientY
+          }
         }
       }
     }
     window.onmousewheel = function (e) {
-      that.scaleImg(e)
+      if (!that.isEmpty) {
+        that.scaleImg(e)
+      }
     }
   },
   methods: {
@@ -120,6 +134,14 @@ export default {
       this.top = this.originTop + e.clientY - this.mouse.y
     },
     scaleImg (e) {
+      // 设置定时器
+      this.setShowScale(true)
+      clearTimeout(this.scaleInfo.timer)
+      const that = this
+      this.scaleInfo.timer = setTimeout(function () {
+        that.setShowScale(false)
+      }, 1200)
+      // 缩放
       const isDown = e.deltaY > 0
       let newScale
       if (isDown) {
@@ -147,6 +169,9 @@ export default {
     },
     setOver (bool) {
       this.isOver = bool
+    },
+    setShowScale (bool) {
+      this.scaleInfo.showScale = bool
     }
   }
 }
@@ -154,7 +179,21 @@ export default {
 
 <!-- Add "scoped" attribute to limit CSS to this component only -->
 <style scoped>
-#scale {
+.fade-enter-active,
+.fade-leave-active {
+  transition: opacity 0.5s ease !important;
+}
+.fade-enter-to,
+.fade-leave-from {
+  opacity: 0.6 !important;
+}
+
+.fade-enter-from,
+.fade-leave-to {
+  opacity: 0 !important;
+}
+
+.scale-info {
   position: fixed;
   background: black;
   border-radius: 5px;
