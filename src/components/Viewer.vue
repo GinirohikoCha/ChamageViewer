@@ -11,7 +11,7 @@
     'top':tweenTop+'px',
     'display':isEmpty?'none':'block'}"
     :draggable="false"
-    class="image-shadow"
+    class="material-shadow"
     v-on:mousedown="setDragging (true)"
     v-on:mouseenter="setHover(true)"
     v-on:mouseleave="setHover(false)"
@@ -146,16 +146,18 @@ export default {
   },
   methods: {
     openImg () {
+      // TODO 图片打开功能
       this.initImg()
       this.isEmpty = false
     },
     initImg () {
+      // 初始化图片时取消缩放动画
       this.tweenScale = null
       this.tweenWidth = null
       this.tweenHeight = null
       this.tweenLeft = null
       this.tweenTop = null
-
+      // 计算长宽比，初始化缩放图片
       const ratio = this.originWidth / this.originHeight
       const windowWidth = document.documentElement.clientWidth
       const windowHeight = document.documentElement.clientHeight
@@ -278,7 +280,7 @@ export default {
   pointer-events: none;
 }
 
-.image-shadow {
+.material-shadow {
   box-shadow: 0 3px 12px rgba(0, 0, 0, 0.23), 0 3px 12px rgba(0, 0, 0, 0.16);
 }
 </style>
