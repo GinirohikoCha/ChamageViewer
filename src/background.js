@@ -3,6 +3,7 @@
 import { app, protocol, BrowserWindow, ipcMain } from 'electron'
 import { createProtocol } from 'vue-cli-plugin-electron-builder/lib'
 import installExtension, { VUEJS_DEVTOOLS } from 'electron-devtools-installer'
+import fs from 'fs'
 const isDevelopment = process.env.NODE_ENV !== 'production'
 
 // Scheme must be registered before the app is ready
@@ -62,6 +63,20 @@ app.on('ready', async () => {
     }
   }
   createWindow()
+
+  ipcMain.on('init-image', function (event) {
+    const url = 'C:/Users/22364/OneDrive/桌面/Never Settle/Husky.jpg'
+    const imageData = fs.readFileSync(url)
+    event.returnValue = {
+      url: url,
+      image: imageData.toString('base64'),
+      width: 3120,
+      height: 1440
+    }
+  })
+  ipcMain.on('get-images-in-dir', function (event, arg) {
+    event.sender.send('reply-images-in-dir', 'pong')
+  })
 })
 
 // Exit cleanly on request from parent process in development mode.

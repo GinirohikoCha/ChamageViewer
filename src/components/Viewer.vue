@@ -15,7 +15,7 @@
     v-on:mousedown="setDragging (true)"
     v-on:mouseenter="setHover(true)"
     v-on:mouseleave="setHover(false)"
-    :src="require('C:/Users/22364/OneDrive/桌面/Never Settle/' + 'Goat.jpg')"/>
+    :src="image"/>
 
   <transition name="fade">
     <div v-show="scaleInfo.showScale" class="scale-info">
@@ -25,6 +25,7 @@
 </template>
 
 <script>
+import { ipcRenderer } from 'electron'
 import { gsap } from 'gsap'
 
 export default {
@@ -47,7 +48,7 @@ export default {
         y: 0
       },
       // 图片
-      url: 'C:/Users/22364/OneDrive/桌面/Never Settle/Husky.jpg',
+      image: '',
       scale: 1,
       originWidth: 1920,
       originHeight: 1080,
@@ -112,6 +113,17 @@ export default {
     }
   },
   mounted () {
+    const image = ipcRenderer.sendSync('init-image')
+    if (image != null) {
+      alert(image.image)
+      this.image = 'data:image/jpeg;base64,' + image.image
+      this.originWidth = image.width
+      this.originHeight = image.height
+      this.initImg()
+    }
+    ipcRenderer.on('reply-images-in-dir', function (event, arg) {
+      alert(arg)
+    })
     const that = this
     window.onmousedown = function (e) {
       if (!that.isEmpty) {
@@ -146,9 +158,7 @@ export default {
   },
   methods: {
     openImg () {
-      // TODO 图片打开功能
       this.initImg()
-      this.isEmpty = false
     },
     initImg () {
       // 初始化图片时取消缩放动画
@@ -181,6 +191,8 @@ export default {
         this.top = 0
         this.left = (windowWidth - this.width) / 2
       }
+
+      this.isEmpty = false
     },
     dragImg (e) {
       this.left = this.originLeft + e.clientX - this.mouse.x
