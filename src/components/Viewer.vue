@@ -115,8 +115,7 @@ export default {
   mounted () {
     const image = ipcRenderer.sendSync('init-image')
     if (image != null) {
-      alert(image.image)
-      this.image = 'data:image/jpeg;base64,' + image.image
+      this.image = 'data:image/' + image.type + ';base64,' + image.image
       this.originWidth = image.width
       this.originHeight = image.height
       this.initImg()
@@ -279,7 +278,7 @@ export default {
   top: 50%;
   color: white;
   height: 40px;
-  min-width: 120px;
+  min-width: 100px;
   line-height: 40px;
   text-align: center;
   font-size: 18px;

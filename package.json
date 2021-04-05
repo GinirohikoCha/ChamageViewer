@@ -16,6 +16,7 @@
     "core-js": "^3.6.5",
     "element-plus": "^1.0.2-beta.36",
     "gsap": "^3.6.1",
+    "image-size": "^0.9.7",
     "vue": "^3.0.0"
   },
   "devDependencies": {
