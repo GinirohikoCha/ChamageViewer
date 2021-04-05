@@ -15,7 +15,7 @@
     v-on:mousedown="setDragging (true)"
     v-on:mouseenter="setHover(true)"
     v-on:mouseleave="setHover(false)"
-    :src="image.data"/>
+    :src="image.url"/>
 
   <transition name="fade">
     <div v-show="scaleInfo.showScale" class="scale-info">
@@ -46,7 +46,6 @@ export default {
       // 图片
       image: {
         url: '',
-        data: '',
         originWidth: 1920,
         originHeight: 1080
       },
@@ -117,7 +116,8 @@ export default {
   },
   mounted () {
     // 初始化
-    this.showImage(ipcRenderer.sendSync('init-image'))
+    const image = ipcRenderer.sendSync('init-image')
+    this.showImage(image.data)
     // 全局操作监听
     const that = this
     window.onmousedown = function (e) {
@@ -148,6 +148,20 @@ export default {
     window.onmousewheel = function (e) {
       if (!that.isEmpty) {
         that.scaleImg(e)
+      }
+    }
+    window.onkeydown = function (e) {
+      if (e.code === 'ArrowLeft') {
+        const image = ipcRenderer.sendSync('pre-image')
+        if (image != null) {
+          that.showImage(image.data)
+        }
+      }
+      if (e.code === 'ArrowRight') {
+        const image = ipcRenderer.sendSync('next-image')
+        if (image != null) {
+          that.showImage(image.data)
+        }
       }
     }
   },
@@ -239,7 +253,6 @@ export default {
     },
     showImage (image) {
       if (image != null) {
-        this.image.data = 'data:image/' + image.type + ';base64,' + image.image
         this.image.url = image.url
         this.image.originWidth = image.width
         this.image.originHeight = image.height
@@ -278,15 +291,15 @@ export default {
 .scale-info {
   position: fixed;
   background: black;
-  border-radius: 5px;
+  border-radius: 17px;
   left: 50%;
   top: 50%;
   color: white;
-  height: 40px;
-  min-width: 100px;
-  line-height: 40px;
+  height: 35px;
+  min-width: 80px;
+  line-height: 35px;
   text-align: center;
-  font-size: 18px;
+  font-size: 15px;
   letter-spacing: 1px;
   transform: translate(-50%,-50%);
   -ms-transform: translate(-50%,-50%);

@@ -36,6 +36,42 @@ async function createWindow () {
   }
 }
 
+let url = 'C:/Users/22364/OneDrive/桌面/Never Settle/Salmon.jpg'
+let imageList = { dir: '', index: 0, images: [] }
+
+function getImageData () {
+  const dimensions = sizeOf(url)
+  return {
+    index: imageList.index,
+    total: imageList.images.length,
+    data: {
+      url: url,
+      type: dimensions.type,
+      width: dimensions.width,
+      height: dimensions.height
+    }
+  }
+}
+
+function refreshImageList () {
+  const slashIdx = url.lastIndexOf('/') + 1
+  const dir = url.substring(0, slashIdx)
+  const image = url.substring(slashIdx)
+  imageList = { dir: dir, index: 0, images: [] }
+  fs.readdirSync(dir).forEach(function (item, index) {
+    if (image === item) {
+      imageList.index = imageList.images.length
+      imageList.images.push(item)
+    } else {
+      try {
+        sizeOf(dir + item)
+        imageList.images.push(item)
+      } catch (err) {}
+    }
+  })
+  console.log(imageList)
+}
+
 // Quit when all windows are closed.
 app.on('window-all-closed', () => {
   // On macOS it is common for applications and their menu bar
@@ -55,6 +91,15 @@ app.on('activate', () => {
 // initialization and is ready to create browser windows.
 // Some APIs can only be used after this event occurs.
 app.on('ready', async () => {
+  // 自定义file:///协议的解析
+  protocol.interceptFileProtocol('file', (req, callback) => {
+    const url = req.url.substr(8)
+    callback(decodeURI(url))
+  }, (error) => {
+    if (error) {
+      console.error('Failed to register protocol')
+    }
+  })
   if (isDevelopment && !process.env.IS_TEST) {
     // Install Vue Devtools
     try {
@@ -63,19 +108,26 @@ app.on('ready', async () => {
       console.error('Vue Devtools failed to install:', e.toString())
     }
   }
+  // 创建窗口
   createWindow()
   // 进程通信
   ipcMain.on('init-image', function (event) {
-    const url = 'C:/Users/22364/OneDrive/桌面/Never Settle/Salmon.jpg'
-    const dimensions = sizeOf(url)
-    const imageData = fs.readFileSync(url)
-    event.returnValue = {
-      url: url,
-      image: imageData.toString('base64'),
-      type: url.substring(url.lastIndexOf('.') + 1),
-      width: dimensions.width,
-      height: dimensions.height
+    refreshImageList()
+    event.returnValue = getImageData()
+  })
+  ipcMain.on('next-image', function (event) {
+    if (++imageList.index >= imageList.images.length) {
+      imageList.index = 0
     }
+    url = imageList.dir + imageList.images[imageList.index]
+    event.returnValue = getImageData()
+  })
+  ipcMain.on('pre-image', function (event) {
+    if (--imageList.index < 0) {
+      imageList.index = imageList.images.length - 1
+    }
+    url = imageList.dir + imageList.images[imageList.index]
+    event.returnValue = getImageData()
   })
 })
 
