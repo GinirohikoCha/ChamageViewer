@@ -15,7 +15,7 @@
     v-on:mousedown="setDragging (true)"
     v-on:mouseenter="setHover(true)"
     v-on:mouseleave="setHover(false)"
-    :src="image"/>
+    :src="image.data"/>
 
   <transition name="fade">
     <div v-show="scaleInfo.showScale" class="scale-info">
@@ -38,20 +38,23 @@ export default {
       isEmpty: true,
       isHover: false,
       isDragging: false,
-      scaleInfo: {
-        showScale: false,
-        timer: null
-      },
       // 系统
       mouse: {
         x: 0,
         y: 0
       },
       // 图片
-      image: '',
+      image: {
+        url: '',
+        data: '',
+        originWidth: 1920,
+        originHeight: 1080
+      },
       scale: 1,
-      originWidth: 1920,
-      originHeight: 1080,
+      scaleInfo: {
+        showScale: false,
+        timer: null
+      },
       left: 0,
       top: 0,
       originLeft: 0,
@@ -66,10 +69,10 @@ export default {
   },
   computed: {
     width: function () {
-      return this.originWidth * this.scale
+      return this.image.originWidth * this.scale
     },
     height: function () {
-      return this.originHeight * this.scale
+      return this.image.originHeight * this.scale
     },
     animatedScale: function () {
       return (this.tweenScale * 100).toFixed(0) + '%'
@@ -113,16 +116,9 @@ export default {
     }
   },
   mounted () {
-    const image = ipcRenderer.sendSync('init-image')
-    if (image != null) {
-      this.image = 'data:image/' + image.type + ';base64,' + image.image
-      this.originWidth = image.width
-      this.originHeight = image.height
-      this.initImg()
-    }
-    ipcRenderer.on('reply-images-in-dir', function (event, arg) {
-      alert(arg)
-    })
+    // 初始化
+    this.showImage(ipcRenderer.sendSync('init-image'))
+    // 全局操作监听
     const that = this
     window.onmousedown = function (e) {
       if (!that.isEmpty) {
@@ -167,26 +163,26 @@ export default {
       this.tweenLeft = null
       this.tweenTop = null
       // 计算长宽比，初始化缩放图片
-      const ratio = this.originWidth / this.originHeight
+      const ratio = this.image.originWidth / this.image.originHeight
       const windowWidth = document.documentElement.clientWidth
       const windowHeight = document.documentElement.clientHeight
 
       if (ratio >= windowWidth / windowHeight) {
         // 小图片不进行放大
-        if (this.originWidth < windowWidth) {
+        if (this.image.originWidth < windowWidth) {
           return
         }
         // 大图片根据长边缩小
-        this.scale = (windowWidth - 1) / this.originWidth
+        this.scale = (windowWidth - 1) / this.image.originWidth
         this.left = 0
         this.top = (windowHeight - this.height) / 2
       } else {
         // 小图片不进行放大
-        if (this.originHeight < windowHeight) {
+        if (this.image.originHeight < windowHeight) {
           return
         }
         // 大图片根据宽边缩小
-        this.scale = (windowHeight - 1) / this.originHeight
+        this.scale = (windowHeight - 1) / this.image.originHeight
         this.top = 0
         this.left = (windowWidth - this.width) / 2
       }
@@ -221,8 +217,8 @@ export default {
           newScale = 5
         }
       }
-      const deltaX = this.originWidth * newScale - this.width
-      const deltaY = this.originHeight * newScale - this.height
+      const deltaX = this.image.originWidth * newScale - this.width
+      const deltaY = this.image.originHeight * newScale - this.height
       if (this.isHover) {
         this.left -= deltaX * (this.mouse.x - this.left) / this.width
         this.top -= deltaY * (this.mouse.y - this.top) / this.height
@@ -240,6 +236,15 @@ export default {
     },
     setShowScale (bool) {
       this.scaleInfo.showScale = bool
+    },
+    showImage (image) {
+      if (image != null) {
+        this.image.data = 'data:image/' + image.type + ';base64,' + image.image
+        this.image.url = image.url
+        this.image.originWidth = image.width
+        this.image.originHeight = image.height
+        this.initImg()
+      }
     }
   }
 }

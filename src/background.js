@@ -64,9 +64,9 @@ app.on('ready', async () => {
     }
   }
   createWindow()
-
+  // 进程通信
   ipcMain.on('init-image', function (event) {
-    const url = 'C:/Users/22364/OneDrive/桌面/Never Settle/Wildebeest.jpg'
+    const url = 'C:/Users/22364/OneDrive/桌面/Never Settle/Salmon.jpg'
     const dimensions = sizeOf(url)
     const imageData = fs.readFileSync(url)
     event.returnValue = {
@@ -76,9 +76,6 @@ app.on('ready', async () => {
       width: dimensions.width,
       height: dimensions.height
     }
-  })
-  ipcMain.on('get-images-in-dir', function (event, arg) {
-    event.sender.send('reply-images-in-dir', 'pong')
   })
 })
 
