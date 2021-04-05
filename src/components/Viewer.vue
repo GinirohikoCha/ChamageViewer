@@ -166,6 +166,7 @@ export default {
         that.showImage(ipcRenderer.sendSync('next-image'))
       }
     }
+    // this.showMessage(ipcRenderer.sendSync('test'))
   },
   methods: {
     openImg () {

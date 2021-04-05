@@ -36,40 +36,50 @@ async function createWindow () {
   }
 }
 
-let url = 'C:/Users/22364/OneDrive/桌面/Never Settle/Salmon.jpg'
-let imageList = { dir: '', index: 0, images: [] }
+// const debugUrl = 'C:\\Users\\22364\\OneDrive\\桌面\\Never Settle\\Goat.jpg'
+// let url = debugUrl.replaceAll('\\', '/')
+let url = process.argv[1].replaceAll('\\', '/')
+let imageList = null
 
 function getImageData () {
-  const dimensions = sizeOf(url)
-  return {
-    index: imageList.index,
-    total: imageList.images.length,
-    data: {
-      url: url,
-      type: dimensions.type,
-      originWidth: dimensions.width,
-      originHeight: dimensions.height
+  if (url != null) {
+    const dimensions = sizeOf(url)
+    return {
+      index: imageList.index,
+      total: imageList.images.length,
+      data: {
+        url: url,
+        type: dimensions.type,
+        originWidth: dimensions.width,
+        originHeight: dimensions.height
+      }
     }
+  } else {
+    return null
   }
 }
 
 function refreshImageList () {
-  const slashIdx = url.lastIndexOf('/') + 1
-  const dir = url.substring(0, slashIdx)
-  const image = url.substring(slashIdx)
-  imageList = { dir: dir, index: 0, images: [] }
-  fs.readdirSync(dir).forEach(function (item, index) {
-    if (image === item) {
-      imageList.index = imageList.images.length
-      imageList.images.push(item)
-    } else {
-      try {
-        sizeOf(dir + item)
+  if (url != null) {
+    console.log(url)
+    const slashIdx = url.lastIndexOf('/') + 1
+    const dir = url.substring(0, slashIdx)
+    const image = url.substring(slashIdx)
+    console.log(dir)
+    imageList = { dir: dir, index: 0, images: [] }
+    fs.readdirSync(dir).forEach(function (item, index) {
+      if (image === item) {
+        imageList.index = imageList.images.length
         imageList.images.push(item)
-      } catch (err) {}
-    }
-  })
-  console.log(imageList)
+      } else {
+        try {
+          sizeOf(dir + item)
+          imageList.images.push(item)
+        } catch (err) {}
+      }
+    })
+    console.log(imageList)
+  }
 }
 
 // Quit when all windows are closed.
@@ -129,6 +139,9 @@ app.on('ready', async () => {
     }
     url = imageList.dir + imageList.images[imageList.index]
     event.returnValue = getImageData()
+  })
+  ipcMain.on('test', function (event) {
+    event.returnValue = url
   })
 })
 
