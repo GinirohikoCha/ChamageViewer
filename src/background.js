@@ -47,8 +47,8 @@ function getImageData () {
     data: {
       url: url,
       type: dimensions.type,
-      width: dimensions.width,
-      height: dimensions.height
+      originWidth: dimensions.width,
+      originHeight: dimensions.height
     }
   }
 }
@@ -100,6 +100,7 @@ app.on('ready', async () => {
       console.error('Failed to register protocol')
     }
   })
+
   if (isDevelopment && !process.env.IS_TEST) {
     // Install Vue Devtools
     try {

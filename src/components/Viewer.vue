@@ -15,7 +15,7 @@
     v-on:mousedown="setDragging (true)"
     v-on:mouseenter="setHover(true)"
     v-on:mouseleave="setHover(false)"
-    :src="image.url"/>
+    :src="image.data.url"/>
 
   <transition name="fade">
     <div v-show="scaleInfo.showScale" class="scale-info">
@@ -26,6 +26,7 @@
 
 <script>
 import { ipcRenderer } from 'electron'
+import { ElMessage } from 'element-plus'
 import { gsap } from 'gsap'
 
 export default {
@@ -45,19 +46,27 @@ export default {
       },
       // 图片
       image: {
-        url: '',
-        originWidth: 1920,
-        originHeight: 1080
-      },
-      scale: 1,
-      scaleInfo: {
-        showScale: false,
-        timer: null
+        index: 0,
+        total: 0,
+        data: {
+          url: '',
+          type: 'jpg',
+          originWidth: 1920,
+          originHeight: 1080
+        }
       },
       left: 0,
       top: 0,
       originLeft: 0,
       originTop: 0,
+      // 中心缩放框
+      scale: 1,
+      scaleInfo: {
+        showScale: false,
+        timer: null
+      },
+      // 消息提示框
+      message: null,
       // 动画
       tweenScale: null,
       tweenWidth: null,
@@ -68,10 +77,10 @@ export default {
   },
   computed: {
     width: function () {
-      return this.image.originWidth * this.scale
+      return this.image.data.originWidth * this.scale
     },
     height: function () {
-      return this.image.originHeight * this.scale
+      return this.image.data.originHeight * this.scale
     },
     animatedScale: function () {
       return (this.tweenScale * 100).toFixed(0) + '%'
@@ -116,8 +125,7 @@ export default {
   },
   mounted () {
     // 初始化
-    const image = ipcRenderer.sendSync('init-image')
-    this.showImage(image.data)
+    this.showImage(ipcRenderer.sendSync('init-image'))
     // 全局操作监听
     const that = this
     window.onmousedown = function (e) {
@@ -152,16 +160,10 @@ export default {
     }
     window.onkeydown = function (e) {
       if (e.code === 'ArrowLeft' || e.code === 'ArrowUp') {
-        const image = ipcRenderer.sendSync('pre-image')
-        if (image != null) {
-          that.showImage(image.data)
-        }
+        that.showImage(ipcRenderer.sendSync('pre-image'))
       }
       if (e.code === 'ArrowRight' || e.code === 'ArrowDown') {
-        const image = ipcRenderer.sendSync('next-image')
-        if (image != null) {
-          that.showImage(image.data)
-        }
+        that.showImage(ipcRenderer.sendSync('next-image'))
       }
     }
   },
@@ -177,26 +179,26 @@ export default {
       this.tweenLeft = null
       this.tweenTop = null
       // 计算长宽比，初始化缩放图片
-      const ratio = this.image.originWidth / this.image.originHeight
+      const ratio = this.image.data.originWidth / this.image.data.originHeight
       const windowWidth = document.documentElement.clientWidth
       const windowHeight = document.documentElement.clientHeight
 
       if (ratio >= windowWidth / windowHeight) {
         // 小图片不进行放大
-        if (this.image.originWidth < windowWidth) {
+        if (this.image.data.originWidth < windowWidth) {
           return
         }
         // 大图片根据长边缩小
-        this.scale = (windowWidth - 1) / this.image.originWidth
+        this.scale = (windowWidth - 1) / this.image.data.originWidth
         this.left = 0
         this.top = (windowHeight - this.height) / 2
       } else {
         // 小图片不进行放大
-        if (this.image.originHeight < windowHeight) {
+        if (this.image.data.originHeight < windowHeight) {
           return
         }
         // 大图片根据宽边缩小
-        this.scale = (windowHeight - 1) / this.image.originHeight
+        this.scale = (windowHeight - 1) / this.image.data.originHeight
         this.top = 0
         this.left = (windowWidth - this.width) / 2
       }
@@ -231,8 +233,8 @@ export default {
           newScale = 5
         }
       }
-      const deltaX = this.image.originWidth * newScale - this.width
-      const deltaY = this.image.originHeight * newScale - this.height
+      const deltaX = this.image.data.originWidth * newScale - this.width
+      const deltaY = this.image.data.originHeight * newScale - this.height
       if (this.isHover) {
         this.left -= deltaX * (this.mouse.x - this.left) / this.width
         this.top -= deltaY * (this.mouse.y - this.top) / this.height
@@ -253,16 +255,31 @@ export default {
     },
     showImage (image) {
       if (image != null) {
-        this.image.originWidth = image.width
-        this.image.originHeight = image.height
+        this.image = image
         const that = this
         const img = new Image()
-        img.src = image.url
+        img.src = this.image.data.url
         img.onload = function () {
-          that.image.url = img.src
+          that.image.data.url = img.src
           that.initImg()
+          if (that.image.index === 0) {
+            that.showMessage('你正在浏览第一张图片')
+          } else if (that.image.index === that.image.total - 1) {
+            that.showMessage('你正在浏览最后一张图片')
+          }
         }
       }
+    },
+    showMessage (msg) {
+      if (this.message != null) {
+        this.message.close()
+      }
+      this.message = ElMessage({
+        message: msg,
+        center: true,
+        duration: 1500,
+        offset: 1
+      })
     }
   }
 }
