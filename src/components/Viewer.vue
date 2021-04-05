@@ -151,13 +151,13 @@ export default {
       }
     }
     window.onkeydown = function (e) {
-      if (e.code === 'ArrowLeft') {
+      if (e.code === 'ArrowLeft' || e.code === 'ArrowUp') {
         const image = ipcRenderer.sendSync('pre-image')
         if (image != null) {
           that.showImage(image.data)
         }
       }
-      if (e.code === 'ArrowRight') {
+      if (e.code === 'ArrowRight' || e.code === 'ArrowDown') {
         const image = ipcRenderer.sendSync('next-image')
         if (image != null) {
           that.showImage(image.data)
@@ -253,10 +253,15 @@ export default {
     },
     showImage (image) {
       if (image != null) {
-        this.image.url = image.url
         this.image.originWidth = image.width
         this.image.originHeight = image.height
-        this.initImg()
+        const that = this
+        const img = new Image()
+        img.src = image.url
+        img.onload = function () {
+          that.image.url = img.src
+          that.initImg()
+        }
       }
     }
   }
