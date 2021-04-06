@@ -12,9 +12,11 @@ protocol.registerSchemesAsPrivileged([
   { scheme: 'app', privileges: { secure: true, standard: true } }
 ])
 
+let win = null
+
 async function createWindow () {
   // Create the browser window.
-  const win = new BrowserWindow({
+  win = new BrowserWindow({
     width: 800,
     height: 600,
     webPreferences: {
@@ -32,18 +34,19 @@ async function createWindow () {
   } else {
     createProtocol('app')
     // Load the index.html when not in development
-    win.loadURL('app://./index.html')
+    await win.loadURL('app://./index.html')
   }
 }
 
-// const debugUrl = 'C:\\Users\\22364\\OneDrive\\桌面\\Never Settle\\Goat.jpg'
-// let url = debugUrl.replaceAll('\\', '/')
-let url = process.argv[1].replaceAll('\\', '/')
+const debugUrl = 'C:\\Users\\22364\\OneDrive\\桌面\\Never Settle\\Salmon.jpg'
+let url = debugUrl.replaceAll('\\', '/')
+// let url = process.argv[1].replaceAll('\\', '/')
 let imageList = null
 
 function getImageData () {
   if (url != null) {
     const dimensions = sizeOf(url)
+    win.setTitle(imageList.images[imageList.index])
     return {
       index: imageList.index,
       total: imageList.images.length,
@@ -105,10 +108,6 @@ app.on('ready', async () => {
   protocol.interceptFileProtocol('file', (req, callback) => {
     const url = req.url.substr(8)
     callback(decodeURI(url))
-  }, (error) => {
-    if (error) {
-      console.error('Failed to register protocol')
-    }
   })
 
   if (isDevelopment && !process.env.IS_TEST) {

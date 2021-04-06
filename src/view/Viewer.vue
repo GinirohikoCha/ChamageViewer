@@ -17,22 +17,22 @@
     v-on:mouseleave="setHover(false)"
     :src="image.data.url"/>
 
-  <transition name="fade">
-    <div v-show="scaleInfo.showScale" class="scale-info">
-      {{ animatedScale }}
-    </div>
-  </transition>
+  <ScaleInfo :change="scale" :scale="animatedScale" />
+  <BottomToolBar :toggle="toolbar"/>
 </template>
 
 <script>
 import { ipcRenderer } from 'electron'
 import { ElMessage } from 'element-plus'
 import { gsap } from 'gsap'
+import ScaleInfo from '@/view/components/ScaleInfo'
+import BottomToolBar from '@/view/components/BottomToolBar'
 
 export default {
   name: 'Viewer',
-  props: {
-    msg: String
+  components: {
+    ScaleInfo,
+    BottomToolBar
   },
   data () {
     return {
@@ -59,12 +59,9 @@ export default {
       top: 0,
       originLeft: 0,
       originTop: 0,
-      // 中心缩放框
       scale: 1,
-      scaleInfo: {
-        showScale: false,
-        timer: null
-      },
+      // 提示区
+      toolbar: false,
       // 消息提示框
       message: null,
       // 动画
@@ -151,6 +148,8 @@ export default {
             that.mouse.y = e.clientY
           }
         }
+        // 是否在工具栏区域
+        that.toolbar = document.documentElement.clientHeight - e.clientY <= 40
       }
     }
     window.onmousewheel = function (e) {
@@ -160,10 +159,10 @@ export default {
     }
     window.onkeydown = function (e) {
       if (e.code === 'ArrowLeft' || e.code === 'ArrowUp') {
-        that.showImage(ipcRenderer.sendSync('pre-image'))
+        that.preImg()
       }
       if (e.code === 'ArrowRight' || e.code === 'ArrowDown') {
-        that.showImage(ipcRenderer.sendSync('next-image'))
+        that.nextImg()
       }
     }
     // this.showMessage(ipcRenderer.sendSync('test'))
@@ -182,7 +181,7 @@ export default {
       // 计算长宽比，初始化缩放图片
       const ratio = this.image.data.originWidth / this.image.data.originHeight
       const windowWidth = document.documentElement.clientWidth
-      const windowHeight = document.documentElement.clientHeight
+      const windowHeight = document.documentElement.clientHeight - 20
 
       if (ratio >= windowWidth / windowHeight) {
         // 小图片不进行放大
@@ -211,13 +210,6 @@ export default {
       this.top = this.originTop + e.clientY - this.mouse.y
     },
     scaleImg (e) {
-      // 设置定时器
-      this.setShowScale(true)
-      clearTimeout(this.scaleInfo.timer)
-      const that = this
-      this.scaleInfo.timer = setTimeout(function () {
-        that.setShowScale(false)
-      }, 1200)
       // 缩放
       const isDown = e.deltaY > 0
       let newScale
@@ -245,14 +237,17 @@ export default {
       }
       this.scale = newScale
     },
+    preImg () {
+      this.showImage(ipcRenderer.sendSync('pre-image'))
+    },
+    nextImg () {
+      this.showImage(ipcRenderer.sendSync('next-image'))
+    },
     setDragging (bool) {
       this.isDragging = bool
     },
     setHover (bool) {
       this.isHover = bool
-    },
-    setShowScale (bool) {
-      this.scaleInfo.showScale = bool
     },
     showImage (image) {
       if (image != null) {
@@ -288,20 +283,6 @@ export default {
 
 <!-- Add "scoped" attribute to limit CSS to this component only -->
 <style scoped>
-.fade-enter-active,
-.fade-leave-active {
-  transition: opacity 0.5s ease !important;
-}
-.fade-enter-to,
-.fade-leave-from {
-  opacity: 0.6 !important;
-}
-
-.fade-enter-from,
-.fade-leave-to {
-  opacity: 0 !important;
-}
-
 .empty {
   position: fixed;
   left: 50%;
@@ -309,27 +290,6 @@ export default {
   transform: translate(-50%,-50%);
   -ms-transform: translate(-50%,-50%);
   -webkit-transform: translate(-50%,-50%);
-}
-
-.scale-info {
-  position: fixed;
-  background: black;
-  border-radius: 17px;
-  left: 50%;
-  top: 50%;
-  color: white;
-  height: 35px;
-  min-width: 80px;
-  line-height: 35px;
-  text-align: center;
-  font-size: 15px;
-  letter-spacing: 1px;
-  transform: translate(-50%,-50%);
-  -ms-transform: translate(-50%,-50%);
-  -webkit-transform: translate(-50%,-50%);
-  opacity: 0.6;
-  /* 鼠标穿透 */
-  pointer-events: none;
 }
 
 .material-shadow {
