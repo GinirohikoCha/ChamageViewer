@@ -149,12 +149,12 @@ export default {
           }
         }
         // 是否在工具栏区域
-        that.toolbar = document.documentElement.clientHeight - e.clientY <= 40
+        that.toolbar = document.documentElement.clientHeight - e.clientY <= 45
       }
     }
     window.onmousewheel = function (e) {
       if (!that.isEmpty) {
-        that.scaleImg(e)
+        that.scaleImg(e.deltaY > 0)
       }
     }
     window.onkeydown = function (e) {
@@ -205,14 +205,19 @@ export default {
 
       this.isEmpty = false
     },
+    preImg () {
+      this.showImage(ipcRenderer.sendSync('pre-image'))
+    },
+    nextImg () {
+      this.showImage(ipcRenderer.sendSync('next-image'))
+    },
     dragImg (e) {
       this.left = this.originLeft + e.clientX - this.mouse.x
       this.top = this.originTop + e.clientY - this.mouse.y
     },
-    scaleImg (e) {
+    scaleImg (isDown) {
       // TODO 缩放过程中切换会导致缩放数值不正常
       // 缩放
-      const isDown = e.deltaY > 0
       let newScale
       if (isDown) {
         newScale = parseFloat((this.scale - 0.05).toFixed(2))
@@ -227,6 +232,9 @@ export default {
           newScale = 5
         }
       }
+      this.scaleTo(newScale)
+    },
+    scaleTo (newScale) {
       const deltaX = this.image.data.originWidth * newScale - this.width
       const deltaY = this.image.data.originHeight * newScale - this.height
       if (this.isHover) {
@@ -237,12 +245,6 @@ export default {
         this.top -= deltaY / 2
       }
       this.scale = newScale
-    },
-    preImg () {
-      this.showImage(ipcRenderer.sendSync('pre-image'))
-    },
-    nextImg () {
-      this.showImage(ipcRenderer.sendSync('next-image'))
     },
     setDragging (bool) {
       this.isDragging = bool
