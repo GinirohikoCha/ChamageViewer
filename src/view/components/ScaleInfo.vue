@@ -20,8 +20,7 @@ export default {
     }
   },
   watch: {
-    change (newValue) {
-      console.log(newValue)
+    change () {
       clearTimeout(this.timer)
       this.show = true
       const that = this

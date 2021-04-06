@@ -210,6 +210,7 @@ export default {
       this.top = this.originTop + e.clientY - this.mouse.y
     },
     scaleImg (e) {
+      // TODO 缩放过程中切换会导致缩放数值不正常
       // 缩放
       const isDown = e.deltaY > 0
       let newScale
