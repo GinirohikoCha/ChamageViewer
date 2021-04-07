@@ -18,7 +18,7 @@
     :src="image.data.url"/>
 
   <ScaleInfo :change="scale" :scale="animatedScale" />
-  <BottomToolBar :toggle="toolbar"/>
+  <BottomToolBar :toggle="toolbar" :scaleProp="scale"/>
 </template>
 
 <script>
