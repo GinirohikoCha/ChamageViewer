@@ -184,23 +184,29 @@ export default {
       const windowHeight = document.documentElement.clientHeight - 20
 
       if (ratio >= windowWidth / windowHeight) {
-        // 小图片不进行放大
         if (this.image.data.originWidth < windowWidth) {
-          return
+          // 小图片不进行放大
+          this.scale = 1
+          this.left = (windowWidth - this.width) / 2
+          this.top = (windowHeight - this.height) / 2
+        } else {
+          // 大图片根据长边缩小
+          this.scale = (windowWidth - 1) / this.image.data.originWidth
+          this.left = 0
+          this.top = (windowHeight - this.height) / 2
         }
-        // 大图片根据长边缩小
-        this.scale = (windowWidth - 1) / this.image.data.originWidth
-        this.left = 0
-        this.top = (windowHeight - this.height) / 2
       } else {
-        // 小图片不进行放大
         if (this.image.data.originHeight < windowHeight) {
-          return
+          // 小图片不进行放大
+          this.scale = 1
+          this.left = (windowWidth - this.width) / 2
+          this.top = (windowHeight - this.height) / 2
+        } else {
+          // 大图片根据宽边缩小
+          this.scale = (windowHeight - 1) / this.image.data.originHeight
+          this.top = 0
+          this.left = (windowWidth - this.width) / 2
         }
-        // 大图片根据宽边缩小
-        this.scale = (windowHeight - 1) / this.image.data.originHeight
-        this.top = 0
-        this.left = (windowWidth - this.width) / 2
       }
 
       this.isEmpty = false
