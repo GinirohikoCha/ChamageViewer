@@ -69,7 +69,14 @@ export default {
       tweenWidth: null,
       tweenHeight: null,
       tweenLeft: null,
-      tweenTop: null
+      tweenTop: null,
+      animation: {
+        scale: null,
+        width: null,
+        height: null,
+        left: null,
+        top: null
+      }
     }
   },
   computed: {
@@ -86,37 +93,52 @@ export default {
   watch: {
     scale (newValue) {
       if (this.tweenScale == null) {
+        if (this.animation.scale != null) {
+          this.animation.scale.kill()
+        }
         this.tweenScale = newValue
       } else {
-        gsap.to(this.$data, { duration: 0.5, tweenScale: newValue })
+        this.animation.scale = gsap.to(this.$data, { duration: 0.5, tweenScale: newValue })
       }
     },
     width (newValue) {
       if (this.tweenWidth == null) {
+        if (this.animation.width != null) {
+          this.animation.width.kill()
+        }
         this.tweenWidth = newValue
       } else {
-        gsap.to(this.$data, { duration: 0.5, tweenWidth: newValue })
+        this.animation.width = gsap.to(this.$data, { duration: 0.5, tweenWidth: newValue })
       }
     },
     height (newValue) {
       if (this.tweenHeight == null) {
+        if (this.animation.height != null) {
+          this.animation.height.kill()
+        }
         this.tweenHeight = newValue
       } else {
-        gsap.to(this.$data, { duration: 0.5, tweenHeight: newValue })
+        this.animation.height = gsap.to(this.$data, { duration: 0.5, tweenHeight: newValue })
       }
     },
     left (newValue) {
       if (this.tweenLeft == null) {
+        if (this.animation.left != null) {
+          this.animation.left.kill()
+        }
         this.tweenLeft = newValue
       } else {
-        gsap.to(this.$data, { duration: 0.5, tweenLeft: newValue })
+        this.animation.left = gsap.to(this.$data, { duration: 0.5, tweenLeft: newValue })
       }
     },
     top (newValue) {
       if (this.tweenTop == null) {
+        if (this.animation.top != null) {
+          this.animation.top.kill()
+        }
         this.tweenTop = newValue
       } else {
-        gsap.to(this.$data, { duration: 0.5, tweenTop: newValue })
+        this.animation.top = gsap.to(this.$data, { duration: 0.5, tweenTop: newValue })
       }
     }
   },
@@ -169,47 +191,41 @@ export default {
   },
   methods: {
     openImg () {
-      this.initImg()
+      // TODO 打开本地文件
     },
-    initImg () {
-      // 初始化图片时取消缩放动画
-      this.tweenScale = null
-      this.tweenWidth = null
-      this.tweenHeight = null
-      this.tweenLeft = null
-      this.tweenTop = null
+    initImg (image) {
       // 计算长宽比，初始化缩放图片
-      const ratio = this.image.data.originWidth / this.image.data.originHeight
+      const ratio = image.data.originWidth / image.data.originHeight
       const windowWidth = document.documentElement.clientWidth
       const windowHeight = document.documentElement.clientHeight - 20
 
       if (ratio >= windowWidth / windowHeight) {
-        if (this.image.data.originWidth < windowWidth) {
+        if (image.data.originWidth < windowWidth) {
           // 小图片不进行放大
           this.scale = 1
-          this.left = (windowWidth - this.width) / 2
-          this.top = (windowHeight - this.height) / 2
+          this.left = (windowWidth - image.data.originWidth) / 2
+          this.top = (windowHeight - image.data.originHeight) / 2
         } else {
           // 大图片根据长边缩小
-          this.scale = (windowWidth - 1) / this.image.data.originWidth
+          this.scale = (windowWidth - 1) / image.data.originWidth
           this.left = 0
-          this.top = (windowHeight - this.height) / 2
+          this.top = (windowHeight - image.data.originHeight * this.scale) / 2
         }
       } else {
-        if (this.image.data.originHeight < windowHeight) {
+        if (image.data.originHeight < windowHeight) {
           // 小图片不进行放大
           this.scale = 1
-          this.left = (windowWidth - this.width) / 2
-          this.top = (windowHeight - this.height) / 2
+          this.left = (windowWidth - image.data.originWidth) / 2
+          this.top = (windowHeight - image.data.originHeight) / 2
         } else {
           // 大图片根据宽边缩小
-          this.scale = (windowHeight - 1) / this.image.data.originHeight
+          this.scale = (windowHeight - 1) / image.data.originHeight
           this.top = 0
-          this.left = (windowWidth - this.width) / 2
+          this.left = (windowWidth - image.data.originWidth * this.scale) / 2
         }
       }
 
-      this.isEmpty = false
+      return image
     },
     preImg () {
       this.showImage(ipcRenderer.sendSync('pre-image'))
@@ -260,13 +276,19 @@ export default {
     },
     showImage (image) {
       if (image != null) {
-        this.image = image
         const that = this
         const img = new Image()
-        img.src = this.image.data.url
+        img.src = image.data.url
         img.onload = function () {
-          that.image.data.url = img.src
-          that.initImg()
+          // 初始化图片时取消缩放动画
+          that.tweenScale = null
+          that.tweenWidth = null
+          that.tweenHeight = null
+          that.tweenLeft = null
+          that.tweenTop = null
+          // 初始化图片
+          that.image = that.initImg(image)
+          that.isEmpty = false
           if (that.image.index === 0) {
             that.showMessage('你正在浏览第一张图片')
           } else if (that.image.index === that.image.total - 1) {
