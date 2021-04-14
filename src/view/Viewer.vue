@@ -65,18 +65,11 @@ export default {
       // 消息提示框
       message: null,
       // 动画
-      tweenScale: null,
-      tweenWidth: null,
-      tweenHeight: null,
-      tweenLeft: null,
-      tweenTop: null,
-      animation: {
-        scale: null,
-        width: null,
-        height: null,
-        left: null,
-        top: null
-      }
+      tweenScale: 1,
+      tweenWidth: 0,
+      tweenHeight: 0,
+      tweenLeft: 0,
+      tweenTop: 0
     }
   },
   computed: {
@@ -92,54 +85,19 @@ export default {
   },
   watch: {
     scale (newValue) {
-      if (this.tweenScale == null) {
-        if (this.animation.scale != null) {
-          this.animation.scale.kill()
-        }
-        this.tweenScale = newValue
-      } else {
-        this.animation.scale = gsap.to(this.$data, { duration: 0.5, tweenScale: newValue })
-      }
+      this.animation.scale = gsap.to(this.$data, { duration: 0.5, tweenScale: newValue })
     },
     width (newValue) {
-      if (this.tweenWidth == null) {
-        if (this.animation.width != null) {
-          this.animation.width.kill()
-        }
-        this.tweenWidth = newValue
-      } else {
-        this.animation.width = gsap.to(this.$data, { duration: 0.5, tweenWidth: newValue })
-      }
+      this.animation.width = gsap.to(this.$data, { duration: 0.5, tweenWidth: newValue })
     },
     height (newValue) {
-      if (this.tweenHeight == null) {
-        if (this.animation.height != null) {
-          this.animation.height.kill()
-        }
-        this.tweenHeight = newValue
-      } else {
-        this.animation.height = gsap.to(this.$data, { duration: 0.5, tweenHeight: newValue })
-      }
+      this.animation.height = gsap.to(this.$data, { duration: 0.5, tweenHeight: newValue })
     },
     left (newValue) {
-      if (this.tweenLeft == null) {
-        if (this.animation.left != null) {
-          this.animation.left.kill()
-        }
-        this.tweenLeft = newValue
-      } else {
-        this.animation.left = gsap.to(this.$data, { duration: 0.5, tweenLeft: newValue })
-      }
+      this.animation.left = gsap.to(this.$data, { duration: 0.5, tweenLeft: newValue })
     },
     top (newValue) {
-      if (this.tweenTop == null) {
-        if (this.animation.top != null) {
-          this.animation.top.kill()
-        }
-        this.tweenTop = newValue
-      } else {
-        this.animation.top = gsap.to(this.$data, { duration: 0.5, tweenTop: newValue })
-      }
+      this.animation.top = gsap.to(this.$data, { duration: 0.5, tweenTop: newValue })
     }
   },
   mounted () {
@@ -276,16 +234,11 @@ export default {
     },
     showImage (image) {
       if (image != null) {
+        // TODO 初始化图片时取消缩放动画
         const that = this
-        const img = new Image()
-        img.src = image.data.url
-        img.onload = function () {
-          // 初始化图片时取消缩放动画
-          that.tweenScale = null
-          that.tweenWidth = null
-          that.tweenHeight = null
-          that.tweenLeft = null
-          that.tweenTop = null
+        const temp = new Image()
+        temp.src = image.data.url
+        temp.onload = function () {
           // 初始化图片
           that.image = that.initImg(image)
           that.isEmpty = false
