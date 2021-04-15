@@ -241,6 +241,9 @@ export default {
         this.rotate -= 90
       }
     },
+    deleteImg () {
+      this.showImage(ipcRenderer.sendSync('delete-image'))
+    },
     scaleTo (newScale) {
       const deltaX = this.image.data.originWidth * newScale - this.width
       const deltaY = this.image.data.originHeight * newScale - this.height
@@ -275,6 +278,8 @@ export default {
             that.showMessage('你正在浏览最后一张图片')
           }
         }
+      } else {
+        this.isEmpty = true
       }
     },
     showMessage (msg) {

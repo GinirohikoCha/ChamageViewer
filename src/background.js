@@ -39,24 +39,29 @@ async function createWindow () {
   }
 }
 
-const debugUrl = 'C:\\Users\\22364\\OneDrive\\桌面\\Never Settle\\Salmon.jpg'
-let url = debugUrl.replaceAll('\\', '/')
-// let url = process.argv[1].replaceAll('\\', '/')
+// const debugUrl =
+// let url = debugUrl.replaceAll('\\', '/')
+let url = process.argv[1].replaceAll('\\', '/')
 let imageList = null
 
 function getImageData () {
   if (url != null) {
-    const dimensions = sizeOf(url)
-    win.setTitle(imageList.images[imageList.index])
-    return {
-      index: imageList.index,
-      total: imageList.images.length,
-      data: {
-        url: url,
-        type: dimensions.type,
-        originWidth: dimensions.width,
-        originHeight: dimensions.height
+    try {
+      const dimensions = sizeOf(url)
+      win.setTitle(imageList.images[imageList.index])
+      return {
+        index: imageList.index,
+        total: imageList.images.length,
+        data: {
+          url: url,
+          type: dimensions.type,
+          originWidth: dimensions.width,
+          originHeight: dimensions.height
+        }
       }
+    } catch (err) {
+      console.log('无法找到当前图片路径:' + url)
+      return null
     }
   } else {
     return null
@@ -126,7 +131,20 @@ app.on('ready', async () => {
     refreshImageList()
     event.returnValue = getImageData()
   })
+  ipcMain.on('delete-image', function (event) {
+    const deleteUrl = url
+    if (++imageList.index >= imageList.images.length) {
+      imageList.index = 0
+    }
+    url = imageList.dir + imageList.images[imageList.index]
+    fs.unlinkSync(deleteUrl)
+    refreshImageList()
+    event.returnValue = getImageData()
+  })
   ipcMain.on('next-image', function (event) {
+    if (imageList === null || imageList.images.length === 0) {
+      event.returnValue = null
+    }
     if (++imageList.index >= imageList.images.length) {
       imageList.index = 0
     }
@@ -134,6 +152,9 @@ app.on('ready', async () => {
     event.returnValue = getImageData()
   })
   ipcMain.on('pre-image', function (event) {
+    if (imageList === null || imageList.images.length === 0) {
+      event.returnValue = null
+    }
     if (--imageList.index < 0) {
       imageList.index = imageList.images.length - 1
     }
