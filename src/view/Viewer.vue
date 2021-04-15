@@ -18,7 +18,7 @@
     :src="image.data.url"/>
 
   <ScaleInfo :change="scale" :scale="animatedScale" />
-  <BottomToolBar :toggle="toolbar" :scaleProp="scale"/>
+  <BottomToolBar :toggle="toolbar" :scaleProp="scale" :config="config"/>
 </template>
 
 <script>
@@ -36,10 +36,13 @@ export default {
   },
   data () {
     return {
+      config: {
+        scrollMode: 0 // 0:缩放-1:换页
+      },
+      // 系统
       isEmpty: true,
       isHover: false,
       isDragging: false,
-      // 系统
       mouse: {
         x: 0,
         y: 0
@@ -134,7 +137,18 @@ export default {
     }
     window.onmousewheel = function (e) {
       if (!that.isEmpty) {
-        that.scaleImg(e.deltaY > 0)
+        switch (that.config.scrollMode) {
+          default:
+          case 0:
+            that.scaleImg(e.deltaY > 0)
+            break
+          case 1:
+            if (e.deltaY > 0) {
+              that.nextImg()
+            } else {
+              that.preImg()
+            }
+        }
       }
     }
     window.onkeydown = function (e) {
@@ -260,6 +274,9 @@ export default {
         duration: 1500,
         offset: 1
       })
+    },
+    updateConfig (config) {
+      this.config = config
     }
   }
 }
