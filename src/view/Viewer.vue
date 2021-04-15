@@ -9,7 +9,8 @@
     'height':tweenHeight+'px',
     'left':tweenLeft+'px',
     'top':tweenTop+'px',
-    'display':isEmpty?'none':'block'}"
+    'display':isEmpty?'none':'block',
+    'transform':'rotate('+tweenRotate+'deg)'}"
     :draggable="false"
     class="material-shadow"
     v-on:mousedown="setDragging (true)"
@@ -58,11 +59,12 @@ export default {
           originHeight: 1080
         }
       },
+      scale: 1,
       left: 0,
       top: 0,
       originLeft: 0,
       originTop: 0,
-      scale: 1,
+      rotate: 0,
       // 提示区
       toolbar: false,
       // 消息提示框
@@ -72,7 +74,8 @@ export default {
       tweenWidth: 0,
       tweenHeight: 0,
       tweenLeft: 400,
-      tweenTop: 300
+      tweenTop: 300,
+      tweenRotate: 0
     }
   },
   computed: {
@@ -101,6 +104,9 @@ export default {
     },
     top (newValue) {
       gsap.to(this.$data, { duration: 0.5, tweenTop: newValue })
+    },
+    rotate (newValue) {
+      gsap.to(this.$data, { duration: 0.2, tweenRotate: newValue })
     }
   },
   mounted () {
@@ -227,6 +233,13 @@ export default {
         }
       }
       this.scaleTo(newScale)
+    },
+    rotateImg (isClockwise) {
+      if (isClockwise) {
+        this.rotate += 90
+      } else {
+        this.rotate -= 90
+      }
     },
     scaleTo (newScale) {
       const deltaX = this.image.data.originWidth * newScale - this.width

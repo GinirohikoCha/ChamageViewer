@@ -40,11 +40,11 @@
              style="font-size: 30px;transform: translate(0,5px);-ms-transform: translate(0,5px);-webkit-transform: translate(0,5px);"
              @click="$parent.nextImg"/>
         </el-tooltip>
-        <el-tooltip effect="dark" content="向左旋转90°" placement="top">
-        <i class="el-icon-refresh-left bottom-toolbar-item" />
+        <el-tooltip effect="dark" content="逆时针旋转90°" placement="top">
+        <i class="el-icon-refresh-left bottom-toolbar-item" @click="$parent.rotateImg(false)"/>
         </el-tooltip>
-        <el-tooltip effect="dark" content="向右旋转90°" placement="top">
-          <i class="el-icon-refresh-right bottom-toolbar-item" />
+        <el-tooltip effect="dark" content="顺时针旋转90°" placement="top">
+          <i class="el-icon-refresh-right bottom-toolbar-item" @click="$parent.rotateImg(true)"/>
         </el-tooltip>
         <el-tooltip effect="dark" content="删除图片" placement="top">
           <i class="el-icon-delete bottom-toolbar-item" />
