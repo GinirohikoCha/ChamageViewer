@@ -60,8 +60,8 @@ export default {
         }
       },
       scale: 1,
-      left: 0,
-      top: 0,
+      left: -1,
+      top: -1,
       originLeft: 0,
       originTop: 0,
       rotate: 0,
@@ -106,7 +106,7 @@ export default {
       gsap.to(this.$data, { duration: 0.5, tweenTop: newValue })
     },
     rotate (newValue) {
-      gsap.to(this.$data, { duration: 0.2, tweenRotate: newValue })
+      gsap.to(this.$data, { duration: 0.1, tweenRotate: newValue })
     }
   },
   mounted () {
@@ -175,35 +175,34 @@ export default {
       // 计算长宽比，初始化缩放图片
       const ratio = image.data.originWidth / image.data.originHeight
       const windowWidth = document.documentElement.clientWidth
-      const windowHeight = document.documentElement.clientHeight - 20
+      const windowHeight = document.documentElement.clientHeight
 
+      let scale = 1
+      let left = 0
+      let top = 0
       if (ratio >= windowWidth / windowHeight) {
         if (image.data.originWidth < windowWidth) {
           // 小图片不进行放大
-          this.scale = 1
-          this.left = (windowWidth - image.data.originWidth) / 2
-          this.top = (windowHeight - image.data.originHeight) / 2
+          left = (windowWidth - image.data.originWidth) / 2
+          top = (windowHeight - image.data.originHeight) / 2
         } else {
           // 大图片根据长边缩小
-          this.scale = (windowWidth - 1) / image.data.originWidth
-          this.left = 0
-          this.top = (windowHeight - image.data.originHeight * this.scale) / 2
+          scale = (windowWidth - 1) / image.data.originWidth
+          top = (windowHeight - image.data.originHeight * scale) / 2
         }
       } else {
         if (image.data.originHeight < windowHeight) {
           // 小图片不进行放大
-          this.scale = 1
-          this.left = (windowWidth - image.data.originWidth) / 2
-          this.top = (windowHeight - image.data.originHeight) / 2
+          left = (windowWidth - image.data.originWidth) / 2
+          top = (windowHeight - image.data.originHeight) / 2
         } else {
           // 大图片根据宽边缩小
-          this.scale = (windowHeight - 1) / image.data.originHeight
-          this.top = 0
-          this.left = (windowWidth - image.data.originWidth * this.scale) / 2
+          scale = (windowHeight - 1) / image.data.originHeight
+          left = (windowWidth - image.data.originWidth * scale) / 2
         }
       }
 
-      return image
+      return { image: image, scale: scale, left: left, top: top }
     },
     preImg () {
       this.showImage(ipcRenderer.sendSync('pre-image'))
@@ -270,7 +269,11 @@ export default {
         img.onload = function () {
           // TODO 初始化图片时取消缩放动画
           // 初始化图片
-          that.image = that.initImg(image)
+          const data = that.initImg(image)
+          that.scale = data.scale
+          that.left = data.left
+          that.top = data.top
+          that.image = data.image
           that.isEmpty = false
           if (that.image.index === 0) {
             that.showMessage('你正在浏览第一张图片')
