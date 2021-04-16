@@ -1,42 +1,34 @@
 <template>
-  <el-empty description="未选择图片" v-show="isEmpty" class="empty">
-    <el-button type="primary" v-on:click="openImg">打开图片</el-button>
-  </el-empty>
+  <ImageDisplay
+    :is-empty="isEmpty"
+    :url="image.data.url"
+    :width="width"
+    :height="height"
+    :left="left"
+    :top="top"
+    :rotate="rotate" />
 
-  <el-image
-    :style="{
-    'width':tweenWidth+'px',
-    'height':tweenHeight+'px',
-    'left':tweenLeft+'px',
-    'top':tweenTop+'px',
-    'display':isEmpty?'none':'block',
-    'transform':'rotate('+tweenRotate+'deg)'}"
-    :draggable="false"
-    class="material-shadow"
-    v-on:mousedown="setDragging (true)"
-    v-on:mouseenter="setHover(true)"
-    v-on:mouseleave="setHover(false)"
-    :src="image.data.url"/>
-
-  <ScaleInfo :change="scale" :scale="animatedScale" />
-  <BottomToolBar :toggle="toolbar" :scaleProp="scale" :config="config"/>
+  <ScaleInfo :scale="scale" />
+  <BottomToolBar :toggle="toolbar" :scaleProp="scale" :config="config" />
 </template>
 
 <script>
 import { ipcRenderer } from 'electron'
 import { ElMessage } from 'element-plus'
-import { gsap } from 'gsap'
+import ImageDisplay from '@/view/components/ImageDisplay'
 import ScaleInfo from '@/view/components/ScaleInfo'
 import BottomToolBar from '@/view/components/BottomToolBar'
 
 export default {
   name: 'Viewer',
   components: {
+    ImageDisplay,
     ScaleInfo,
     BottomToolBar
   },
   data () {
     return {
+      // 设置
       config: {
         scrollMode: 0 // 0:缩放-1:换页
       },
@@ -48,7 +40,7 @@ export default {
         x: 0,
         y: 0
       },
-      // 图片
+      // 图片显示
       image: {
         index: 0,
         total: 0,
@@ -68,14 +60,7 @@ export default {
       // 提示区
       toolbar: false,
       // 消息提示框
-      message: null,
-      // 动画
-      tweenScale: 1,
-      tweenWidth: 0,
-      tweenHeight: 0,
-      tweenLeft: 400,
-      tweenTop: 300,
-      tweenRotate: 0
+      message: null
     }
   },
   computed: {
@@ -87,26 +72,6 @@ export default {
     },
     animatedScale: function () {
       return (this.tweenScale * 100).toFixed(0) + '%'
-    }
-  },
-  watch: {
-    scale (newValue) {
-      gsap.to(this.$data, { duration: 0.5, tweenScale: newValue })
-    },
-    width (newValue) {
-      gsap.to(this.$data, { duration: 0.5, tweenWidth: newValue })
-    },
-    height (newValue) {
-      gsap.to(this.$data, { duration: 0.5, tweenHeight: newValue })
-    },
-    left (newValue) {
-      gsap.to(this.$data, { duration: 0.5, tweenLeft: newValue })
-    },
-    top (newValue) {
-      gsap.to(this.$data, { duration: 0.5, tweenTop: newValue })
-    },
-    rotate (newValue) {
-      gsap.to(this.$data, { duration: 0.1, tweenRotate: newValue })
     }
   },
   mounted () {
@@ -168,9 +133,6 @@ export default {
     // this.showMessage(ipcRenderer.sendSync('test'))
   },
   methods: {
-    openImg () {
-      // TODO 打开本地文件
-    },
     initImg (image) {
       // 计算长宽比，初始化缩放图片
       const ratio = image.data.originWidth / image.data.originHeight
@@ -241,7 +203,17 @@ export default {
       }
     },
     deleteImg () {
-      this.showImage(ipcRenderer.sendSync('delete-image'))
+      this.$confirm('此操作将永久删除该图片, 是否确定?', '提示', {
+        confirmButtonText: '确定',
+        cancelButtonText: '取消',
+        type: 'warning'
+      }).then(() => {
+        this.showImage(ipcRenderer.sendSync('delete-image'))
+        this.$notify({
+          title: '删除成功!',
+          duration: 2000
+        })
+      }).catch(() => {})
     },
     scaleTo (newScale) {
       const deltaX = this.image.data.originWidth * newScale - this.width
@@ -312,9 +284,5 @@ export default {
   transform: translate(-50%,-50%);
   -ms-transform: translate(-50%,-50%);
   -webkit-transform: translate(-50%,-50%);
-}
-
-.material-shadow {
-  box-shadow: 0 3px 12px rgba(0, 0, 0, 0.23), 0 3px 12px rgba(0, 0, 0, 0.16);
 }
 </style>

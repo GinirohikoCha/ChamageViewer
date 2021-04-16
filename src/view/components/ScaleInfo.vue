@@ -1,26 +1,34 @@
 <template>
   <transition name="fade">
     <div v-show="show" class="scale-info">
-      {{ scale }}
+      {{ animatedScale }}
     </div>
   </transition>
 </template>
 
 <script>
+import { gsap } from 'gsap'
+
 export default {
   name: 'ScaleInfo',
   props: {
-    change: Number,
-    scale: String
+    scale: Number
   },
   data () {
     return {
       show: false,
-      timer: null
+      timer: null,
+      tweenScale: 1
+    }
+  },
+  computed: {
+    animatedScale: function () {
+      return (this.tweenScale * 100).toFixed(0) + '%'
     }
   },
   watch: {
-    change () {
+    scale (newValue) {
+      gsap.to(this.$data, { duration: 0.5, tweenScale: newValue })
       clearTimeout(this.timer)
       this.show = true
       const that = this
