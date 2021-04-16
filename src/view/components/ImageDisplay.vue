@@ -10,9 +10,9 @@
     'left':tweenLeft+'px',
     'top':tweenTop+'px',
     'display':isEmpty?'none':'block',
-    'transform':'rotate('+tweenRotate+'deg)'}"
+    'transform':'rotate('+tweenRotate+'deg)',
+    'box-shadow':tweenShadowH+'px '+tweenShadowV+'px 12px rgba(0, 0, 0, 0.23), 0 3px 12px rgba(0, 0, 0, 0.16)'}"
     :draggable="false"
-    class="material-shadow"
     v-on:mousedown="$parent.setDragging(true)"
     v-on:mouseenter="$parent.setHover(true)"
     v-on:mouseleave="$parent.setHover(false)"
@@ -41,7 +41,9 @@ export default {
       tweenHeight: 0,
       tweenLeft: 400,
       tweenTop: 300,
-      tweenRotate: 0
+      tweenRotate: 0,
+      tweenShadowH: 0,
+      tweenShadowV: 3
     }
   },
   watch: {
@@ -58,7 +60,27 @@ export default {
       gsap.to(this.$data, { duration: 0.5, tweenTop: newValue })
     },
     rotate (newValue) {
-      gsap.to(this.$data, { duration: 0.1, tweenRotate: newValue })
+      gsap.to(this.$data, { duration: 0.2, tweenRotate: newValue })
+      const sign = newValue >= 0 ? 1 : -1
+      switch (newValue % 360) {
+        default:
+        case 0:
+          gsap.to(this.$data, { duration: 0.2, tweenShadowH: 0 })
+          gsap.to(this.$data, { duration: 0.2, tweenShadowV: sign * 3 })
+          break
+        case 90:
+          gsap.to(this.$data, { duration: 0.2, tweenShadowH: sign * 3 })
+          gsap.to(this.$data, { duration: 0.2, tweenShadowV: 0 })
+          break
+        case 180:
+          gsap.to(this.$data, { duration: 0.2, tweenShadowH: 0 })
+          gsap.to(this.$data, { duration: 0.2, tweenShadowV: sign * -3 })
+          break
+        case 270:
+          gsap.to(this.$data, { duration: 0.2, tweenShadowH: sign * -3 })
+          gsap.to(this.$data, { duration: 0.2, tweenShadowV: 0 })
+          break
+      }
     }
   },
   methods: {
@@ -70,7 +92,12 @@ export default {
 </script>
 
 <style scoped>
-.material-shadow {
-  box-shadow: 0 3px 12px rgba(0, 0, 0, 0.23), 0 3px 12px rgba(0, 0, 0, 0.16);
+.empty {
+  position: fixed;
+  left: 50%;
+  top: 50%;
+  transform: translate(-50%,-50%);
+  -ms-transform: translate(-50%,-50%);
+  -webkit-transform: translate(-50%,-50%);
 }
 </style>

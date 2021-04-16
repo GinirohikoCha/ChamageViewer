@@ -177,7 +177,6 @@ export default {
       this.top = this.originTop + e.clientY - this.mouse.y
     },
     scaleImg (isDown) {
-      // TODO 缩放过程中切换会导致缩放数值不正常
       // 缩放
       let newScale
       if (isDown) {
@@ -277,12 +276,4 @@ export default {
 
 <!-- Add "scoped" attribute to limit CSS to this component only -->
 <style scoped>
-.empty {
-  position: fixed;
-  left: 50%;
-  top: 50%;
-  transform: translate(-50%,-50%);
-  -ms-transform: translate(-50%,-50%);
-  -webkit-transform: translate(-50%,-50%);
-}
 </style>
