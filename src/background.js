@@ -38,10 +38,13 @@ async function createWindow () {
     await win.loadURL('app://./index.html')
   }
 }
-
-// const debugUrl =
-// let url = debugUrl.replaceAll('\\', '/')
-let url = process.argv[1].replaceAll('\\', '/')
+let url = ''
+if (process.env.WEBPACK_DEV_SERVER_URL) {
+  const debugUrl = 'C:\\Users\\22364\\Pictures\\Never Settle\\Salmon.jpg'
+  url = debugUrl.replaceAll('\\', '/')
+} else {
+  url = process.argv[1].replaceAll('\\', '/')
+}
 let imageList = null
 
 function getImageData () {
