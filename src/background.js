@@ -1,6 +1,6 @@
 'use strict'
 
-import { app, protocol, ipcMain, BrowserWindow, Menu } from 'electron'
+import { app, protocol, ipcMain, BrowserWindow, Menu, dialog } from 'electron'
 import { createProtocol } from 'vue-cli-plugin-electron-builder/lib'
 import installExtension, { VUEJS_DEVTOOLS } from 'electron-devtools-installer'
 import fs from 'fs'
@@ -130,6 +130,17 @@ app.on('ready', async () => {
   // 创建窗口
   createWindow()
   // 进程通信
+  ipcMain.on('open-image', function (event) {
+    url = dialog.showOpenDialogSync(win, {
+      title: '打开图片',
+      filters: [
+        { name: 'Images', extensions: ['bmp', 'jpg', 'jpeg', 'png', 'gif', 'tif', 'svg', 'psd', 'ai', 'raw', 'webp'] }
+      ],
+      properties: ['openFile']
+    })[0].replaceAll('\\', '/')
+    refreshImageList()
+    event.returnValue = getImageData()
+  })
   ipcMain.on('init-image', function (event) {
     refreshImageList()
     event.returnValue = getImageData()

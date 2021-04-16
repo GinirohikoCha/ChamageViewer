@@ -133,6 +133,9 @@ export default {
     // this.showMessage(ipcRenderer.sendSync('test'))
   },
   methods: {
+    openImg () {
+      this.showImage(ipcRenderer.sendSync('open-image'))
+    },
     initImg (image) {
       // 计算长宽比，初始化缩放图片
       const ratio = image.data.originWidth / image.data.originHeight

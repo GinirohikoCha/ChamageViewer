@@ -1,6 +1,6 @@
 <template>
   <el-empty description="未选择图片" v-show="isEmpty" class="empty">
-    <el-button type="primary" v-on:click="openImg">打开图片</el-button>
+    <el-button type="primary" v-on:click="$parent.openImg">打开图片</el-button>
   </el-empty>
 
   <el-image
@@ -81,11 +81,6 @@ export default {
           gsap.to(this.$data, { duration: 0.2, tweenShadowV: 0 })
           break
       }
-    }
-  },
-  methods: {
-    openImg () {
-      // TODO 打开本地文件
     }
   }
 }
