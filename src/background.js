@@ -13,6 +13,7 @@ protocol.registerSchemesAsPrivileged([
 ])
 
 let win = null
+console.debug(process.env.WEBPACK_DEV_SERVER_URL)
 
 async function createWindow () {
   // Create the browser window.
@@ -38,6 +39,7 @@ async function createWindow () {
     await win.loadURL('app://./index.html')
   }
 }
+
 let url = ''
 if (process.env.WEBPACK_DEV_SERVER_URL) {
   const debugUrl = 'C:\\Users\\22364\\Pictures\\Never Settle\\Salmon.jpg'
@@ -73,11 +75,11 @@ function getImageData () {
 
 function refreshImageList () {
   if (url != null) {
-    console.log(url)
+    console.log('文件' + url)
     const slashIdx = url.lastIndexOf('/') + 1
     const dir = url.substring(0, slashIdx)
     const image = url.substring(slashIdx)
-    console.log(dir)
+    console.log('文件夹' + dir)
     imageList = { dir: dir, index: 0, images: [] }
     fs.readdirSync(dir).forEach(function (item, index) {
       if (image === item) {
@@ -93,6 +95,12 @@ function refreshImageList () {
     console.log(imageList)
   }
 }
+
+console.log('应用地址' + process.argv[0])
+const defaultConfig = {
+  scrollMode: 0 // 0:缩放-1:换页
+}
+let config = defaultConfig
 
 // Quit when all windows are closed.
 app.on('window-all-closed', () => {
@@ -130,6 +138,25 @@ app.on('ready', async () => {
   // 创建窗口
   createWindow()
   // 进程通信
+  ipcMain.on('load-config', function (event) {
+    const exePath = process.argv[0].replaceAll('\\', '/')
+    const configPath = exePath.substring(0, exePath.lastIndexOf('/') + 1) + 'config'
+    if (fs.existsSync(configPath)) {
+      fs.readFile(configPath, function (error, data) {
+        if (error) {
+          event.sender.send('config-loaded', defaultConfig)
+        } else {
+          config = JSON.parse(data.toString())
+          event.sender.send('config-loaded', config)
+        }
+      })
+    } else {
+      fs.writeFile(configPath, JSON.stringify(defaultConfig), function (error) {
+        if (error) { console.error('写入失败') } else { console.log('写入成功') }
+      })
+      event.sender.send('config-loaded', defaultConfig)
+    }
+  })
   ipcMain.on('open-image', function (event) {
     url = dialog.showOpenDialogSync(win, {
       title: '打开图片',
@@ -176,7 +203,8 @@ app.on('ready', async () => {
     event.returnValue = getImageData()
   })
   ipcMain.on('test', function (event) {
-    event.returnValue = url
+    const exePath = process.argv[0].replaceAll('\\', '/')
+    event.returnValue = exePath.substring(0, exePath.lastIndexOf('/'))
   })
 })
 

@@ -75,10 +75,14 @@ export default {
     }
   },
   mounted () {
+    const that = this
+    ipcRenderer.on('config-loaded', function (event, arg) {
+      that.config = arg
+    })
+    ipcRenderer.send('load-config')
     // 初始化
     this.showImage(ipcRenderer.sendSync('init-image'))
     // 全局操作监听
-    const that = this
     window.onmousedown = function (e) {
       if (!that.isEmpty) {
         that.mouse.x = e.clientX
@@ -130,7 +134,7 @@ export default {
         that.nextImg()
       }
     }
-    // this.showMessage(ipcRenderer.sendSync('test'))
+    // alert(ipcRenderer.sendSync('test'))
   },
   methods: {
     openImg () {
