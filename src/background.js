@@ -13,6 +13,7 @@ protocol.registerSchemesAsPrivileged([
 ])
 
 let win = null
+let winSetting = null
 console.debug(process.env.WEBPACK_DEV_SERVER_URL)
 
 async function createWindow () {
@@ -25,7 +26,8 @@ async function createWindow () {
       // Use pluginOptions.nodeIntegration, leave this alone
       // See nklayman.github.io/vue-cli-plugin-electron-builder/guide/security.html#node-integration for more info
       nodeIntegration: process.env.ELECTRON_NODE_INTEGRATION
-    }
+    },
+    show: false
   })
   Menu.setApplicationMenu(null)
 
@@ -37,6 +39,41 @@ async function createWindow () {
     createProtocol('app')
     // Load the index.html when not in development
     await win.loadURL('app://./index.html')
+  }
+  win.once('ready-to-show', () => {
+    win.show()
+  })
+}
+
+function createSettingWindow () {
+  if (winSetting) {
+    winSetting.show()
+  } else {
+    winSetting = new BrowserWindow({
+      width: 400,
+      height: 300,
+      parent: win,
+      title: '设置',
+      resizable: false,
+      webPreferences: {
+        webSecurity: false,
+        nodeIntegration: process.env.ELECTRON_NODE_INTEGRATION
+      },
+      show: false
+    })
+
+    if (process.env.WEBPACK_DEV_SERVER_URL) {
+      winSetting.loadURL(process.env.WEBPACK_DEV_SERVER_URL + '#/config')
+    } else {
+      winSetting.loadURL('app://./index.html/#/config')
+    }
+    winSetting.once('ready-to-show', () => {
+      winSetting.show()
+    })
+    winSetting.on('close', (e) => {
+      e.preventDefault()
+      winSetting.hide()
+    })
   }
 }
 
@@ -138,6 +175,9 @@ app.on('ready', async () => {
   // 创建窗口
   createWindow()
   // 进程通信
+  ipcMain.on('open-config', function (event) {
+    createSettingWindow()
+  })
   ipcMain.on('load-config', function (event) {
     const exePath = process.argv[0].replaceAll('\\', '/')
     const configPath = exePath.substring(0, exePath.lastIndexOf('/') + 1) + 'config'

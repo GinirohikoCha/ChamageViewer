@@ -274,6 +274,9 @@ export default {
         offset: 1
       })
     },
+    openConfig () {
+      ipcRenderer.send('open-config')
+    },
     updateConfig (config) {
       this.config = config
     }

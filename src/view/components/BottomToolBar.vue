@@ -49,7 +49,7 @@
         <el-tooltip effect="dark" content="删除图片" placement="top">
           <i class="el-icon-delete bottom-toolbar-item" @click="$parent.deleteImg"/>
         </el-tooltip>
-        <i class="el-icon-setting bottom-toolbar-item" />
+        <i class="el-icon-setting bottom-toolbar-item" @click="$parent.openConfig"/>
       </el-space>
     </div>
   </transition>

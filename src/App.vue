@@ -1,15 +1,10 @@
 <template>
-  <Viewer/>
+  <router-view />
 </template>
 
 <script>
-import Viewer from './view/Viewer.vue'
-
 export default {
-  name: 'App',
-  components: {
-    Viewer
-  }
+  name: 'App'
 }
 </script>
 
