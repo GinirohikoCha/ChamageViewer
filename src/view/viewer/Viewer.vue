@@ -30,7 +30,13 @@ export default {
     return {
       // 设置
       config: {
-        scrollMode: 0 // 0:缩放-1:换页
+        version: '0.0.0',
+        habit: {
+          scroll: {
+            enable: true,
+            mode: 0 // 0:缩放-1:翻页
+          }
+        }
       },
       // 系统
       isEmpty: true,
@@ -111,8 +117,8 @@ export default {
       }
     }
     window.onmousewheel = function (e) {
-      if (!that.isEmpty) {
-        switch (that.config.scrollMode) {
+      if (!that.isEmpty && that.config.habit.scroll.enable) {
+        switch (that.config.habit.scroll.mode) {
           default:
           case 0:
             that.scaleImg(e.deltaY > 0)

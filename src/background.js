@@ -137,7 +137,13 @@ function refreshImageList () {
 
 console.log('应用地址' + process.argv[0])
 const defaultConfig = {
-  scrollMode: 0 // 0:缩放-1:换页
+  version: '2.0.3',
+  habit: {
+    scroll: {
+      enable: true,
+      mode: 0 // 0:缩放-1:翻页
+    }
+  }
 }
 let config = defaultConfig
 
@@ -198,6 +204,10 @@ app.on('ready', async () => {
       })
       event.sender.send('config-loaded', defaultConfig)
     }
+  })
+  ipcMain.on('update-config', function (event, newConfig) {
+    config = newConfig
+    win.webContents.send('config-loaded', config)
   })
   ipcMain.on('open-image', function (event) {
     url = dialog.showOpenDialogSync(win, {
