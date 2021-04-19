@@ -15,9 +15,9 @@
 <script>
 import { ipcRenderer } from 'electron'
 import { ElMessage } from 'element-plus'
-import ImageDisplay from '@/view/components/ImageDisplay'
-import ScaleInfo from '@/view/components/ScaleInfo'
-import BottomToolBar from '@/view/components/BottomToolBar'
+import ImageDisplay from '@/view/viewer/components/ImageDisplay'
+import ScaleInfo from '@/view/viewer/components/ScaleInfo'
+import BottomToolBar from '@/view/viewer/components/BottomToolBar'
 
 export default {
   name: 'Viewer',

@@ -33,13 +33,14 @@ async function createWindow () {
 
   if (process.env.WEBPACK_DEV_SERVER_URL) {
     // Load the url of the dev server if in development mode
-    await win.loadURL(process.env.WEBPACK_DEV_SERVER_URL)
+    win.loadURL(process.env.WEBPACK_DEV_SERVER_URL)
     if (!process.env.IS_TEST) win.webContents.openDevTools()
   } else {
     createProtocol('app')
     // Load the index.html when not in development
-    await win.loadURL('app://./index.html')
+    win.loadURL('app://./index.html')
   }
+
   win.once('ready-to-show', () => {
     win.show()
   })
@@ -50,8 +51,8 @@ function createSettingWindow () {
     winSetting.show()
   } else {
     winSetting = new BrowserWindow({
-      width: 400,
-      height: 300,
+      width: 600,
+      height: 400,
       parent: win,
       title: '设置',
       resizable: false,
@@ -64,6 +65,7 @@ function createSettingWindow () {
 
     if (process.env.WEBPACK_DEV_SERVER_URL) {
       winSetting.loadURL(process.env.WEBPACK_DEV_SERVER_URL + '#/config')
+      if (!process.env.IS_TEST) winSetting.webContents.openDevTools()
     } else {
       winSetting.loadURL('app://./index.html/#/config')
     }

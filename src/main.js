@@ -6,8 +6,8 @@ import 'element-plus/lib/theme-chalk/index.css'
 import App from './App.vue'
 
 const routes = [
-  { path: '/', component: () => import('@/view/Viewer') },
-  { path: '/config', component: () => import('@/view/Config') }
+  { path: '/', component: () => import('@/view/viewer/Viewer') },
+  { path: '/config', component: () => import('@/view/config/Config') }
 ]
 
 const router = createRouter({
