@@ -2,9 +2,9 @@
   <transition name="fade">
     <div v-show="show" class="bottom-toolbar material-shadow">
       <el-space>
-        <el-tooltip effect="dark" content="滚轮换页模式" placement="top">
+        <el-tooltip effect="dark" :content="modeTitle" placement="top">
           <i class="el-icon-mouse"
-             :class="{'bottom-toolbar-item-active': scrollSwitchMode, 'bottom-toolbar-item': !scrollSwitchMode}"
+             :class="{'bottom-toolbar-item-active': modeSwitched, 'bottom-toolbar-item': !modeSwitched}"
              @click="toggleScrollMode"/>
         </el-tooltip>
         <el-tooltip effect="dark" content="原始尺寸" placement="top">
@@ -72,13 +72,27 @@ export default {
           visible: false
         }
       },
+      scrollMode: 0,
       show: false,
       timer: null
     }
   },
   computed: {
-    scrollSwitchMode: function () {
-      return this.config.scrollMode === 1
+    modeSwitched: function () {
+      return this.scrollMode !== this.config.habit.scroll.mode
+    },
+    modeTitle: function () {
+      if (this.modeSwitched) {
+        switch (this.scrollMode) {
+          default:
+          case 0:
+            return '滚轮换页模式'
+          case 1:
+            return '滚轮缩放模式'
+        }
+      } else {
+        return null
+      }
     }
   },
   watch: {
@@ -112,13 +126,12 @@ export default {
       return (this.menu.scale.value * 100).toFixed(0) + '%'
     },
     toggleScrollMode () {
-      const config = JSON.parse(JSON.stringify(this.config))
-      if (this.scrollSwitchMode) {
-        config.scrollMode = 0
+      if (this.modeSwitched) {
+        this.scrollMode = this.config.habit.scroll.mode
       } else {
-        config.scrollMode = 1
+        this.scrollMode = this.config.habit.scroll.mode ? 0 : 1
       }
-      this.$parent.updateConfig(config)
+      this.$parent.switchScrollMode(this.scrollMode)
     }
   }
 }

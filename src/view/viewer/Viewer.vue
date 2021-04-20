@@ -42,6 +42,7 @@ export default {
       isEmpty: true,
       isHover: false,
       isDragging: false,
+      scrollMode: 0,
       mouse: {
         x: 0,
         y: 0
@@ -84,6 +85,7 @@ export default {
     const that = this
     ipcRenderer.on('config-loaded', function (event, arg) {
       that.config = arg
+      that.scrollMode = arg.habit.scroll.mode
     })
     ipcRenderer.send('load-config')
     // 初始化
@@ -118,7 +120,7 @@ export default {
     }
     window.onmousewheel = function (e) {
       if (!that.isEmpty && that.config.habit.scroll.enable) {
-        switch (that.config.habit.scroll.mode) {
+        switch (that.scrollMode) {
           default:
           case 0:
             that.scaleImg(e.deltaY > 0)
@@ -283,8 +285,8 @@ export default {
     openConfig () {
       ipcRenderer.send('open-config')
     },
-    updateConfig (config) {
-      this.config = config
+    switchScrollMode (mode) {
+      this.scrollMode = mode
     }
   }
 }
