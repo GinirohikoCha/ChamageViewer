@@ -82,16 +82,12 @@ export default {
       return this.scrollMode !== this.config.habit.scroll.mode
     },
     modeTitle: function () {
-      if (this.modeSwitched) {
-        switch (this.scrollMode) {
-          default:
-          case 0:
-            return '滚轮换页模式'
-          case 1:
-            return '滚轮缩放模式'
-        }
-      } else {
-        return null
+      switch (this.scrollMode) {
+        default:
+        case 0:
+          return '切换滚轮换页模式'
+        case 1:
+          return '切换滚轮缩放模式'
       }
     }
   },

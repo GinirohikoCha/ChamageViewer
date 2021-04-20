@@ -27,6 +27,9 @@ export default {
       }
     }
   },
+  mounted () {
+    this.config = ipcRenderer.sendSync('get-config')
+  },
   methods: {
     updateHabit (habit) {
       this.config.habit = habit

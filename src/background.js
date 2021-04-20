@@ -136,6 +136,8 @@ function refreshImageList () {
 }
 
 console.log('应用地址' + process.argv[0])
+const exePath = process.argv[0].replaceAll('\\', '/')
+const configPath = exePath.substring(0, exePath.lastIndexOf('/') + 1) + 'config'
 const defaultConfig = {
   version: '2.0.3',
   habit: {
@@ -187,8 +189,6 @@ app.on('ready', async () => {
     createSettingWindow()
   })
   ipcMain.on('load-config', function (event) {
-    const exePath = process.argv[0].replaceAll('\\', '/')
-    const configPath = exePath.substring(0, exePath.lastIndexOf('/') + 1) + 'config'
     if (fs.existsSync(configPath)) {
       fs.readFile(configPath, function (error, data) {
         if (error) {
@@ -199,15 +199,17 @@ app.on('ready', async () => {
         }
       })
     } else {
-      fs.writeFile(configPath, JSON.stringify(defaultConfig), function (error) {
-        if (error) { console.error('写入失败') } else { console.log('写入成功') }
-      })
       event.sender.send('config-loaded', defaultConfig)
+      saveConfig(defaultConfig)
     }
   })
   ipcMain.on('update-config', function (event, newConfig) {
     config = newConfig
     win.webContents.send('config-loaded', config)
+    saveConfig(config)
+  })
+  ipcMain.on('get-config', function (event) {
+    event.returnValue = config
   })
   ipcMain.on('open-image', function (event) {
     url = dialog.showOpenDialogSync(win, {
@@ -273,4 +275,10 @@ if (isDevelopment) {
       app.quit()
     })
   }
+}
+
+function saveConfig (config) {
+  fs.writeFile(configPath, JSON.stringify(config), function (error) {
+    if (error) { console.error('写入失败') } else { console.log('写入成功') }
+  })
 }
