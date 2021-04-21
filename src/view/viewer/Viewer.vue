@@ -142,6 +142,12 @@ export default {
         that.nextImg()
       }
     }
+    window.onresize = function (e) {
+      const data = that.initImg(that.image)
+      that.scale = data.scale
+      that.left = data.left
+      that.top = data.top
+    }
     // alert(ipcRenderer.sendSync('test'))
   },
   methods: {
