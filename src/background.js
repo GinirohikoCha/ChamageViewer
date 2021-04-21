@@ -195,6 +195,10 @@ app.on('ready', async () => {
           event.sender.send('config-loaded', defaultConfig)
         } else {
           config = JSON.parse(data.toString())
+          if (config.version !== defaultConfig.version) {
+            config = defaultConfig
+            saveConfig(config)
+          }
           event.sender.send('config-loaded', config)
         }
       })
