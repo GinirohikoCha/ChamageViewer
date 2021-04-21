@@ -163,25 +163,32 @@ export default {
       let scale = 1
       let left = 0
       let top = 0
-      if (ratio >= windowWidth / windowHeight) {
-        if (image.data.originWidth < windowWidth) {
-          // 小图片不进行放大
-          left = (windowWidth - image.data.originWidth) / 2
-          top = (windowHeight - image.data.originHeight) / 2
-        } else {
-          // 大图片根据长边缩小
-          scale = (windowWidth - 1) / image.data.originWidth
-          top = (windowHeight - image.data.originHeight * scale) / 2
-        }
+      if (ratio <= 0.3) {
+        // 长图
+        scale = (windowWidth * 0.6) / image.data.originWidth
+        left = windowWidth * 0.2
       } else {
-        if (image.data.originHeight < windowHeight) {
-          // 小图片不进行放大
-          left = (windowWidth - image.data.originWidth) / 2
-          top = (windowHeight - image.data.originHeight) / 2
+        // 正常图片
+        if (ratio >= windowWidth / windowHeight) {
+          if (image.data.originWidth < windowWidth) {
+            // 小图片不进行放大
+            left = (windowWidth - image.data.originWidth) / 2
+            top = (windowHeight - image.data.originHeight) / 2
+          } else {
+            // 大图片根据长边缩小
+            scale = (windowWidth - 1) / image.data.originWidth
+            top = (windowHeight - image.data.originHeight * scale) / 2
+          }
         } else {
-          // 大图片根据宽边缩小
-          scale = (windowHeight - 1) / image.data.originHeight
-          left = (windowWidth - image.data.originWidth * scale) / 2
+          if (image.data.originHeight < windowHeight) {
+            // 小图片不进行放大
+            left = (windowWidth - image.data.originWidth) / 2
+            top = (windowHeight - image.data.originHeight) / 2
+          } else {
+            // 大图片根据宽边缩小
+            scale = (windowHeight - 1) / image.data.originHeight
+            left = (windowWidth - image.data.originWidth * scale) / 2
+          }
         }
       }
 
