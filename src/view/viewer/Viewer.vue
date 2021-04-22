@@ -10,7 +10,7 @@
 
   <ChangePageBtn :show="show.changePageBtn" />
   <ScaleInfo :scale="scale" />
-  <BottomToolBar :toggle="show.toolbar" :scaleProp="scale" :config="config" />
+  <BottomToolBar :toggle="show.toolbar" :scale-prop="scale" :config="config" :is-long="isLong" />
 </template>
 
 <script>
@@ -45,6 +45,7 @@ export default {
       isEmpty: true,
       isHover: false,
       isDragging: false,
+      isLong: false,
       scrollMode: 0,
       mouse: {
         x: 0,
@@ -138,6 +139,10 @@ export default {
             } else {
               that.preImg()
             }
+            break
+          case 2:
+            that.top -= e.deltaY
+            break
         }
       }
     }
@@ -154,6 +159,7 @@ export default {
       that.scale = data.scale
       that.left = data.left
       that.top = data.top
+      that.isLong = data.isLong
     }
     // alert(ipcRenderer.sendSync('test'))
   },
@@ -170,10 +176,12 @@ export default {
       let scale = 1
       let left = 0
       let top = 0
+      let isLong = false
       if (ratio <= 0.3) {
         // 长图
         scale = (windowWidth * 0.6) / image.data.originWidth
         left = windowWidth * 0.2
+        isLong = true
       } else {
         // 正常图片
         if (ratio >= windowWidth / windowHeight) {
@@ -199,7 +207,7 @@ export default {
         }
       }
 
-      return { image: image, scale: scale, left: left, top: top }
+      return { image: image, scale: scale, left: left, top: top, isLong: isLong }
     },
     preImg () {
       this.showImage(ipcRenderer.sendSync('pre-image'))
@@ -279,6 +287,7 @@ export default {
           that.scale = data.scale
           that.left = data.left
           that.top = data.top
+          that.isLong = data.isLong
           that.image = data.image
           that.isEmpty = false
           if (that.image.index === 0) {

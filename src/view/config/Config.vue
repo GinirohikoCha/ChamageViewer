@@ -21,7 +21,7 @@ export default {
         habit: {
           scroll: {
             enable: true,
-            mode: 0 // 0:缩放-1:翻页
+            mode: 0 // 0:缩放-1:翻页-2:长图浏览
           }
         }
       }

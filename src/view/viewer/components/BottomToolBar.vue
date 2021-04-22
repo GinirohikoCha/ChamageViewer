@@ -61,7 +61,8 @@ export default {
   props: {
     toggle: Boolean,
     scaleProp: Number,
-    config: Object
+    config: Object,
+    isLong: Boolean
   },
   data () {
     return {
@@ -85,8 +86,15 @@ export default {
       switch (this.scrollMode) {
         default:
         case 0:
-          return '切换滚轮换页模式'
+          if (this.isLong) {
+            return '切换长图浏览模式'
+          } else {
+            return '切换滚轮换页模式'
+          }
         case 1:
+          return '切换滚轮缩放模式'
+        // 长图滚轮浏览模式
+        case 2:
           return '切换滚轮缩放模式'
       }
     }
@@ -125,7 +133,11 @@ export default {
       if (this.modeSwitched) {
         this.scrollMode = this.config.habit.scroll.mode
       } else {
-        this.scrollMode = this.config.habit.scroll.mode ? 0 : 1
+        if (this.isLong) {
+          this.scrollMode = 2
+        } else {
+          this.scrollMode = this.config.habit.scroll.mode ? 0 : 1
+        }
       }
       this.$parent.switchScrollMode(this.scrollMode)
     }
