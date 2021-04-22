@@ -8,8 +8,9 @@
     :top="top"
     :rotate="rotate" />
 
+  <ChangePageBtn :show="show.changePageBtn" />
   <ScaleInfo :scale="scale" />
-  <BottomToolBar :toggle="toolbar" :scaleProp="scale" :config="config" />
+  <BottomToolBar :toggle="show.toolbar" :scaleProp="scale" :config="config" />
 </template>
 
 <script>
@@ -18,13 +19,15 @@ import { ElMessage } from 'element-plus'
 import ImageDisplay from '@/view/viewer/components/ImageDisplay'
 import ScaleInfo from '@/view/viewer/components/ScaleInfo'
 import BottomToolBar from '@/view/viewer/components/BottomToolBar'
+import ChangePageBtn from '@/view/viewer/components/ChangePageBtn'
 
 export default {
   name: 'Viewer',
   components: {
     ImageDisplay,
     ScaleInfo,
-    BottomToolBar
+    BottomToolBar,
+    ChangePageBtn
   },
   data () {
     return {
@@ -65,7 +68,10 @@ export default {
       originTop: 0,
       rotate: 0,
       // 提示区
-      toolbar: false,
+      show: {
+        toolbar: false,
+        changePageBtn: false
+      },
       // 消息提示框
       message: null
     }
@@ -114,8 +120,9 @@ export default {
             that.mouse.y = e.clientY
           }
         }
-        // 是否在工具栏区域
-        that.toolbar = document.documentElement.clientHeight - e.clientY <= 45
+        // 根据区域显隐按钮&工具
+        that.show.toolbar = document.documentElement.clientHeight - e.clientY <= 45
+        that.show.changePageBtn = e.clientX <= 70 || document.documentElement.clientWidth - e.clientX <= 70
       }
     }
     window.onmousewheel = function (e) {
