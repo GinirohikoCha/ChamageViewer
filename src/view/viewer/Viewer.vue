@@ -141,6 +141,10 @@ export default {
             }
             break
           case 2:
+            if ((e.deltaY < 0 && that.top >= -100) ||
+              (e.deltaY > 0 && that.top <= -that.height + document.documentElement.clientHeight)) {
+              break
+            }
             that.top -= e.deltaY
             break
         }
