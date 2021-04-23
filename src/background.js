@@ -131,6 +131,23 @@ function refreshImageList () {
         } catch (err) {}
       }
     })
+    // 中文排序优化
+    imageList.images.sort((item1, item2) => {
+      // 是否存在中文
+      if (hasChinese(item1) || hasChinese(item2)) {
+        for (let i = 0; i < Math.min(item1.length, item2.length); i++) {
+          const char1 = item1.charAt(i)
+          const char2 = item2.charAt(i)
+          if (char1 !== char2) {
+            if (hasChinese(char1) && hasChinese(char2)) {
+              return item1.localeCompare(item2)
+            } else {
+              return 0
+            }
+          }
+        }
+      }
+    })
     console.log(imageList)
   }
 }
@@ -285,4 +302,8 @@ function saveConfig (config) {
   fs.writeFile(configPath, JSON.stringify(config), function (error) {
     if (error) { console.error('写入失败') } else { console.log('写入成功') }
   })
+}
+
+function hasChinese (str) {
+  return /[\u4E00-\u9FA5]|[\uFE30-\uFFA0]/gi.test(str)
 }
