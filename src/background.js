@@ -5,6 +5,7 @@ import { createProtocol } from 'vue-cli-plugin-electron-builder/lib'
 import installExtension, { VUEJS_DEVTOOLS } from 'electron-devtools-installer'
 import fs from 'fs'
 const sizeOf = require('image-size')
+const configUtil = require('@/util/config')
 const isDevelopment = process.env.NODE_ENV !== 'production'
 
 // Scheme must be registered before the app is ready
@@ -152,20 +153,6 @@ function refreshImageList () {
   }
 }
 
-console.log('应用地址' + process.argv[0])
-const exePath = process.argv[0].replaceAll('\\', '/')
-const configPath = exePath.substring(0, exePath.lastIndexOf('/') + 1) + 'config'
-const defaultConfig = {
-  version: '2.0.3',
-  habit: {
-    scroll: {
-      enable: true,
-      mode: 0 // 0:缩放-1:翻页
-    }
-  }
-}
-let config = defaultConfig
-
 // Quit when all windows are closed.
 app.on('window-all-closed', () => {
   // On macOS it is common for applications and their menu bar
@@ -206,31 +193,16 @@ app.on('ready', async () => {
     createSettingWindow()
   })
   ipcMain.on('load-config', function (event) {
-    if (fs.existsSync(configPath)) {
-      fs.readFile(configPath, function (error, data) {
-        if (error) {
-          event.sender.send('config-loaded', defaultConfig)
-        } else {
-          config = JSON.parse(data.toString())
-          if (config.version !== defaultConfig.version) {
-            config = defaultConfig
-            saveConfig(config)
-          }
-          event.sender.send('config-loaded', config)
-        }
-      })
-    } else {
-      event.sender.send('config-loaded', defaultConfig)
-      saveConfig(defaultConfig)
-    }
+    const config = configUtil.loadConfig()
+    console.log('已加载配置:' + config)
+    event.sender.send('config-loaded', config)
   })
   ipcMain.on('update-config', function (event, newConfig) {
-    config = newConfig
-    win.webContents.send('config-loaded', config)
-    saveConfig(config)
+    configUtil.updateConfig(newConfig)
+    win.webContents.send('config-loaded', newConfig)
   })
   ipcMain.on('get-config', function (event) {
-    event.returnValue = config
+    event.returnValue = configUtil.getConfig()
   })
   ipcMain.on('open-image', function (event) {
     url = dialog.showOpenDialogSync(win, {
@@ -296,12 +268,6 @@ if (isDevelopment) {
       app.quit()
     })
   }
-}
-
-function saveConfig (config) {
-  fs.writeFile(configPath, JSON.stringify(config), function (error) {
-    if (error) { console.error('写入失败') } else { console.log('写入成功') }
-  })
 }
 
 function hasChinese (str) {
