@@ -5,11 +5,12 @@ console.log('应用地址' + process.argv[0])
 const exePath = process.argv[0].replaceAll('\\', '/')
 const configPath = exePath.substring(0, exePath.lastIndexOf('/') + 1) + 'config'
 const defaultConfig = {
-  version: '2.0.3.2',
+  version: '2.0.3.3',
   common: {
     interface: {
       enableChangePageBtn: true,
-      enableScaleInfo: true
+      enableScaleInfo: true,
+      enableBottomToolBar: true
     }
   },
   habit: {

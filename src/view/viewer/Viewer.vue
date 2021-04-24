@@ -8,9 +8,18 @@
     :top="top"
     :rotate="rotate" />
 
-  <ChangePageBtn v-if="config.common.interface.enableChangePageBtn" :show="show.changePageBtn" />
-  <ScaleInfo v-if="config.common.interface.enableScaleInfo" :scale="scale" />
-  <BottomToolBar :toggle="show.toolbar" :scale-prop="scale" :config="config" :is-long="isLong" />
+  <ChangePageBtn
+    v-if="config.common.interface.enableChangePageBtn"
+    :show="show.changePageBtn" />
+  <ScaleInfo
+    v-if="config.common.interface.enableScaleInfo"
+    :scale="scale" />
+  <BottomToolBar
+    v-if="config.common.interface.enableBottomToolBar"
+    :toggle="show.toolbar"
+    :scale-prop="scale"
+    :config="config"
+    :is-long="isLong" />
 </template>
 
 <script>
@@ -37,7 +46,8 @@ export default {
         common: {
           interface: {
             enableChangePageBtn: true,
-            enableScaleInfo: true
+            enableScaleInfo: true,
+            enableBottomToolBar: true
           }
         },
         habit: {
@@ -148,21 +158,33 @@ export default {
             }
             break
           case 2:
-            if ((e.deltaY < 0 && that.top >= -100) ||
-              (e.deltaY > 0 && that.top <= -that.height + document.documentElement.clientHeight)) {
-              break
-            }
-            that.top -= e.deltaY
+            that.glance(e.deltaY)
             break
         }
       }
     }
     window.onkeydown = function (e) {
-      if (e.code === 'ArrowLeft' || e.code === 'ArrowUp') {
-        that.preImg()
-      }
-      if (e.code === 'ArrowRight' || e.code === 'ArrowDown') {
-        that.nextImg()
+      switch (e.code) {
+        case 'ArrowLeft':
+          that.preImg()
+          break
+        case 'ArrowRight':
+          that.nextImg()
+          break
+        case 'ArrowUp':
+          if (that.scrollMode === 3) {
+            that.glance(-100)
+          } else {
+            that.preImg()
+          }
+          break
+        case 'ArrowDown':
+          if (that.scrollMode === 3) {
+            that.glance(100)
+          } else {
+            that.nextImg()
+          }
+          break
       }
     }
     window.onresize = function (e) {
@@ -188,7 +210,7 @@ export default {
       let left = 0
       let top = 0
       let isLong = false
-      if (ratio <= 0.3) {
+      if (ratio <= 0.4) {
         // 长图
         scale = (windowWidth * 0.6) / image.data.originWidth
         left = windowWidth * 0.2
@@ -327,6 +349,13 @@ export default {
     },
     switchScrollMode (mode) {
       this.scrollMode = mode
+    },
+    glance (offset) {
+      if ((offset < 0 && this.top >= -100) ||
+        (offset > 0 && this.top <= -this.height + document.documentElement.clientHeight)) {
+        return
+      }
+      this.top -= offset
     }
   }
 }

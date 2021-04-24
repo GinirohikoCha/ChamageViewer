@@ -3,16 +3,23 @@
     <el-divider content-position="left">界面设置</el-divider>
     <el-row>
       <el-col :span="12">
-        <el-form-item label="启用两侧换页按钮">
+        <el-form-item label="显示两侧换页按钮">
           <el-switch
             v-model="commonTemp.interface.enableChangePageBtn"
             @change="onChange"/>
         </el-form-item>
       </el-col>
       <el-col :span="12">
-        <el-form-item label="启用缩放比例提示">
+        <el-form-item label="显示缩放比例提示">
           <el-switch
             v-model="commonTemp.interface.enableScaleInfo"
+            @change="onChange"/>
+        </el-form-item>
+      </el-col>
+      <el-col :span="12">
+        <el-form-item label="显示底部工具栏">
+          <el-switch
+            v-model="commonTemp.interface.enableBottomToolBar"
             @change="onChange"/>
         </el-form-item>
       </el-col>
@@ -31,7 +38,8 @@ export default {
       commonTemp: {
         interface: {
           enableChangePageBtn: true,
-          enableScaleInfo: true
+          enableScaleInfo: true,
+          enableBottomToolBar: true
         }
       }
     }

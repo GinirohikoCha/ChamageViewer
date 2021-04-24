@@ -23,7 +23,8 @@ export default {
         common: {
           interface: {
             enableChangePageBtn: true,
-            enableScaleInfo: true
+            enableScaleInfo: true,
+            enableBottomToolBar: true
           }
         },
         habit: {
