@@ -194,7 +194,8 @@ app.on('ready', async () => {
   })
   ipcMain.on('load-config', function (event) {
     const config = configUtil.loadConfig()
-    console.log('已加载配置:' + config)
+    console.log('已加载配置:')
+    console.log(config)
     event.sender.send('config-loaded', config)
   })
   ipcMain.on('update-config', function (event, newConfig) {

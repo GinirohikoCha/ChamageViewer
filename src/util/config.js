@@ -5,7 +5,13 @@ console.log('应用地址' + process.argv[0])
 const exePath = process.argv[0].replaceAll('\\', '/')
 const configPath = exePath.substring(0, exePath.lastIndexOf('/') + 1) + 'config'
 const defaultConfig = {
-  version: '2.0.3',
+  version: '2.0.3.2',
+  common: {
+    interface: {
+      enableChangePageBtn: true,
+      enableScaleInfo: true
+    }
+  },
   habit: {
     scroll: {
       enable: true,
@@ -29,7 +35,6 @@ export function loadConfig () {
           config = defaultConfig
           saveConfig(config)
         }
-        console.log('读取配置文件成功')
       }
     })
   } else {

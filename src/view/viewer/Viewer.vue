@@ -8,8 +8,8 @@
     :top="top"
     :rotate="rotate" />
 
-  <ChangePageBtn :show="show.changePageBtn" />
-  <ScaleInfo :scale="scale" />
+  <ChangePageBtn v-if="config.common.interface.enableChangePageBtn" :show="show.changePageBtn" />
+  <ScaleInfo v-if="config.common.interface.enableScaleInfo" :scale="scale" />
   <BottomToolBar :toggle="show.toolbar" :scale-prop="scale" :config="config" :is-long="isLong" />
 </template>
 
@@ -34,6 +34,12 @@ export default {
       // 设置
       config: {
         version: '0.0.0',
+        common: {
+          interface: {
+            enableChangePageBtn: true,
+            enableScaleInfo: true
+          }
+        },
         habit: {
           scroll: {
             enable: true,
@@ -93,6 +99,7 @@ export default {
     ipcRenderer.on('config-loaded', function (event, arg) {
       that.config = arg
       that.scrollMode = arg.habit.scroll.mode
+      console.log('读取配置文件成功')
     })
     ipcRenderer.send('load-config')
     // 初始化
