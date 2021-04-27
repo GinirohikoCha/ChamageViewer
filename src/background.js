@@ -3,9 +3,8 @@
 import { app, protocol, ipcMain, BrowserWindow, Menu, dialog } from 'electron'
 import { createProtocol } from 'vue-cli-plugin-electron-builder/lib'
 import installExtension, { VUEJS_DEVTOOLS } from 'electron-devtools-installer'
-import fs from 'fs'
-const sizeOf = require('image-size')
 const configUtil = require('@/util/config')
+const imageUtil = require('@/util/image')
 const isDevelopment = process.env.NODE_ENV !== 'production'
 
 // Scheme must be registered before the app is ready
@@ -80,77 +79,12 @@ function createSettingWindow () {
   }
 }
 
-let url = ''
+let processUrl = ''
 if (process.env.WEBPACK_DEV_SERVER_URL) {
   const debugUrl = 'C:\\Users\\22364\\Pictures\\Never Settle\\Salmon.jpg'
-  url = debugUrl.replaceAll('\\', '/')
+  processUrl = debugUrl.replaceAll('\\', '/')
 } else {
-  url = process.argv[1].replaceAll('\\', '/')
-}
-let imageList = null
-
-function getImageData () {
-  if (url != null) {
-    try {
-      const dimensions = sizeOf(url)
-      win.setTitle(imageList.images[imageList.index])
-      return {
-        index: imageList.index,
-        total: imageList.images.length,
-        data: {
-          url: url,
-          type: dimensions.type,
-          originWidth: dimensions.width,
-          originHeight: dimensions.height
-        }
-      }
-    } catch (err) {
-      console.log('无法找到当前图片路径:' + url)
-      return null
-    }
-  } else {
-    return null
-  }
-}
-
-function refreshImageList () {
-  if (url != null) {
-    console.log('文件' + url)
-    const slashIdx = url.lastIndexOf('/') + 1
-    const dir = url.substring(0, slashIdx)
-    const image = url.substring(slashIdx)
-    console.log('文件夹' + dir)
-    imageList = { dir: dir, index: 0, images: [] }
-    fs.readdirSync(dir).forEach(function (item, index) {
-      if (image === item) {
-        imageList.index = imageList.images.length
-        imageList.images.push(item)
-      } else {
-        try {
-          sizeOf(dir + item)
-          imageList.images.push(item)
-        } catch (err) {}
-      }
-    })
-    // 中文排序优化
-    imageList.images.sort((item1, item2) => {
-      // 是否存在中文
-      if (hasChinese(item1) || hasChinese(item2)) {
-        for (let i = 0; i < Math.min(item1.length, item2.length); i++) {
-          const char1 = item1.charAt(i)
-          const char2 = item2.charAt(i)
-          if (char1 !== char2) {
-            if (hasChinese(char1) && hasChinese(char2)) {
-              return item1.localeCompare(item2)
-            } else {
-              return 0
-            }
-          }
-        }
-      }
-    })
-    console.log(imageList)
-  }
+  processUrl = process.argv[1].replaceAll('\\', '/')
 }
 
 // Quit when all windows are closed.
@@ -189,6 +123,7 @@ app.on('ready', async () => {
   // 创建窗口
   createWindow()
   // 进程通信
+  // 配置操作
   ipcMain.on('open-config', function (event) {
     createSettingWindow()
   })
@@ -205,50 +140,33 @@ app.on('ready', async () => {
   ipcMain.on('get-config', function (event) {
     event.returnValue = configUtil.getConfig()
   })
+  // 图片操作
   ipcMain.on('open-image', function (event) {
-    url = dialog.showOpenDialogSync(win, {
+    processUrl = dialog.showOpenDialogSync(win, {
       title: '打开图片',
       filters: [
         { name: 'Images', extensions: ['bmp', 'jpg', 'jpeg', 'png', 'gif', 'tif', 'svg', 'psd', 'ai', 'raw', 'webp'] }
       ],
       properties: ['openFile']
     })[0].replaceAll('\\', '/')
-    refreshImageList()
-    event.returnValue = getImageData()
+    event.returnValue = imageUtil.openImage(processUrl)
+    win.setTitle(imageUtil.getImageTitle())
   })
   ipcMain.on('init-image', function (event) {
-    refreshImageList()
-    event.returnValue = getImageData()
+    event.returnValue = imageUtil.openImage(processUrl)
+    win.setTitle(imageUtil.getImageTitle())
   })
   ipcMain.on('delete-image', function (event) {
-    const deleteUrl = url
-    if (++imageList.index >= imageList.images.length) {
-      imageList.index = 0
-    }
-    url = imageList.dir + imageList.images[imageList.index]
-    fs.unlinkSync(deleteUrl)
-    refreshImageList()
-    event.returnValue = getImageData()
+    event.returnValue = imageUtil.deleteImage()
+    win.setTitle(imageUtil.getImageTitle())
   })
   ipcMain.on('next-image', function (event) {
-    if (imageList === null || imageList.images.length === 0) {
-      event.returnValue = null
-    }
-    if (++imageList.index >= imageList.images.length) {
-      imageList.index = 0
-    }
-    url = imageList.dir + imageList.images[imageList.index]
-    event.returnValue = getImageData()
+    event.returnValue = imageUtil.getNxtImage()
+    win.setTitle(imageUtil.getImageTitle())
   })
   ipcMain.on('pre-image', function (event) {
-    if (imageList === null || imageList.images.length === 0) {
-      event.returnValue = null
-    }
-    if (--imageList.index < 0) {
-      imageList.index = imageList.images.length - 1
-    }
-    url = imageList.dir + imageList.images[imageList.index]
-    event.returnValue = getImageData()
+    event.returnValue = imageUtil.getPreImage()
+    win.setTitle(imageUtil.getImageTitle())
   })
   ipcMain.on('test', function (event) {
     const exePath = process.argv[0].replaceAll('\\', '/')
@@ -269,8 +187,4 @@ if (isDevelopment) {
       app.quit()
     })
   }
-}
-
-function hasChinese (str) {
-  return /[\u4E00-\u9FA5]|[\uFE30-\uFFA0]/gi.test(str)
 }

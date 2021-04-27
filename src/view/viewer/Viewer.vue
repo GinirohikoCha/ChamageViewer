@@ -9,7 +9,7 @@
     :rotate="rotate" />
 
   <ChangePageBtn
-    v-if="config.common.interface.enableChangePageBtn"
+    v-if="config.common.interface.enableChangePageBtn && !isEmpty"
     :show="show.changePageBtn" />
   <ScaleInfo
     v-if="config.common.interface.enableScaleInfo"
@@ -25,10 +25,10 @@
 <script>
 import { ipcRenderer } from 'electron'
 import { ElMessage } from 'element-plus'
-import ImageDisplay from '@/view/viewer/components/ImageDisplay'
-import ScaleInfo from '@/view/viewer/components/ScaleInfo'
-import BottomToolBar from '@/view/viewer/components/BottomToolBar'
-import ChangePageBtn from '@/view/viewer/components/ChangePageBtn'
+import ImageDisplay from '@/view/components/ImageDisplay'
+import ScaleInfo from '@/view/components/ScaleInfo'
+import BottomToolBar from '@/view/components/BottomToolBar'
+import ChangePageBtn from '@/view/components/ChangePageBtn'
 
 export default {
   name: 'Viewer',
