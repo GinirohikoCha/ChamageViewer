@@ -2,6 +2,9 @@
   <transition name="fade">
     <div v-show="show" class="bottom-toolbar material-shadow">
       <el-space>
+        <el-tooltip effect="dark" content="漫画模式" placement="top">
+          <i class="el-icon-reading bottom-toolbar-item" />
+        </el-tooltip>
         <el-tooltip effect="dark" :content="modeTitle" placement="top">
           <i class="el-icon-mouse"
              :class="{'bottom-toolbar-item-active': modeSwitched, 'bottom-toolbar-item': !modeSwitched}"

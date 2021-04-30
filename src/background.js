@@ -54,7 +54,6 @@ function createSettingWindow () {
       width: 600,
       height: 400,
       parent: win,
-      title: '设置',
       resizable: false,
       webPreferences: {
         webSecurity: false,
@@ -70,6 +69,7 @@ function createSettingWindow () {
       winSetting.loadURL('app://./index.html/#/config')
     }
     winSetting.once('ready-to-show', () => {
+      winSetting.setTitle('设置')
       winSetting.show()
     })
     winSetting.on('close', (e) => {

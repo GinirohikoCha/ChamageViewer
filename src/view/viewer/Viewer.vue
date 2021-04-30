@@ -40,7 +40,7 @@ export default {
   },
   data () {
     return {
-      // 设置
+      // 默认设置
       config: {
         version: '0.0.0',
         common: {
