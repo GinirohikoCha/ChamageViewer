@@ -2,13 +2,13 @@
   <transition name="fade">
     <i class="el-icon-arrow-left arrow-left"
        v-show="display"
-       @click="$parent.preImg"/>
+       @click="$emit('preImage')"/>
   </transition>
 
   <transition name="fade">
     <i class="el-icon-arrow-right arrow-right"
        v-show="display"
-       @click="$parent.nextImg"/>
+       @click="$emit('nextImage')"/>
   </transition>
 
 </template>
@@ -18,6 +18,10 @@ export default {
   name: 'ChangePageBtn',
   props: {
     show: Boolean
+  },
+  emits: {
+    preImage: null,
+    nextImage: null
   },
   data () {
     return {

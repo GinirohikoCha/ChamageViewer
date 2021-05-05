@@ -1,15 +1,11 @@
 <template>
-  <el-empty description="未选择图片" v-show="isEmpty" class="empty">
-    <el-button type="primary" v-on:click="$parent.openImg">打开图片</el-button>
-  </el-empty>
-
   <el-image
     :style="{
     'width':tweenWidth+'px',
     'height':tweenHeight+'px',
     'left':tweenLeft+'px',
     'top':tweenTop+'px',
-    'display':isEmpty?'none':'block',
+    'display':display?'block':'none',
     'transform':'rotate('+tweenRotate+'deg)',
     'box-shadow':tweenShadowH+'px '+tweenShadowV+'px 12px rgba(0, 0, 0, 0.23), 0 3px 12px rgba(0, 0, 0, 0.16)'}"
     :draggable="false"
@@ -25,7 +21,7 @@ import { gsap } from 'gsap'
 export default {
   name: 'ImageDisplay',
   props: {
-    isEmpty: Boolean,
+    display: Boolean,
     url: String,
     width: Number,
     height: Number,
@@ -87,12 +83,4 @@ export default {
 </script>
 
 <style scoped>
-.empty {
-  position: fixed;
-  left: 50%;
-  top: 50%;
-  transform: translate(-50%,-50%);
-  -ms-transform: translate(-50%,-50%);
-  -webkit-transform: translate(-50%,-50%);
-}
 </style>

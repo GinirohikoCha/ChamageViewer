@@ -11,7 +11,7 @@
              @click="toggleScrollMode"/>
         </el-tooltip>
         <el-tooltip effect="dark" content="原始尺寸" placement="top">
-          <i class="el-icon-c-scale-to-original bottom-toolbar-item" @click="$parent.scaleTo(1)" />
+          <i class="el-icon-c-scale-to-original bottom-toolbar-item" @click="$emit('scale', 1)" />
         </el-tooltip>
         <el-popover
           placement="top"
@@ -33,7 +33,7 @@
         <el-tooltip effect="dark" content="上一张图片" placement="top">
           <i class="el-icon-arrow-left bottom-toolbar-item"
              style="font-size: 30px;transform: translate(0,5px);-ms-transform: translate(0,5px);-webkit-transform: translate(0,5px);"
-             @click="$parent.preImg"/>
+             @click="$emit('pre')"/>
         </el-tooltip>
         <el-tooltip effect="dark" content="幻灯片模式" placement="top">
           <i class="el-icon-film bottom-toolbar-item" />
@@ -41,24 +41,26 @@
         <el-tooltip effect="dark" content="下一张图片" placement="top">
           <i class="el-icon-arrow-right bottom-toolbar-item"
              style="font-size: 30px;transform: translate(0,5px);-ms-transform: translate(0,5px);-webkit-transform: translate(0,5px);"
-             @click="$parent.nextImg"/>
+             @click="$emit('next')"/>
         </el-tooltip>
         <el-tooltip effect="dark" content="逆时针旋转90°" placement="top">
-        <i class="el-icon-refresh-left bottom-toolbar-item" @click="$parent.rotateImg(false)"/>
+        <i class="el-icon-refresh-left bottom-toolbar-item" @click="$emit('rotate', false)"/>
         </el-tooltip>
         <el-tooltip effect="dark" content="顺时针旋转90°" placement="top">
-          <i class="el-icon-refresh-right bottom-toolbar-item" @click="$parent.rotateImg(true)"/>
+          <i class="el-icon-refresh-right bottom-toolbar-item" @click="$emit('rotate', true)"/>
         </el-tooltip>
         <el-tooltip effect="dark" content="删除图片" placement="top">
-          <i class="el-icon-delete bottom-toolbar-item" @click="$parent.deleteImg"/>
+          <i class="el-icon-delete bottom-toolbar-item" @click="$emit('delete')"/>
         </el-tooltip>
-        <i class="el-icon-setting bottom-toolbar-item" @click="$parent.openConfig"/>
+        <i class="el-icon-setting bottom-toolbar-item" @click="openConfig"/>
       </el-space>
     </div>
   </transition>
 </template>
 
 <script>
+import { ipcRenderer } from 'electron'
+
 export default {
   name: 'BottomToolBar',
   props: {
@@ -66,6 +68,13 @@ export default {
     scaleProp: Number,
     config: Object,
     isLong: Boolean
+  },
+  emits: {
+    scale: null,
+    pre: null,
+    next: null,
+    rotate: null,
+    delete: null
   },
   data () {
     return {
@@ -142,7 +151,10 @@ export default {
           this.scrollMode = this.config.habit.scroll.mode ? 0 : 1
         }
       }
-      this.$parent.switchScrollMode(this.scrollMode)
+      // this.$parent.switchScrollMode(this.scrollMode)
+    },
+    openConfig () {
+      ipcRenderer.send('open-config')
     }
   }
 }
