@@ -33,8 +33,8 @@ export default {
         data: {
           url: '',
           type: 'jpg',
-          originWidth: 1920,
-          originHeight: 1080
+          originWidth: 0,
+          originHeight: 0
         }
       },
       attr: {

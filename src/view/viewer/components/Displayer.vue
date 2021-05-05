@@ -70,7 +70,7 @@ export default {
         y: 0
       },
       // 图片显示状态
-      scale: 1,
+      scale: 0,
       left: -1,
       top: -1,
       pressLeft: 0,
