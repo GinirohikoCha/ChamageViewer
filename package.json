@@ -1,6 +1,6 @@
 {
   "name": "chamage-viewer",
-  "version": "2.0.3",
+  "version": "2.1.0",
   "private": true,
   "author": "GinirohikoCha",
   "description": "猹图 - Electron+Vue开源Windows图片查看器 2.0",
