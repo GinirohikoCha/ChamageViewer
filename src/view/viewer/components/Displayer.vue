@@ -52,6 +52,7 @@ export default {
     initAttr: Object
   },
   emits: {
+    initImage: null,
     openImage: null,
     preImage: null,
     nextImage: null,
@@ -63,18 +64,21 @@ export default {
       display: false,
       url: '',
       // 系统操作状态
-      isHover: false, // 是否悬浮在图片上方
+      isHover: false, // 是否鼠标在图片上方
       isDragging: false, // 是否正在拖拽图片
       mouse: {
         x: 0,
         y: 0
       },
+      status: {
+        scrollMode: 0
+      },
+      pressLeft: 0, // 按下后图片所在位置,用于鼠标拖动位移计算
+      pressTop: 0,
       // 图片显示状态
       scale: 0,
       left: -1,
       top: -1,
-      pressLeft: 0,
-      pressTop: 0,
       rotate: 0,
       // 组件显隐
       show: {
@@ -94,19 +98,28 @@ export default {
   watch: {
     image (newImage) {
       this.showImage()
+    },
+    config (newConfig) {
+      this.applyConfig()
+    },
+    initAttr (newAttr) {
+      this.scale = newAttr.scale
+      this.left = newAttr.left
+      this.top = newAttr.top
     }
   },
   mounted () {
     // 初始化
     this.showImage()
+    this.applyConfig()
     // 全局操作监听
     const that = this
     window.onmousedown = function (e) {
       if (that.display) {
         that.mouse.x = e.clientX
         that.mouse.y = e.clientY
-        that.originLeft = that.left
-        that.originTop = that.top
+        that.pressLeft = that.left
+        that.pressTop = that.top
       }
     }
     window.onmouseup = function (e) {
@@ -174,11 +187,7 @@ export default {
       }
     }
     window.onresize = function (e) {
-      const data = that.initImg(that.image)
-      that.scale = data.scale
-      that.left = data.left
-      that.top = data.top
-      that.isLong = data.isLong
+      that.initImg()
     }
   },
   methods: {
@@ -187,6 +196,9 @@ export default {
     },
     setDragging (bool) {
       this.isDragging = bool
+    },
+    initImg () {
+      this.$emit('initImage')
     },
     openImg () {
       this.$emit('openImage')
@@ -230,8 +242,8 @@ export default {
       }
     },
     dragImg (e) {
-      this.left = this.originLeft + e.clientX - this.mouse.x
-      this.top = this.originTop + e.clientY - this.mouse.y
+      this.left = this.pressLeft + e.clientX - this.mouse.x
+      this.top = this.pressTop + e.clientY - this.mouse.y
     },
     scaleImg (isDown) {
       // 缩放
@@ -257,6 +269,10 @@ export default {
       } else {
         this.rotate -= 90
       }
+    },
+    /// /////////////////////////////////////////////
+    applyConfig () {
+      this.status.scrollMode = this.config.habit.scroll.mode
     },
     /// /////////////////////////////////////////////
     scaleTo (newScale) {

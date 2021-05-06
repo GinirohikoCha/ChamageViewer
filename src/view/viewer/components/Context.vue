@@ -3,6 +3,7 @@
     :config="config"
     :image="image"
     :init-attr="attr"
+    @init-image="initImg(image)"
     @open-image="openImg"
     @pre-image="preImg"
     @next-image="nextImg"
