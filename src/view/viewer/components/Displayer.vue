@@ -25,11 +25,14 @@
     :toggle="show.toolbar"
     :scale-prop="scale"
     :config="config"
+    :attr="initAttr"
+    :status="status"
     @pre="preImg"
     @next="nextImg"
     @scale="scaleTo"
     @rotate="rotateImg"
-    @delete="deleteImg" />
+    @delete="deleteImg"
+    @switch-mode="switchMode" />
 </template>
 
 <script>
@@ -144,10 +147,14 @@ export default {
     }
     window.onmousewheel = function (e) {
       if (that.display && that.config.habit.scroll.enable) {
-        switch (that.config.habit.scroll.mode) {
+        switch (that.status.scrollMode) {
           default:
           case 0:
-            that.scaleImg(e.deltaY > 0)
+            if (that.initAttr.isLong) {
+              that.glance(e.deltaY)
+            } else {
+              that.scaleImg(e.deltaY > 0)
+            }
             break
           case 1:
             if (e.deltaY > 0) {
@@ -155,9 +162,6 @@ export default {
             } else {
               that.preImg()
             }
-            break
-          case 2:
-            that.glance(e.deltaY)
             break
         }
       }
@@ -171,14 +175,14 @@ export default {
           that.nextImg()
           break
         case 'ArrowUp':
-          if (that.scrollMode === 3) {
+          if (that.scrollMode === 0 && that.initAttr.isLong) {
             that.glance(-100)
           } else {
             that.preImg()
           }
           break
         case 'ArrowDown':
-          if (that.scrollMode === 3) {
+          if (that.scrollMode === 0 && that.initAttr.isLong) {
             that.glance(100)
           } else {
             that.nextImg()
@@ -273,6 +277,10 @@ export default {
     /// /////////////////////////////////////////////
     applyConfig () {
       this.status.scrollMode = this.config.habit.scroll.mode
+    },
+    /// /////////////////////////////////////////////
+    switchMode (mode) {
+      this.status.scrollMode = mode
     },
     /// /////////////////////////////////////////////
     scaleTo (newScale) {

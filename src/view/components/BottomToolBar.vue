@@ -67,14 +67,16 @@ export default {
     toggle: Boolean,
     scaleProp: Number,
     config: Object,
-    isLong: Boolean
+    attr: Object,
+    status: Object
   },
   emits: {
     scale: null,
     pre: null,
     next: null,
     rotate: null,
-    delete: null
+    delete: null,
+    switchMode: null
   },
   data () {
     return {
@@ -98,23 +100,26 @@ export default {
       switch (this.scrollMode) {
         default:
         case 0:
-          if (this.isLong) {
+          return '切换滚轮换页模式'
+        case 1:
+          if (this.attr.isLong) {
             return '切换长图浏览模式'
           } else {
-            return '切换滚轮换页模式'
+            return '切换滚轮缩放模式'
           }
-        case 1:
-          return '切换滚轮缩放模式'
-        // 长图滚轮浏览模式
-        case 2:
-          return '切换滚轮缩放模式'
       }
     }
   },
   watch: {
     toggle (newValue) {
       this.showToolBar(newValue)
+    },
+    'status.scrollMode' (newValue) {
+      this.scrollMode = newValue
     }
+  },
+  mounted () {
+    this.scrollMode = this.status.scrollMode
   },
   methods: {
     showToolBar (bool) {
@@ -143,15 +148,10 @@ export default {
     },
     toggleScrollMode () {
       if (this.modeSwitched) {
-        this.scrollMode = this.config.habit.scroll.mode
+        this.$emit('switchMode', this.config.habit.scroll.mode)
       } else {
-        if (this.isLong) {
-          this.scrollMode = 2
-        } else {
-          this.scrollMode = this.config.habit.scroll.mode ? 0 : 1
-        }
+        this.$emit('switchMode', this.config.habit.scroll.mode ? 0 : 1)
       }
-      // this.$parent.switchScrollMode(this.scrollMode)
     },
     openConfig () {
       ipcRenderer.send('open-config')
