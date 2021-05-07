@@ -33,7 +33,8 @@ export default {
       // 临时计算数据
       temp: {
         mouseX: 0,
-        mouseY: 0
+        mouseY: 0,
+        keyCtrl: false
       }
     }
   },
@@ -72,6 +73,12 @@ export default {
     window.onmousewheel = function (e) {
       that.handleWheel(e)
     }
+    window.onkeydown = function (e) {
+      that.handleKeyDwn(e)
+    }
+    window.onkeyup = function (e) {
+      that.handleKeyUp(e)
+    }
   },
   methods: {
     setHover (bool) {
@@ -105,10 +112,39 @@ export default {
       this.$emit('resize')
     },
     handleWheel (event) {
-      if (event.deltaY > 0) {
-        this.nextImg()
+      if (this.temp.keyCtrl) {
+        this.scaleImg(event.deltaY > 0)
       } else {
-        this.preImg()
+        if (event.deltaY > 0) {
+          this.nextImg()
+        } else {
+          this.preImg()
+        }
+      }
+    },
+    handleKeyDwn (event) {
+      console.log(event.code)
+      switch (event.code) {
+        case 'ControlLeft':
+          this.temp.keyCtrl = true
+          break
+        case 'ArrowLeft':
+          this.preImg()
+          break
+        case 'ArrowRight':
+          this.nextImg()
+          break
+        case 'ArrowUp':
+          break
+        case 'ArrowDown':
+          break
+      }
+    },
+    handleKeyUp (event) {
+      switch (event.code) {
+        case 'ControlLeft':
+          this.temp.keyCtrl = false
+          break
       }
     },
     /// ///
@@ -122,6 +158,37 @@ export default {
     dragImage (deltaX, deltaY) {
       this.left = this.left + deltaX
       this.top = this.top + deltaY
+    },
+    scaleImg (isDown) {
+      // 缩放
+      let newScale
+      if (isDown) {
+        newScale = parseFloat((this.scale - 0.05).toFixed(2))
+        // 缩放下限
+        if (newScale < 0.01) {
+          newScale = 0.01
+        }
+      } else {
+        newScale = parseFloat((this.scale + 0.05).toFixed(2))
+        // 缩放上限
+        if (newScale > 5) {
+          newScale = 5
+        }
+      }
+      this.scaleTo(newScale)
+    },
+    /// ///
+    scaleTo (newScale) {
+      const deltaX = this.image.data.width * newScale - this.width
+      const deltaY = this.image.data.height * newScale - this.height
+      if (this.hover) {
+        this.left -= deltaX * (this.temp.mouseX - this.left) / this.width
+        this.top -= deltaY * (this.temp.mouseY - this.top) / this.height
+      } else {
+        this.left -= deltaX / 2
+        this.top -= deltaY / 2
+      }
+      this.scale = newScale
     }
   }
 }
