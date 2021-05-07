@@ -59,6 +59,9 @@ export function initWindow (processUrl) {
   ipcMain.on('init-image', function (event) {
     event.returnValue = imageUtil.loadImageAndDir(processUrl)
   })
+  ipcMain.on('load-image', function (event, url, name, index) {
+    event.returnValue = imageUtil.loadImage(url, name, index)
+  })
   ipcMain.on('delete-image', function (event) {
     event.returnValue = fileUtil.deleteImage()
     mainWindow.setTitle(fileUtil.getImageTitle())

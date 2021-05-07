@@ -2,7 +2,10 @@
   <div id="viewer-context">
     <Displayer
       class="displayer"
-      :image="image" />
+      :image="image"
+      @resize="image = initImg(image)"
+      @pre-image="changeImage(-1)"
+      @nxt-image="changeImage(1)"/>
   </div>
 </template>
 
@@ -26,6 +29,7 @@ export default {
   },
   data () {
     return {
+      image: null,
       imageList: {
         dir: '',
         index: 0,
@@ -34,14 +38,17 @@ export default {
     }
   },
   computed: {
+    total: function () {
+      return this.imageList.images.length
+    },
     // 当前图片
-    image: function () {
-      return this.imageList.images.length === 0 ? null : this.imageList.images[this.imageList.index]
+    curImage: function () {
+      return this.total === 0 ? null : this.imageList.images[this.imageList.index]
     }
   },
   mounted () {
     this.imageList = ipcRenderer.sendSync('init-image')
-    this.initImg(this.image)
+    this.image = this.initImg(this.curImage)
     this.$emit('changeImage', this.image)
   },
   methods: {
@@ -86,6 +93,23 @@ export default {
         image.attr.initLeft = left
         image.attr.initTop = top
         console.log(TAG + 'initImg:初始化完毕\n' + JSON.stringify(image))
+        return JSON.parse(JSON.stringify(image))
+      }
+    },
+    changeImage (step) {
+      this.imageList.index += step
+      if (this.imageList.index < 0) {
+        this.imageList.index = this.total - 1
+      } else if (this.imageList.index >= this.total) {
+        this.imageList.index = 0
+      }
+      // 是否已经加载
+      if (this.curImage.name) {
+        this.image = this.initImg(this.curImage)
+      } else {
+        const url = this.imageList.dir + this.curImage
+        this.imageList.images[this.imageList.index] = ipcRenderer.sendSync('load-image', url, this.curImage, this.imageList.index)
+        this.image = this.initImg(this.curImage)
       }
     },
     showMessage (msg) {

@@ -47,7 +47,7 @@ export function loadImageAndDir (url) {
     for (let i = 0; i < imageList.images.length; i++) {
       if (imageName === imageList.images[i]) {
         imageList.index = i
-        imageList.images[i] = loadImage(imageList.dir + imageList.images[i], imageName)
+        loadImage(imageList.dir + imageList.images[i], imageName, imageList.index)
         break
       }
     }
@@ -62,12 +62,12 @@ export function loadImageAndDir (url) {
   }
 }
 
-function loadImage (url, name) {
+export function loadImage (url, name, index) {
   console.info(TAG + 'loadImage:正在加载图片...')
   if (url != null) {
     try {
       const dimensions = sizeOf(url)
-      return {
+      imageList.images[index] = {
         name: name,
         data: {
           url: url,
@@ -82,6 +82,7 @@ function loadImage (url, name) {
           initTop: 0
         }
       }
+      return imageList.images[index]
     } catch (err) {
       console.warn(TAG + 'loadImage:无法找到当前图片路径:' + url)
       // TODO 处理
