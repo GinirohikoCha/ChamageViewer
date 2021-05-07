@@ -2,6 +2,8 @@ import { BrowserWindow, dialog, ipcMain } from 'electron'
 import { createProtocol } from 'vue-cli-plugin-electron-builder/lib'
 
 const configUtil = require('@/util/config')
+const imageUtil = require('@/util/image')
+
 const fileUtil = require('@/util/file')
 
 export let mainWindow = null
@@ -9,6 +11,7 @@ export let settingWindow = null
 
 export function initWindow (processUrl) {
   openMainWindow()
+  // 进程通信
   // 窗口操作
   ipcMain.on('minimize-window', function (event) {
     getWindow(event.sender).minimize()
@@ -24,7 +27,6 @@ export function initWindow (processUrl) {
   ipcMain.on('close-window', function (event) {
     getWindow(event.sender).close()
   })
-  // 进程通信
   // 配置操作
   ipcMain.on('open-config', function (event) {
     openSettingWindow()
@@ -32,7 +34,7 @@ export function initWindow (processUrl) {
   ipcMain.on('load-config', function (event) {
     const config = configUtil.loadConfig()
     console.log('已加载配置:')
-    console.log(config)
+    console.log(JSON.stringify(config))
     event.sender.send('config-loaded', config)
   })
   ipcMain.on('update-config', function (event, newConfig) {
@@ -55,8 +57,7 @@ export function initWindow (processUrl) {
     mainWindow.setTitle(fileUtil.getImageTitle())
   })
   ipcMain.on('init-image', function (event) {
-    event.returnValue = fileUtil.openImage(processUrl)
-    mainWindow.setTitle(fileUtil.getImageTitle())
+    event.returnValue = imageUtil.loadImageAndDir(processUrl)
   })
   ipcMain.on('delete-image', function (event) {
     event.returnValue = fileUtil.deleteImage()

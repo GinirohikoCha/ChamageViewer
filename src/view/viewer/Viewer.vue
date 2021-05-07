@@ -1,10 +1,11 @@
 <template>
-  <Header
-    :title="'ChamageViewer'" />
-
   <Context
     :config="config"
-    @message="showMessage" />
+    @message="showMessage"
+    @change-image="setTitle"/>
+
+  <Header
+    :title="title" />
 </template>
 
 <script>
@@ -21,6 +22,7 @@ export default {
   },
   data () {
     return {
+      title: 'ChamageViewer',
       // 默认设置
       config: {
         version: '0.0.0',
@@ -52,6 +54,13 @@ export default {
     // alert(ipcRenderer.sendSync('test'))
   },
   methods: {
+    setTitle (image) {
+      if (image === null) {
+        this.title = 'ChamageViewer'
+      } else {
+        this.title = image.name + ' - ' + image.data.width + '×' + image.data.height
+      }
+    },
     showMessage (msg) {
       if (this.message != null) {
         this.message.close()
