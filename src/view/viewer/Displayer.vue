@@ -1,6 +1,7 @@
 <template>
   <el-image
     :style="{
+    'display':'block',
     'width':width+'px',
     'height':height+'px',
     'left':left+'px',
@@ -47,7 +48,8 @@ export default {
   emits: {
     resize: null,
     preImage: null,
-    nxtImage: null
+    nxtImage: null,
+    deleteImage: null
   },
   data () {
     return {
@@ -161,7 +163,6 @@ export default {
         this.temp.mouseX = event.clientX
         this.temp.mouseY = event.clientY
       }
-      // TODO 根据区域显隐按钮
     },
     handleInit (event) {
       this.$emit('resize')

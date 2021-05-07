@@ -4,15 +4,13 @@ import { createProtocol } from 'vue-cli-plugin-electron-builder/lib'
 const configUtil = require('@/util/config')
 const imageUtil = require('@/util/image')
 
-const fileUtil = require('@/util/file')
-
 export let mainWindow = null
 export let settingWindow = null
 
 export function initWindow (processUrl) {
   openMainWindow()
-  // 进程通信
-  // 窗口操作
+  /// 进程通信 ///
+  /// 窗口操作 ///
   ipcMain.on('minimize-window', function (event) {
     getWindow(event.sender).minimize()
   })
@@ -27,7 +25,7 @@ export function initWindow (processUrl) {
   ipcMain.on('close-window', function (event) {
     getWindow(event.sender).close()
   })
-  // 配置操作
+  /// 配置操作 ///
   ipcMain.on('open-config', function (event) {
     openSettingWindow()
   })
@@ -44,7 +42,7 @@ export function initWindow (processUrl) {
   ipcMain.on('get-config', function (event) {
     event.returnValue = configUtil.getConfig()
   })
-  // 图片操作
+  /// 图片操作 ///
   ipcMain.on('open-image', function (event) {
     processUrl = dialog.showOpenDialogSync(mainWindow, {
       title: '打开图片',
@@ -53,8 +51,7 @@ export function initWindow (processUrl) {
       ],
       properties: ['openFile']
     })[0].replaceAll('\\', '/')
-    event.returnValue = fileUtil.openImage(processUrl)
-    mainWindow.setTitle(fileUtil.getImageTitle())
+    event.returnValue = imageUtil.loadImageAndDir(processUrl)
   })
   ipcMain.on('init-image', function (event) {
     event.returnValue = imageUtil.loadImageAndDir(processUrl)
@@ -62,21 +59,13 @@ export function initWindow (processUrl) {
   ipcMain.on('load-image', function (event, url, name, index) {
     event.returnValue = imageUtil.loadImage(url, name, index)
   })
+  ipcMain.on('change-image', function (event, index) {
+    event.returnValue = imageUtil.changeImage(index)
+  })
   ipcMain.on('delete-image', function (event) {
-    event.returnValue = fileUtil.deleteImage()
-    mainWindow.setTitle(fileUtil.getImageTitle())
+    event.returnValue = imageUtil.deleteImage()
   })
-  ipcMain.on('next-image', function (event) {
-    event.returnValue = fileUtil.getNxtImage()
-    mainWindow.setTitle(fileUtil.getImageTitle())
-  })
-  ipcMain.on('pre-image', function (event) {
-    event.returnValue = fileUtil.getPreImage()
-    mainWindow.setTitle(fileUtil.getImageTitle())
-  })
-  ipcMain.on('list-image', function (event) {
-    event.returnValue = fileUtil.getImageList()
-  })
+  /// ///
   ipcMain.on('test', function (event) {
     const exePath = process.argv[0].replaceAll('\\', '/')
     event.returnValue = exePath.substring(0, exePath.lastIndexOf('/'))

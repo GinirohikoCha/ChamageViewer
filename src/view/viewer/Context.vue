@@ -6,7 +6,8 @@
       :image="image"
       @resize="image = initImg(image)"
       @pre-image="changeImage(-1)"
-      @nxt-image="changeImage(1)"/>
+      @nxt-image="changeImage(1)"
+      @delete-image="deleteImage"/>
   </div>
 </template>
 
@@ -49,8 +50,7 @@ export default {
   },
   mounted () {
     this.imageList = ipcRenderer.sendSync('init-image')
-    this.image = this.initImg(this.curImage)
-    this.$emit('changeImage', this.image)
+    this.refreshCurImage()
   },
   methods: {
     initImg (image) {
@@ -112,6 +112,15 @@ export default {
         this.imageList.images[this.imageList.index] = ipcRenderer.sendSync('load-image', url, this.curImage, this.imageList.index)
         this.image = this.initImg(this.curImage)
       }
+      ipcRenderer.send('change-image', this.imageList.index)
+    },
+    deleteImage () {
+      this.imageList = ipcRenderer.sendSync('delete-image')
+      this.refreshCurImage()
+    },
+    refreshCurImage () {
+      this.image = this.initImg(this.curImage)
+      this.$emit('changeImage', this.image)
     },
     showMessage (msg) {
       this.$emit('message', msg)
