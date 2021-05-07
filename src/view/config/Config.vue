@@ -37,7 +37,7 @@ export default {
     }
   },
   mounted () {
-    console.log(ipcRenderer.sendSync('get-config'))
+    // console.log(ipcRenderer.sendSync('get-config'))
     this.config = ipcRenderer.sendSync('get-config')
   },
   methods: {

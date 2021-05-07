@@ -2,6 +2,7 @@
   <div id="viewer-context">
     <Displayer
       class="displayer"
+      :config="config"
       :image="image"
       @resize="image = initImg(image)"
       @pre-image="changeImage(-1)"

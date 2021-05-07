@@ -4,13 +4,19 @@
   </el-empty>
 
   <ImageDisplay
-    :display="display"
+    :display="display && !status.comicMode"
     :url="url"
     :width="width"
     :height="height"
     :left="left"
     :top="top"
     :rotate="rotate" />
+  <ComicDisplay
+    :display="display && status.comicMode"
+    :image-list="imageList"
+    :width="width"
+    :left="left"
+    :top="top"/>
 
   <ScaleInfo
     v-if="config.common.interface.enableScaleInfo"
@@ -27,6 +33,7 @@
     :config="config"
     :attr="initAttr"
     :status="status"
+    @comic="switchComicMode"
     @pre="preImg"
     @next="nextImg"
     @scale="scaleTo"
@@ -36,15 +43,17 @@
 </template>
 
 <script>
-import ImageDisplay from '@/view/components/ImageDisplay'
-import ScaleInfo from '@/view/components/ScaleInfo'
-import BottomToolBar from '@/view/components/BottomToolBar'
-import ChangePageBtn from '@/view/components/ChangePageBtn'
+import ImageDisplay from '@/view/deprecated/ImageDisplay'
+import ComicDisplay from '@/view/deprecated/ComicDisplay'
+import ScaleInfo from '@/view/viewer/components/ScaleInfo'
+import BottomToolBar from '@/view/viewer/components/BottomToolBar'
+import ChangePageBtn from '@/view/viewer/components/ChangePageBtn'
 
 export default {
   name: 'Displayer',
   components: {
     ImageDisplay,
+    ComicDisplay,
     ScaleInfo,
     BottomToolBar,
     ChangePageBtn
@@ -52,6 +61,7 @@ export default {
   props: {
     config: Object,
     image: Object,
+    imageList: Object,
     initAttr: Object
   },
   emits: {
@@ -74,7 +84,8 @@ export default {
         y: 0
       },
       status: {
-        scrollMode: 0
+        scrollMode: 0,
+        comicMode: false
       },
       pressLeft: 0, // 按下后图片所在位置,用于鼠标拖动位移计算
       pressTop: 0,
@@ -281,6 +292,9 @@ export default {
     /// /////////////////////////////////////////////
     switchMode (mode) {
       this.status.scrollMode = mode
+    },
+    switchComicMode (mode) {
+      this.status.comicMode = mode
     },
     /// /////////////////////////////////////////////
     scaleTo (newScale) {

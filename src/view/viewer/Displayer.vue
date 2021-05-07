@@ -10,12 +10,32 @@
     v-on:mouseenter="setHover(true)"
     v-on:mouseleave="setHover(false)"
     :src="imageUrl"/>
+
+  <ScaleInfo :scale="scale" />
+  <ChangePageBtn
+    @pre-image="preImg"
+    @next-image="nextImg"/>
+  <BottomToolBar
+    :scale-prop="scale"
+    :config="config"
+    :image="image"
+    :status="{ scrollMode: 0, comicMode: false }"/>
 </template>
 
 <script>
+import ScaleInfo from '@/view/viewer/components/ScaleInfo'
+import ChangePageBtn from '@/view/viewer/components/ChangePageBtn'
+import BottomToolBar from '@/view/viewer/components/BottomToolBar'
+
 export default {
   name: 'Displayer',
+  components: {
+    ScaleInfo,
+    ChangePageBtn,
+    BottomToolBar
+  },
   props: {
+    config: Object,
     image: Object
   },
   emits: {

@@ -32,7 +32,6 @@ export default {
   data () {
     return {
       // 动画
-      tweenScale: 1,
       tweenWidth: 0,
       tweenHeight: 0,
       tweenLeft: 400,

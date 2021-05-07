@@ -2,6 +2,7 @@
   <Displayer
     :config="config"
     :image="image"
+    :image-list="imageList"
     :init-attr="attr"
     @init-image="initImg(image)"
     @open-image="openImg"
@@ -13,7 +14,7 @@
 
 <script>
 import { ipcRenderer } from 'electron'
-import Displayer from '@/view/viewer/components/Displayer'
+import Displayer from '@/view/deprecated/Displayer'
 
 export default {
   name: 'Context',
@@ -38,6 +39,7 @@ export default {
           originHeight: 0
         }
       },
+      imageList: null,
       attr: {
         isLong: false,
         scale: 1,
@@ -97,6 +99,7 @@ export default {
           top: top
         }
         this.image = image
+        this.imageList = ipcRenderer.sendSync('list-image')
       } else {
         this.image = null
       }
