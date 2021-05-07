@@ -5,7 +5,8 @@
     'height':height+'px',
     'left':left+'px',
     'top':top+'px',
-    'box-shadow':'0px 3px 12px rgba(0, 0, 0, 0.23), 0 3px 12px rgba(0, 0, 0, 0.16)'}"
+    'transform':'rotate('+rotate+'deg)',
+    'box-shadow':shadowX+'px '+shadowY+'px 12px rgba(0, 0, 0, 0.23), 0 3px 12px rgba(0, 0, 0, 0.16)'}"
     :draggable="false"
     v-on:mouseenter="setHover(true)"
     v-on:mouseleave="setHover(false)"
@@ -13,13 +14,18 @@
 
   <ScaleInfo :scale="scale" />
   <ChangePageBtn
-    @pre-image="preImg"
-    @next-image="nextImg"/>
+    @pre-image="preImage"
+    @next-image="nextImage"/>
   <BottomToolBar
     :scale-prop="scale"
     :config="config"
     :image="image"
-    :status="{ scrollMode: 0, comicMode: false }"/>
+    :status="{ scrollMode: 0, comicMode: false }"
+    @scale="scaleTo"
+    @pre="preImage"
+    @next="nextImage"
+    @rotate="rotateImage"
+    @delete="deleteImage"/>
 </template>
 
 <script>
@@ -50,6 +56,7 @@ export default {
       scale: 0,
       left: 0,
       top: 0,
+      rotate: 0,
       // 临时计算数据
       temp: {
         mouseX: 0,
@@ -67,6 +74,34 @@ export default {
     },
     height: function () {
       return this.image ? this.image.data.height * this.scale + 1 : 0
+    },
+    shadowX: function () {
+      const sign = this.rotate >= 0 ? 1 : -1
+      switch (this.rotate % 360) {
+        default:
+        case 0:
+          return 0
+        case 90:
+          return sign * 3
+        case 180:
+          return 0
+        case 270:
+          return sign * -3
+      }
+    },
+    shadowY: function () {
+      const sign = this.rotate >= 0 ? 1 : -1
+      switch (this.rotate % 360) {
+        default:
+        case 0:
+          return sign * 3
+        case 90:
+          return 0
+        case 180:
+          return sign * -3
+        case 270:
+          return 0
+      }
     }
   },
   watch: {
@@ -133,12 +168,12 @@ export default {
     },
     handleWheel (event) {
       if (this.temp.keyCtrl) {
-        this.scaleImg(event.deltaY > 0)
+        this.scaleImage(event.deltaY > 0)
       } else {
         if (event.deltaY > 0) {
-          this.nextImg()
+          this.nextImage()
         } else {
-          this.preImg()
+          this.preImage()
         }
       }
     },
@@ -149,10 +184,10 @@ export default {
           this.temp.keyCtrl = true
           break
         case 'ArrowLeft':
-          this.preImg()
+          this.preImage()
           break
         case 'ArrowRight':
-          this.nextImg()
+          this.nextImage()
           break
         case 'ArrowUp':
           break
@@ -168,18 +203,27 @@ export default {
       }
     },
     /// ///
-    preImg () {
+    preImage () {
       this.$emit('preImage')
     },
-    nextImg () {
+    nextImage () {
       this.$emit('nxtImage')
+    },
+    deleteImage () {
+      this.$confirm('此操作将永久删除该图片, 是否确定?', '提示', {
+        confirmButtonText: '确定',
+        cancelButtonText: '取消',
+        type: 'warning'
+      }).then(() => {
+        this.$emit('deleteImage')
+      }).catch(() => {})
     },
     /// ///
     dragImage (deltaX, deltaY) {
       this.left = this.left + deltaX
       this.top = this.top + deltaY
     },
-    scaleImg (isDown) {
+    scaleImage (isDown) {
       // 缩放
       let newScale
       if (isDown) {
@@ -196,6 +240,13 @@ export default {
         }
       }
       this.scaleTo(newScale)
+    },
+    rotateImage (isClockwise) {
+      if (isClockwise) {
+        this.rotate += 90
+      } else {
+        this.rotate -= 90
+      }
     },
     /// ///
     scaleTo (newScale) {
