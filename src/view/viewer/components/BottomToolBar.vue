@@ -7,15 +7,13 @@
       <div v-show="display" class="bottom-toolbar material-shadow">
         <el-space>
           <el-tooltip effect="dark" content="漫画模式" placement="top">
-            <i class="el-icon-reading"
-               :class="{'bottom-toolbar-item-active': status.comicMode, 'bottom-toolbar-item': !status.comicMode}"
-               @click="$emit('comic', !status.comicMode)" />
+            <i class="el-icon-reading bottom-toolbar-item" />
           </el-tooltip>
-          <el-tooltip effect="dark" :content="modeTitle" placement="top">
-            <i class="el-icon-mouse"
-               :class="{'bottom-toolbar-item-active': modeSwitched, 'bottom-toolbar-item': !modeSwitched}"
-               @click="toggleScrollMode"/>
-          </el-tooltip>
+<!--          <el-tooltip effect="dark" :content="modeTitle" placement="top">-->
+<!--            <i class="el-icon-mouse"-->
+<!--               :class="{'bottom-toolbar-item-active': modeSwitched, 'bottom-toolbar-item': !modeSwitched}"-->
+<!--               @click="toggleScrollMode"/>-->
+<!--          </el-tooltip>-->
           <el-tooltip effect="dark" content="原始尺寸" placement="top">
             <i class="el-icon-c-scale-to-original bottom-toolbar-item" @click="$emit('scale', 1)" />
           </el-tooltip>
@@ -73,8 +71,7 @@ export default {
   props: {
     scaleProp: Number,
     config: Object,
-    image: Object,
-    status: Object
+    image: Object
   },
   emits: {
     comic: null,
@@ -82,8 +79,7 @@ export default {
     pre: null,
     next: null,
     rotate: null,
-    delete: null,
-    switchMode: null
+    delete: null
   },
   data () {
     return {
@@ -95,38 +91,14 @@ export default {
           visible: false
         }
       },
-      scrollMode: 0,
       timer: null
     }
   },
   computed: {
-    modeSwitched: function () {
-      return this.scrollMode !== this.config.habit.scroll.mode
-    },
-    modeTitle: function () {
-      if (this.image) {
-        switch (this.scrollMode) {
-          default:
-          case 0:
-            return '切换滚轮换页模式'
-          case 1:
-            if (this.image.attr.long) {
-              return '切换长图浏览模式'
-            } else {
-              return '切换滚轮缩放模式'
-            }
-        }
-      }
-      return ''
-    }
   },
   watch: {
-    'status.scrollMode' (newValue) {
-      this.scrollMode = newValue
-    }
   },
   mounted () {
-    this.scrollMode = this.status.scrollMode
   },
   methods: {
     showToolBar (bool) {
@@ -152,13 +124,6 @@ export default {
         this.$parent.scaleTo(this.menu.scale.value)
       }
       return (this.menu.scale.value * 100).toFixed(0) + '%'
-    },
-    toggleScrollMode () {
-      if (this.modeSwitched) {
-        this.$emit('switchMode', this.config.habit.scroll.mode)
-      } else {
-        this.$emit('switchMode', this.config.habit.scroll.mode ? 0 : 1)
-      }
     },
     openConfig () {
       ipcRenderer.send('open-config')

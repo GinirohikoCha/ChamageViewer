@@ -21,7 +21,6 @@
     :scale-prop="scale"
     :config="config"
     :image="image"
-    :status="{ scrollMode: 0, comicMode: false }"
     @scale="scaleTo"
     @pre="preImage"
     @next="nextImage"
@@ -108,6 +107,7 @@ export default {
   },
   watch: {
     image (newImage) {
+      this.rotate = 0
       this.scale = newImage.attr.initScale
       this.left = newImage.attr.initLeft
       this.top = newImage.attr.initTop
@@ -171,10 +171,14 @@ export default {
       if (this.temp.keyCtrl) {
         this.scaleImage(event.deltaY > 0)
       } else {
-        if (event.deltaY > 0) {
-          this.nextImage()
+        if (this.image.attr.long) {
+          this.skim(event.deltaY)
         } else {
-          this.preImage()
+          if (event.deltaY > 0) {
+            this.nextImage()
+          } else {
+            this.preImage()
+          }
         }
       }
     },
@@ -191,8 +195,10 @@ export default {
           this.nextImage()
           break
         case 'ArrowUp':
+          this.skim(-100)
           break
         case 'ArrowDown':
+          this.skim(100)
           break
       }
     },
@@ -261,6 +267,13 @@ export default {
         this.top -= deltaY / 2
       }
       this.scale = newScale
+    },
+    skim (offset) {
+      if ((offset < 0 && this.top >= -100) ||
+        (offset > 0 && this.top <= -this.height + document.documentElement.clientHeight)) {
+        return
+      }
+      this.top -= offset
     }
   }
 }
