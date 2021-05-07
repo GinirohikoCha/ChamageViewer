@@ -1,4 +1,4 @@
-import { BrowserWindow, dialog, ipcMain, Menu } from 'electron'
+import { BrowserWindow, dialog, ipcMain } from 'electron'
 import { createProtocol } from 'vue-cli-plugin-electron-builder/lib'
 
 const configUtil = require('@/util/config')
@@ -9,6 +9,21 @@ export let settingWindow = null
 
 export function initWindow (processUrl) {
   openMainWindow()
+  // 窗口操作
+  ipcMain.on('minimize-window', function (event) {
+    getWindow(event.sender).minimize()
+  })
+  ipcMain.on('maximize-window', function (event) {
+    const target = getWindow(event.sender)
+    if (target.isMaximized()) {
+      target.unmaximize()
+    } else {
+      target.maximize()
+    }
+  })
+  ipcMain.on('close-window', function (event) {
+    getWindow(event.sender).close()
+  })
   // 进程通信
   // 配置操作
   ipcMain.on('open-config', function (event) {
@@ -55,6 +70,9 @@ export function initWindow (processUrl) {
     event.returnValue = fileUtil.getPreImage()
     mainWindow.setTitle(fileUtil.getImageTitle())
   })
+  ipcMain.on('list-image', function (event) {
+    event.returnValue = fileUtil.getImageList()
+  })
   ipcMain.on('test', function (event) {
     const exePath = process.argv[0].replaceAll('\\', '/')
     event.returnValue = exePath.substring(0, exePath.lastIndexOf('/'))
@@ -84,9 +102,9 @@ async function createMainWindow () {
       // See nklayman.github.io/vue-cli-plugin-electron-builder/guide/security.html#node-integration for more info
       nodeIntegration: process.env.ELECTRON_NODE_INTEGRATION
     },
+    frame: false,
     show: false
   })
-  Menu.setApplicationMenu(null)
 
   if (process.env.WEBPACK_DEV_SERVER_URL) {
     // Load the url of the dev server if in development mode
@@ -130,4 +148,15 @@ function createSettingWindow () {
     e.preventDefault()
     settingWindow.hide()
   })
+}
+
+function getWindow (webContents) {
+  switch (webContents) {
+    case mainWindow.webContents:
+      return mainWindow
+    case settingWindow.webContents:
+      return settingWindow
+    default:
+      return null
+  }
 }

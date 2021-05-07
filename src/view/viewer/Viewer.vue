@@ -1,4 +1,7 @@
 <template>
+  <Header
+    :title="'ChamageViewer'" />
+
   <Context
     :config="config"
     @message="showMessage" />
@@ -7,11 +10,13 @@
 <script>
 import { ipcRenderer } from 'electron'
 import { ElMessage } from 'element-plus'
-import Context from '@/view/viewer/components/Context'
+import Header from '@/view/viewer/components/Header'
+import Context from '@/view/viewer/Context'
 
 export default {
   name: 'Viewer',
   components: {
+    Header,
     Context
   },
   data () {
@@ -39,8 +44,8 @@ export default {
   },
   mounted () {
     const that = this
-    ipcRenderer.on('config-loaded', function (event, arg) {
-      that.config = arg
+    ipcRenderer.on('config-loaded', function (event, config) {
+      that.config = config
       console.log('读取配置文件成功')
     })
     ipcRenderer.send('load-config')

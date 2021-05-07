@@ -1,0 +1,37 @@
+{
+  "id": "2531596",
+  "name": "chamage-viewer",
+  "font_family": "iconfont",
+  "css_prefix_text": "el-icon-cha-",
+  "description": "",
+  "glyphs": [
+    {
+      "icon_id": "12659763",
+      "name": "关闭",
+      "font_class": "close",
+      "unicode": "e617",
+      "unicode_decimal": 58903
+    },
+    {
+      "icon_id": "12659764",
+      "name": "放大",
+      "font_class": "maximize",
+      "unicode": "e618",
+      "unicode_decimal": 58904
+    },
+    {
+      "icon_id": "12659766",
+      "name": "缩小",
+      "font_class": "minimize",
+      "unicode": "e619",
+      "unicode_decimal": 58905
+    },
+    {
+      "icon_id": "12659768",
+      "name": "还原",
+      "font_class": "restore",
+      "unicode": "e61a",
+      "unicode_decimal": 58906
+    }
+  ]
+}
