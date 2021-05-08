@@ -55,9 +55,9 @@ export default {
       const urls = []
       imageList.images.forEach(function (item, index) {
         if (item.name) {
-          urls.push(item.data.url)
+          urls.push(encodeURI(item.data.url))
         } else {
-          urls.push(imageList.dir + item)
+          urls.push(encodeURI(imageList.dir + item))
         }
       })
       return urls

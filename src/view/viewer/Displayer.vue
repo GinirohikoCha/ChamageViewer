@@ -77,7 +77,7 @@ export default {
   },
   computed: {
     imageUrl: function () {
-      return this.image ? this.image.data.url : ''
+      return this.image ? encodeURI(this.image.data.url) : ''
     },
     width: function () {
       return this.image ? this.image.data.width * this.scale + 1 : 0
