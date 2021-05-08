@@ -7,7 +7,9 @@
       @resize="image = initImg(image)"
       @pre-image="changeImage(-1)"
       @nxt-image="changeImage(1)"
-      @delete-image="deleteImage"/>
+      @delete-image="deleteImage"
+      @fullscreen="$emit('fullscreen')"
+      @config="$emit('config')"/>
   </div>
 </template>
 
@@ -27,7 +29,9 @@ export default {
   },
   emits: {
     changeImage: null,
-    message: null
+    message: null,
+    fullscreen: null,
+    config: null
   },
   data () {
     return {

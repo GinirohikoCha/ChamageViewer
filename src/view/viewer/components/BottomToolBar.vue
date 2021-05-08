@@ -40,7 +40,7 @@
                @click="$emit('pre')"/>
           </el-tooltip>
           <el-tooltip effect="dark" content="幻灯片模式" placement="top">
-            <i class="el-icon-film bottom-toolbar-item" />
+            <i class="el-icon-film bottom-toolbar-item"  @click="$emit('fullscreen')" />
           </el-tooltip>
           <el-tooltip effect="dark" content="下一张图片" placement="top">
             <i class="el-icon-arrow-right bottom-toolbar-item"
@@ -56,7 +56,7 @@
           <el-tooltip effect="dark" content="删除图片" placement="top">
             <i class="el-icon-delete bottom-toolbar-item" @click="$emit('delete')"/>
           </el-tooltip>
-          <i class="el-icon-setting bottom-toolbar-item" @click="openConfig"/>
+          <i class="el-icon-setting bottom-toolbar-item" @click="$emit('config')"/>
         </el-space>
       </div>
     </transition>
@@ -64,8 +64,6 @@
 </template>
 
 <script>
-import { ipcRenderer } from 'electron'
-
 export default {
   name: 'BottomToolBar',
   props: {
@@ -79,7 +77,9 @@ export default {
     pre: null,
     next: null,
     rotate: null,
-    delete: null
+    delete: null,
+    config: null,
+    fullscreen: null
   },
   data () {
     return {
@@ -124,9 +124,6 @@ export default {
         this.$parent.scaleTo(this.menu.scale.value)
       }
       return (this.menu.scale.value * 100).toFixed(0) + '%'
-    },
-    openConfig () {
-      ipcRenderer.send('open-config')
     }
   }
 }

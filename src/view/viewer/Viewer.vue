@@ -2,7 +2,9 @@
   <Context
     :config="config"
     @message="showMessage"
-    @change-image="setTitle"/>
+    @change-image="setTitle"
+    @fullscreen="toggleFullScreen"
+    @config="openConfig"/>
 
   <Header
     :title="title" />
@@ -40,6 +42,10 @@ export default {
           }
         }
       },
+      // 模式状态
+      mode: {
+        fullscreen: false
+      },
       // 消息提示框
       message: null
     }
@@ -60,6 +66,13 @@ export default {
       } else {
         this.title = image.name + ' - ' + image.data.width + '×' + image.data.height
       }
+    },
+    toggleFullScreen () {
+      this.mode.fullscreen = !this.mode.fullscreen
+      ipcRenderer.send('fullscreen-window', this.mode.fullscreen, null)
+    },
+    openConfig () {
+      ipcRenderer.send('open-config')
     },
     showMessage (msg) {
       if (this.message != null) {

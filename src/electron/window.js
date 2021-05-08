@@ -22,6 +22,29 @@ export function initWindow (processUrl) {
       target.maximize()
     }
   })
+  ipcMain.on('fullscreen-window', function (event, flag, target) {
+    if (target) {
+      switch (target) {
+        default:
+        case 'mainWindow':
+          target = mainWindow
+          break
+        case 'settingWindow':
+          target = settingWindow
+          break
+      }
+    } else {
+      target = getWindow(event.sender)
+    }
+    // ISSUE isFullScreen() 无法正确 识别状态
+    // console.log(target.isFullScreen())
+    if (flag) {
+      target.setBackgroundColor('#99000000')
+    } else {
+      target.setBackgroundColor('#FFFFFFFF')
+    }
+    target.setFullScreen(flag)
+  })
   ipcMain.on('close-window', function (event) {
     getWindow(event.sender).close()
   })
@@ -95,6 +118,8 @@ async function createMainWindow () {
       // See nklayman.github.io/vue-cli-plugin-electron-builder/guide/security.html#node-integration for more info
       nodeIntegration: process.env.ELECTRON_NODE_INTEGRATION
     },
+    transparent: true,
+    backgroundColor: '#FFFFFFFF',
     frame: false,
     show: false
   })

@@ -11,12 +11,12 @@
     :draggable="false"
     v-on:mouseenter="setHover(true)"
     v-on:mouseleave="setHover(false)"
-    :src="imageUrl"/>
+    :src="imageUrl" />
 
   <ScaleInfo :scale="scale" />
   <ChangePageBtn
     @pre-image="preImage"
-    @next-image="nextImage"/>
+    @next-image="nextImage" />
   <BottomToolBar
     :scale-prop="scale"
     :config="config"
@@ -25,7 +25,9 @@
     @pre="preImage"
     @next="nextImage"
     @rotate="rotateImage"
-    @delete="deleteImage"/>
+    @delete="deleteImage"
+    @config="$emit('config')"
+    @fullscreen="$emit('fullscreen')"/>
 </template>
 
 <script>
@@ -48,7 +50,9 @@ export default {
     resize: null,
     preImage: null,
     nxtImage: null,
-    deleteImage: null
+    deleteImage: null,
+    fullscreen: null,
+    config: null
   },
   data () {
     return {
@@ -146,10 +150,17 @@ export default {
     },
     /// ///
     handlePress (event) {
-      this.temp.mouseX = event.clientX
-      this.temp.mouseY = event.clientY
-      if (this.hover) {
-        this.setDragging(true)
+      switch (event.button) {
+        case 0:
+          this.temp.mouseX = event.clientX
+          this.temp.mouseY = event.clientY
+          if (this.hover) {
+            this.setDragging(true)
+          }
+          break
+        case 1:
+          this.$emit('fullscreen')
+          break
       }
     },
     handleRelease (event) {
