@@ -14,12 +14,14 @@
       v-for="url in imageUrls"
       :draggable="false"
       :key="url"
-      :src="url"
-      lazy />
+      :src="url"/>
   </div>
 </template>
 
 <script>
+
+const TAG = '[ComicDisplay]'
+
 export default {
   name: 'ComicDisplayer',
   props: {
@@ -48,6 +50,7 @@ export default {
       return (this.windowWidth - this.width) / 2
     },
     imageUrls: function () {
+      console.log(TAG + 'imageUrls:正在渲染漫画')
       const imageList = this.imageList
       const urls = []
       imageList.images.forEach(function (item, index) {
