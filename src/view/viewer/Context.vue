@@ -1,15 +1,17 @@
 <template>
-  <div id="viewer-context">
+  <div class="viewer-context">
     <Displayer
-      class="displayer"
       :config="config"
       :image="image"
+      :mode="mode"
       @resize="image = initImg(image)"
       @pre-image="changeImage(-1)"
       @nxt-image="changeImage(1)"
       @delete-image="deleteImage"
       @fullscreen="$emit('fullscreen')"
-      @config="$emit('config')"/>
+      @comic="$emit('comic')"
+      @config="$emit('config')"
+      @message="showMessage"/>
   </div>
 </template>
 
@@ -25,12 +27,14 @@ export default {
     Displayer
   },
   props: {
-    config: Object
+    config: Object,
+    mode: Object
   },
   emits: {
     changeImage: null,
     message: null,
     fullscreen: null,
+    comic: null,
     config: null
   },
   data () {
@@ -104,8 +108,10 @@ export default {
     changeImage (step) {
       this.imageList.index += step
       if (this.imageList.index < 0) {
+        this.showMessage('正在浏览最后一张图片')
         this.imageList.index = this.total - 1
       } else if (this.imageList.index >= this.total) {
+        this.showMessage('正在浏览第一张图片')
         this.imageList.index = 0
       }
       // 是否已经加载
@@ -134,13 +140,9 @@ export default {
 </script>
 
 <style scoped>
-#viewer-context {
+.viewer-context {
   position: absolute;
   width: 100%;
   height: 100%;
-}
-
-.displayer {
-  position: absolute;
 }
 </style>

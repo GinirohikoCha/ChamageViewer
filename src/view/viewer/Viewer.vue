@@ -1,10 +1,22 @@
 <template>
   <Context
+    v-show="!mode.comic"
     :config="config"
+    :mode="mode"
     @message="showMessage"
     @change-image="setTitle"
     @fullscreen="toggleFullScreen"
-    @config="openConfig"/>
+    @config="openConfig"
+    @comic="toggleComic"/>
+  <ComicContext
+    v-if="mode.comic"
+    :config="config"
+    :mode="mode"
+    @message="showMessage"
+    @change-image="setTitle"
+    @fullscreen="toggleFullScreen"
+    @config="openConfig"
+    @escape="toggleComic"/>
 
   <Header
     :title="title" />
@@ -15,10 +27,12 @@ import { ipcRenderer } from 'electron'
 import { ElMessage } from 'element-plus'
 import Header from '@/view/viewer/components/Header'
 import Context from '@/view/viewer/Context'
+import ComicContext from '@/view/viewer/ComicContext'
 
 export default {
   name: 'Viewer',
   components: {
+    ComicContext,
     Header,
     Context
   },
@@ -44,7 +58,8 @@ export default {
       },
       // 模式状态
       mode: {
-        fullscreen: false
+        fullscreen: false,
+        comic: false
       },
       // 消息提示框
       message: null
@@ -70,6 +85,9 @@ export default {
     toggleFullScreen () {
       this.mode.fullscreen = !this.mode.fullscreen
       ipcRenderer.send('fullscreen-window', this.mode.fullscreen, null)
+    },
+    toggleComic () {
+      this.mode.comic = !this.mode.comic
     },
     openConfig () {
       ipcRenderer.send('open-config')

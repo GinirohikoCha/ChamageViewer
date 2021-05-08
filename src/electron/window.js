@@ -88,6 +88,9 @@ export function initWindow (processUrl) {
   ipcMain.on('delete-image', function (event) {
     event.returnValue = imageUtil.deleteImage()
   })
+  ipcMain.on('comic', function (event, index) {
+    event.returnValue = imageUtil.getImageAndDir()
+  })
   /// ///
   ipcMain.on('test', function (event) {
     const exePath = process.argv[0].replaceAll('\\', '/')

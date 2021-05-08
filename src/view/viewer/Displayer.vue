@@ -1,6 +1,7 @@
 <template>
   <el-image
     :style="{
+    'position':'absolute',
     'display':'block',
     'width':width+'px',
     'height':height+'px',
@@ -27,7 +28,8 @@
     @rotate="rotateImage"
     @delete="deleteImage"
     @config="$emit('config')"
-    @fullscreen="$emit('fullscreen')"/>
+    @fullscreen="$emit('fullscreen')"
+    @comic="$emit('comic')"/>
 </template>
 
 <script>
@@ -44,7 +46,8 @@ export default {
   },
   props: {
     config: Object,
-    image: Object
+    image: Object,
+    mode: Object
   },
   emits: {
     resize: null,
@@ -52,7 +55,9 @@ export default {
     nxtImage: null,
     deleteImage: null,
     fullscreen: null,
-    config: null
+    comic: null,
+    config: null,
+    message: null
   },
   data () {
     return {
@@ -120,25 +125,39 @@ export default {
   mounted () {
     const that = this
     window.onmousedown = function (e) {
-      that.handlePress(e)
+      if (!that.mode.comic) {
+        that.handlePress(e)
+      }
     }
     window.onmouseup = function (e) {
-      that.handleRelease(e)
+      if (!that.mode.comic) {
+        that.handleRelease(e)
+      }
     }
     window.onmousemove = function (e) {
-      that.handleMove(e)
+      if (!that.mode.comic) {
+        that.handleMove(e)
+      }
     }
     window.onresize = function (e) {
-      that.handleInit(e)
+      if (!that.mode.comic) {
+        that.handleInit(e)
+      }
     }
     window.onmousewheel = function (e) {
-      that.handleWheel(e)
+      if (!that.mode.comic) {
+        that.handleWheel(e)
+      }
     }
     window.onkeydown = function (e) {
-      that.handleKeyDwn(e)
+      if (!that.mode.comic) {
+        that.handleKeyDwn(e)
+      }
     }
     window.onkeyup = function (e) {
-      that.handleKeyUp(e)
+      if (!that.mode.comic) {
+        that.handleKeyUp(e)
+      }
     }
   },
   methods: {
@@ -183,7 +202,7 @@ export default {
         this.scaleImage(event.deltaY > 0)
       } else {
         if (this.image.attr.long) {
-          this.skim(event.deltaY)
+          this.skimImage(event.deltaY)
         } else {
           if (event.deltaY > 0) {
             this.nextImage()
@@ -206,10 +225,10 @@ export default {
           this.nextImage()
           break
         case 'ArrowUp':
-          this.skim(-100)
+          this.skimImage(-100)
           break
         case 'ArrowDown':
-          this.skim(100)
+          this.skimImage(100)
           break
       }
     },
@@ -228,7 +247,7 @@ export default {
       this.$emit('nxtImage')
     },
     deleteImage () {
-      this.$confirm('此操作将永久删除该图片, 是否确定?', '提示', {
+      this.$confirm('此操作将永久删除该图片, 是否确定？', '提示', {
         confirmButtonText: '确定',
         cancelButtonText: '取消',
         type: 'warning'
@@ -266,6 +285,13 @@ export default {
         this.rotate -= 90
       }
     },
+    skimImage (offset) {
+      if ((offset < 0 && this.top >= 100) ||
+        (offset > 0 && this.top <= -100 - this.height + document.documentElement.clientHeight)) {
+        return
+      }
+      this.skimTo(this.top - offset)
+    },
     /// ///
     scaleTo (newScale) {
       const deltaX = this.image.data.width * newScale - this.width
@@ -279,12 +305,11 @@ export default {
       }
       this.scale = newScale
     },
-    skim (offset) {
-      if ((offset < 0 && this.top >= -100) ||
-        (offset > 0 && this.top <= -this.height + document.documentElement.clientHeight)) {
-        return
-      }
-      this.top -= offset
+    skimTo (top) {
+      this.top = top
+    },
+    showMessage (msg) {
+      this.$emit('message', msg)
     }
   }
 }

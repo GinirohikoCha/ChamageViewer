@@ -62,8 +62,12 @@ export function loadImageAndDir (url) {
   return imageList
 }
 
+export function getImageAndDir () {
+  return imageList
+}
+
 export function loadImage (url, name, index) {
-  console.info(TAG + 'loadImage:正在加载图片...')
+  console.info(TAG + 'loadImage:正在加载图片' + name)
   if (url != null) {
     try {
       const dimensions = sizeOf(url)
