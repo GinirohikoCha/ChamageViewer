@@ -14,11 +14,15 @@
     v-on:mouseleave="setHover(false)"
     :src="imageUrl" />
 
-  <ScaleInfo :scale="scale" />
+  <ScaleInfo
+    v-if="config.common.interface.enableScaleInfo"
+    :scale="scale" />
   <ChangePageBtn
+    v-if="config.common.interface.enableChangePageBtn"
     @pre-image="preImage"
     @next-image="nextImage" />
   <BottomToolBar
+    v-if="config.common.interface.enableBottomToolBar"
     :scale-prop="scale"
     :config="config"
     :image="image"

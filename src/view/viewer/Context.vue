@@ -116,11 +116,11 @@ export default {
       }
       // 是否已经加载
       if (this.curImage.name) {
-        this.image = this.initImg(this.curImage)
+        this.refreshCurImage()
       } else {
         const url = this.imageList.dir + this.curImage
         this.imageList.images[this.imageList.index] = ipcRenderer.sendSync('load-image', url, this.curImage, this.imageList.index)
-        this.image = this.initImg(this.curImage)
+        this.refreshCurImage()
       }
       ipcRenderer.send('change-image', this.imageList.index)
     },

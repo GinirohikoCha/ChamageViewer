@@ -154,6 +154,7 @@ function createSettingWindow () {
     },
     show: false
   })
+  settingWindow.setMenu(null)
 
   if (process.env.WEBPACK_DEV_SERVER_URL) {
     settingWindow.loadURL(process.env.WEBPACK_DEV_SERVER_URL + '#/config')
