@@ -1,5 +1,5 @@
 <template>
-  <div class="app-header">
+  <div v-if="!mode.fullscreen && !mode.comic" class="app-header">
     <i class="el-icon-picture-outline-round app-header-icon"></i>
     <div class="app-header-title">
       {{ title }}
@@ -11,6 +11,15 @@
       <i class="el-icon-cha-close app-header-button app-header-close" @click="close"/>
     </div>
   </div>
+
+  <div v-if="mode.fullscreen" class="app-header-dark">
+    <i class="el-icon-picture-outline-round app-header-icon"></i>
+    <div class="app-header-title">
+      {{ title }}
+    </div>
+
+    <i class="el-icon-cha-close app-header-close" @click="close"/>
+  </div>
 </template>
 
 <script>
@@ -19,7 +28,8 @@ import { ipcRenderer } from 'electron'
 export default {
   name: 'Header',
   props: {
-    title: String
+    title: String,
+    mode: Object
   },
   data () {
     return {
@@ -49,7 +59,7 @@ export default {
   -webkit-app-region: drag;
 }
 
-.app-header-icon {
+.app-header .app-header-icon {
   float: left;
   width: 30px;
   height: 30px;
@@ -58,7 +68,7 @@ export default {
   color: black;
 }
 
-.app-header-title {
+.app-header .app-header-title {
   float: left;
   width: auto;
   line-height: 30px;
@@ -67,25 +77,63 @@ export default {
   color: black;
 }
 
-.app-header-button-group {
+.app-header .app-header-button-group {
   float: right;
   height: 30px;
   -webkit-app-region: no-drag;
 }
 
-.app-header-button-group .app-header-button {
+.app-header .app-header-button-group .app-header-button {
   width: 46px;
   line-height: 30px;
   text-align: center;
   color: black;
 }
 
-.app-header-button:hover {
+.app-header .app-header-button:hover {
   background: whitesmoke;
 }
 
-.app-header-close:hover {
+.app-header .app-header-close:hover {
   background: red;
   color: white;
+}
+
+.app-header-dark {
+  position: fixed;
+  width: 100%;
+  height: 40px;
+}
+
+.app-header-dark .app-header-icon {
+  float: left;
+  width: 40px;
+  height: 40px;
+  line-height: 40px;
+  text-align: center;
+  color: white;
+}
+
+.app-header-dark .app-header-title {
+  float: left;
+  width: auto;
+  line-height: 40px;
+  font-size: 12px;
+  font-family: 微软雅黑, serif;
+  color: white;
+}
+
+.app-header-dark .app-header-close{
+  position: fixed;
+  right: 0;
+  line-height: 40px;
+  text-align: center;
+  font-size: 40px;
+  color: white;
+}
+
+.app-header-dark .app-header-close:hover{
+  color: black;
+  background: white;
 }
 </style>

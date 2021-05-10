@@ -19,7 +19,8 @@
     @escape="toggleComic"/>
 
   <Header
-    :title="title" />
+    :title="title"
+    :mode="mode" />
 </template>
 
 <script>

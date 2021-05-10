@@ -1,4 +1,8 @@
 <template>
+  <div class="app-header">
+    <i class="el-icon-back header-back" @click="$emit('escape')"/>
+  </div>
+
   <div class="viewer-context">
     <ComicDisplayer
       :image-list="imageList"
@@ -55,5 +59,30 @@ export default {
   position: absolute;
   width: 100%;
   height: 100%;
+}
+
+.app-header {
+  position: fixed;
+  width: 100%;
+  height: 30px;
+  -webkit-app-region: drag;
+  z-index: 100;
+}
+
+.header-back {
+  position: fixed;
+  left: 0;
+  background: white;
+  border-radius: 0 0 10px 0;
+  padding: 5px 20px;
+  line-height: 30px;
+  font-size: 30px;
+  cursor: pointer;
+  opacity: 0.7;
+  -webkit-app-region: no-drag;
+}
+
+.header-back:hover {
+  opacity: 1;
 }
 </style>
