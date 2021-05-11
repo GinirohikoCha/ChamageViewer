@@ -20,7 +20,7 @@
 
 <script>
 
-const TAG = '[ComicDisplay]'
+const TAG = '[ComicDisplayer]'
 
 export default {
   name: 'ComicDisplayer',
@@ -64,27 +64,18 @@ export default {
     }
   },
   mounted () {
-    const that = this
-    window.onmousewheel = function (e) {
-      if (that.mode.comic) {
-        that.handleWheel(e)
-      }
-    }
-    window.onresize = function (e) {
-      if (that.mode.comic) {
-        that.handleResize(e)
-      }
-    }
-    window.onkeydown = function (e) {
-      if (that.mode.comic) {
-        that.handleKeyDwn(e)
-      }
-    }
-    window.onkeyup = function (e) {
-      if (that.mode.comic) {
-        that.handleKeyUp(e)
-      }
-    }
+    window.addEventListener('mousewheel', this.handleWheel)
+    window.addEventListener('resize', this.handleResize)
+    window.addEventListener('keydown', this.handleKeyDwn)
+    window.addEventListener('keyup', this.handleKeyUp)
+    console.log(TAG + 'mounted:监听已挂载')
+  },
+  unmounted () {
+    window.removeEventListener('mousewheel', this.handleWheel)
+    window.removeEventListener('resize', this.handleResize)
+    window.removeEventListener('keydown', this.handleKeyDown)
+    window.removeEventListener('keyup', this.handleKeyUp)
+    console.log(TAG + 'unmounted:监听已卸载')
   },
   methods: {
     handleWheel (event) {
@@ -97,7 +88,7 @@ export default {
     handleResize (event) {
       this.windowWidth = document.documentElement.clientWidth
     },
-    handleKeyDwn (event) {
+    handleKeyDown (event) {
       switch (event.code) {
         case 'ControlLeft':
           this.temp.keyCtrl = true

@@ -41,6 +41,8 @@ import ScaleInfo from '@/view/viewer/components/ScaleInfo'
 import ChangePageBtn from '@/view/viewer/components/ChangePageBtn'
 import BottomToolBar from '@/view/viewer/components/BottomToolBar'
 
+const TAG = '[Displayer]'
+
 export default {
   name: 'Displayer',
   components: {
@@ -124,45 +126,17 @@ export default {
       this.scale = newImage.attr.initScale
       this.left = newImage.attr.initLeft
       this.top = newImage.attr.initTop
+    },
+    'mode.comic' (newValue) {
+      if (newValue) {
+        this.removeListener()
+      } else {
+        this.addListener()
+      }
     }
   },
   mounted () {
-    const that = this
-    window.onmousedown = function (e) {
-      if (!that.mode.comic) {
-        that.handlePress(e)
-      }
-    }
-    window.onmouseup = function (e) {
-      if (!that.mode.comic) {
-        that.handleRelease(e)
-      }
-    }
-    window.onmousemove = function (e) {
-      if (!that.mode.comic) {
-        that.handleMove(e)
-      }
-    }
-    window.onresize = function (e) {
-      if (!that.mode.comic) {
-        that.handleInit(e)
-      }
-    }
-    window.onmousewheel = function (e) {
-      if (!that.mode.comic) {
-        that.handleWheel(e)
-      }
-    }
-    window.onkeydown = function (e) {
-      if (!that.mode.comic) {
-        that.handleKeyDwn(e)
-      }
-    }
-    window.onkeyup = function (e) {
-      if (!that.mode.comic) {
-        that.handleKeyUp(e)
-      }
-    }
+    this.addListener()
   },
   methods: {
     setHover (bool) {
@@ -171,8 +145,28 @@ export default {
     setDragging (bool) {
       this.dragging = bool
     },
+    addListener () {
+      window.addEventListener('mousedown', this.handleMouseDown)
+      window.addEventListener('mouseup', this.handleMouseUp)
+      window.addEventListener('mousemove', this.handleMove)
+      window.addEventListener('mousewheel', this.handleWheel)
+      window.addEventListener('keydown', this.handleKeyDown)
+      window.addEventListener('keyup', this.handleKeyUp)
+      window.addEventListener('resize', this.handleResize)
+      console.log(TAG + 'addListener:监听已挂载')
+    },
+    removeListener () {
+      window.removeEventListener('mousedown', this.handleMouseDown)
+      window.removeEventListener('mouseup', this.handleMouseUp)
+      window.removeEventListener('mousemove', this.handleMove)
+      window.removeEventListener('mousewheel', this.handleWheel)
+      window.removeEventListener('keydown', this.handleKeyDown)
+      window.removeEventListener('keyup', this.handleKeyUp)
+      window.removeEventListener('resize', this.handleResize)
+      console.log(TAG + 'removeListener:监听已卸载')
+    },
     /// ///
-    handlePress (event) {
+    handleMouseDown (event) {
       switch (event.button) {
         case 0:
           this.temp.mouseX = event.clientX
@@ -186,7 +180,7 @@ export default {
           break
       }
     },
-    handleRelease (event) {
+    handleMouseUp (event) {
       this.setDragging(false)
     },
     handleMove (event) {
@@ -198,7 +192,7 @@ export default {
         this.temp.mouseY = event.clientY
       }
     },
-    handleInit (event) {
+    handleResize (event) {
       this.$emit('resize')
     },
     handleWheel (event) {
@@ -216,7 +210,7 @@ export default {
         }
       }
     },
-    handleKeyDwn (event) {
+    handleKeyDown (event) {
       console.log(event.code)
       switch (event.code) {
         case 'ControlLeft':
