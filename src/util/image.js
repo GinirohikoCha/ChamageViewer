@@ -7,9 +7,10 @@ let imageList = { dir: '', index: 0, images: [] }
 
 // 加载图片以及图片所在文件夹内的所有图片
 export function loadImageAndDir (url) {
-  imageList = { dir: '', index: 0, images: [] }
-  console.info('开始进行初始化加载')
-  if (url != null) {
+  try {
+    console.info('开始进行初始化加载')
+    imageList = { dir: '', index: 0, images: [] }
+    sizeOf(url)
     const slashIdx = url.lastIndexOf('/') + 1
     const dir = url.substring(0, slashIdx)
     const imageName = url.substring(slashIdx)
@@ -53,11 +54,11 @@ export function loadImageAndDir (url) {
       }
     }
     console.info('加载初始图片完毕')
-    console.debug(JSON.stringify(imageList))
+    console.debug(imageList)
     console.info('完成初始化加载')
-  } else {
-    console.error('无法找到当前图片路径')
-    console.info('结束初始化加载')
+  } catch (err) {
+    console.error('无法找到当前打开图片')
+    console.info('初始化加载失败')
   }
   return imageList
 }
@@ -67,33 +68,27 @@ export function getImageAndDir () {
 }
 
 export function loadImage (url, name, index) {
-  console.info(TAG + 'loadImage:正在加载图片' + name)
-  if (url != null) {
-    try {
-      const dimensions = sizeOf(url)
-      imageList.images[index] = {
-        name: name,
-        data: {
-          url: url,
-          type: dimensions.type,
-          width: dimensions.width,
-          height: dimensions.height
-        },
-        attr: {
-          long: dimensions.width / dimensions.height <= 0.4, // 是否为长图
-          initScale: 0,
-          initLeft: 0,
-          initTop: 0
-        }
+  try {
+    console.info(TAG + 'loadImage:正在加载图片' + name)
+    const dimensions = sizeOf(url)
+    imageList.images[index] = {
+      name: name,
+      data: {
+        url: url,
+        type: dimensions.type,
+        width: dimensions.width,
+        height: dimensions.height
+      },
+      attr: {
+        long: dimensions.width / dimensions.height <= 0.4, // 是否为长图
+        initScale: 0,
+        initLeft: 0,
+        initTop: 0
       }
-      return imageList.images[index]
-    } catch (err) {
-      console.warn(TAG + 'loadImage:无法找到当前图片路径:' + url)
-      // TODO 处理
-      return null
     }
-  } else {
-    console.error(TAG + 'loadImage:未获得图片路径')
+    return imageList.images[index]
+  } catch (err) {
+    console.error(TAG + 'loadImage:无法正确加载当前图片路径:' + url)
     // TODO 处理
     return null
   }

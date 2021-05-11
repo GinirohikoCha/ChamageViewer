@@ -1,10 +1,14 @@
 <template>
-  <div class="viewer-context">
+  <el-empty description="请选择图片" v-show="!curImage" class="empty">
+    <el-button type="primary" v-on:click="openImg">打开图片</el-button>
+  </el-empty>
+
+  <div v-show="curImage" class="viewer-context">
     <Displayer
       :config="config"
       :image="image"
       :mode="mode"
-      @resize="image = initImg(image)"
+      @resize="refreshCurImage"
       @pre-image="changeImage(-1)"
       @nxt-image="changeImage(1)"
       @delete-image="deleteImage"
@@ -58,9 +62,15 @@ export default {
   },
   mounted () {
     this.imageList = ipcRenderer.sendSync('init-image')
+    console.log(TAG + 'mounted:')
+    console.log(this.imageList)
     this.refreshCurImage()
   },
   methods: {
+    openImg () {
+      this.imageList = ipcRenderer.sendSync('open-image')
+      this.refreshCurImage()
+    },
     initImg (image) {
       console.log(TAG + 'initImg:开始初始化图片')
       if (image) {
@@ -103,6 +113,8 @@ export default {
         image.attr.initTop = top
         console.log(TAG + 'initImg:初始化完毕\n' + JSON.stringify(image))
         return JSON.parse(JSON.stringify(image))
+      } else {
+        return null
       }
     },
     changeImage (step) {
@@ -144,5 +156,15 @@ export default {
   position: absolute;
   width: 100%;
   height: 100%;
+}
+
+.empty {
+  position: fixed;
+  left: 50%;
+  top: 50%;
+  transform: translate(-50%,-50%);
+  -ms-transform: translate(-50%,-50%);
+  -webkit-transform: translate(-50%,-50%);
+  z-index: 1;
 }
 </style>

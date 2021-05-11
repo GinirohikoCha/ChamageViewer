@@ -77,10 +77,10 @@ export default {
   },
   methods: {
     setTitle (image) {
-      if (image === null) {
-        this.title = 'ChamageViewer'
-      } else {
+      if (image) {
         this.title = image.name + ' - ' + image.data.width + '×' + image.data.height
+      } else {
+        this.title = 'ChamageViewer'
       }
     },
     toggleFullScreen () {
