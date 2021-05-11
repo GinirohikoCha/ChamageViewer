@@ -1,18 +1,14 @@
 <template>
-  <el-image
-    :style="{
-    'position':'absolute',
-    'display':'block',
-    'width':width+'px',
-    'height':height+'px',
-    'left':left+'px',
-    'top':top+'px',
-    'transform':'rotate('+rotate+'deg)',
-    'box-shadow':shadowX+'px '+shadowY+'px 12px rgba(0, 0, 0, 0.23), 0 3px 12px rgba(0, 0, 0, 0.16)'}"
-    :draggable="false"
-    v-on:mouseenter="setHover(true)"
-    v-on:mouseleave="setHover(false)"
-    :src="imageUrl" />
+  <AnimatedImage
+    ref="AnimatedImage"
+    :url="imageUrl"
+    :width="width"
+    :height="height"
+    :left="left"
+    :top="top"
+    :rotate="rotate"
+    @enter="setHover(true)"
+    @leave="setHover(false)"/>
 
   <ScaleInfo
     v-if="config.common.interface.enableScaleInfo"
@@ -40,6 +36,7 @@
 import ScaleInfo from '@/view/viewer/components/ScaleInfo'
 import ChangePageBtn from '@/view/viewer/components/ChangePageBtn'
 import BottomToolBar from '@/view/viewer/components/BottomToolBar'
+import AnimatedImage from '@/view/viewer/components/AnimatedImage'
 
 const TAG = '[Displayer]'
 
@@ -48,7 +45,8 @@ export default {
   components: {
     ScaleInfo,
     ChangePageBtn,
-    BottomToolBar
+    BottomToolBar,
+    AnimatedImage
   },
   props: {
     config: Object,
@@ -69,6 +67,7 @@ export default {
     return {
       hover: false,
       dragging: false,
+      imageUrl: '',
       scale: 0,
       left: 0,
       top: 0,
@@ -82,9 +81,6 @@ export default {
     }
   },
   computed: {
-    imageUrl: function () {
-      return this.image ? encodeURI(this.image.data.url) : ''
-    },
     width: function () {
       return this.image ? this.image.data.width * this.scale + 1 : 0
     },
@@ -122,10 +118,11 @@ export default {
   },
   watch: {
     image (newImage) {
+      this.imageUrl = encodeURI(newImage.data.url)
       this.rotate = 0
-      this.scale = newImage.attr.initScale
       this.left = newImage.attr.initLeft
       this.top = newImage.attr.initTop
+      this.scale = newImage.attr.initScale
     },
     'mode.comic' (newValue) {
       if (newValue) {
