@@ -1,21 +1,23 @@
 <template>
-  <el-empty description="请选择图片" v-show="!curImage" class="empty">
-    <el-button type="primary" v-on:click="openImg">打开图片</el-button>
-  </el-empty>
+  <div>
+    <el-empty description="请选择图片" v-show="!curImage" class="empty">
+      <el-button type="primary" v-on:click="openImg">打开图片</el-button>
+    </el-empty>
 
-  <div v-show="curImage" class="viewer-context">
-    <Displayer
-      :config="config"
-      :image="image"
-      :mode="mode"
-      @resize="refreshCurImage"
-      @pre-image="changeImage(-1)"
-      @nxt-image="changeImage(1)"
-      @delete-image="deleteImage"
-      @fullscreen="$emit('fullscreen')"
-      @comic="$emit('comic')"
-      @config="$emit('config')"
-      @message="showMessage"/>
+    <div v-show="curImage" class="viewer-context">
+      <Displayer
+        :config="config"
+        :image="image"
+        :mode="mode"
+        @resize="refreshCurImage"
+        @pre-image="changeImage(-1)"
+        @nxt-image="changeImage(1)"
+        @delete-image="deleteImage"
+        @fullscreen="$emit('fullscreen')"
+        @comic="$emit('comic')"
+        @config="$emit('config')"
+        @message="showMessage"/>
+    </div>
   </div>
 </template>
 
