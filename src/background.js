@@ -18,7 +18,9 @@ if (process.env.WEBPACK_DEV_SERVER_URL) {
   const debugUrl = 'C:\\Users\\22364\\Pictures\\Never Settle\\Salmon.jpg'
   processUrl = debugUrl.replaceAll('\\', '/')
 } else {
-  processUrl = process.argv[1].replaceAll('\\', '/')
+  if (process.argv[1]) {
+    processUrl = process.argv[1].replaceAll('\\', '/')
+  }
 }
 
 // Quit when all windows are closed.
