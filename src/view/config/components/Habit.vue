@@ -2,7 +2,7 @@
   <el-form ref="option" :model="option" label-width="100px" size="mini">
     <el-divider content-position="left">鼠标滚轮设置</el-divider>
     <el-form-item label="鼠标滚轮功能">
-      <el-tooltip effect="dark" content="Ctrl+滚轮使用另一项功能" placement="bottom">
+      <el-tooltip effect="dark" content="按住Ctrl临时切换滚轮功能" placement="bottom">
         <el-switch
           v-model="option.scroll.mode"
           style="margin-left: 20px"
