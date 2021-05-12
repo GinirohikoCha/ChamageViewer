@@ -1,19 +1,19 @@
 <template>
   <el-tabs :tab-position="'left'" style="height: 400px;">
     <el-tab-pane label="常规设置"><Common :common="config.common" @update="updateCommon"/></el-tab-pane>
-<!--    <el-tab-pane label="习惯设置"><Habit :habit="config.habit" @update="updateHabit"/></el-tab-pane>-->
+    <el-tab-pane label="习惯设置"><Habit :habit="config.habit" @update="updateHabit"/></el-tab-pane>
   </el-tabs>
 </template>
 
 <script>
 import { ipcRenderer } from 'electron'
-// import Habit from '@/view/config/components/Habit'
+import Habit from '@/view/config/components/Habit'
 import Common from '@/view/config/components/Common'
 
 export default {
   name: 'Config',
   components: {
-    // Habit,
+    Habit,
     Common
   },
   data () {
@@ -29,8 +29,7 @@ export default {
         },
         habit: {
           scroll: {
-            enable: true,
-            mode: 0 // 0:缩放-1:翻页
+            mode: 0 // 0-翻页:1-缩放
           }
         }
       }

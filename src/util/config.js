@@ -5,7 +5,7 @@ console.log('应用地址' + process.argv[0])
 const exePath = process.argv[0].replaceAll('\\', '/')
 const configPath = exePath.substring(0, exePath.lastIndexOf('/') + 1) + 'config'
 const defaultConfig = {
-  version: '2.3.0',
+  version: '2.3.21',
   common: {
     interface: {
       enableChangePageBtn: true,
@@ -15,8 +15,7 @@ const defaultConfig = {
   },
   habit: {
     scroll: {
-      enable: true,
-      mode: 0 // 0:缩放-1:翻页
+      mode: 0 // 0-翻页:1-缩放
     }
   }
 }
@@ -25,19 +24,14 @@ let config = defaultConfig
 export function loadConfig () {
   initialized = true
   if (fs.existsSync(configPath)) {
-    fs.readFile(configPath, function (error, data) {
-      if (error) {
-        console.error('读取配置文件失败，返回默认配置')
-        config = defaultConfig
-      } else {
-        config = JSON.parse(data.toString())
-        if (config.version !== defaultConfig.version) {
-          console.log('配置文件版本不匹配，返回默认配置')
-          config = defaultConfig
-          saveConfig(config)
-        }
-      }
-    })
+    console.log('配置文件存在，开始读取')
+    config = JSON.parse(fs.readFileSync(configPath).toString())
+    console.log('配置文件读取完毕')
+    if (config.version !== defaultConfig.version) {
+      console.log('配置文件版本不匹配，返回默认配置')
+      config = defaultConfig
+      saveConfig(config)
+    }
   } else {
     console.log('配置文件不存在，生成默认配置文件')
     saveConfig(defaultConfig)

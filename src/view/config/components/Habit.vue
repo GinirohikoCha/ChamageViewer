@@ -1,18 +1,18 @@
 <template>
   <el-form ref="option" :model="option" label-width="100px" size="mini">
     <el-divider content-position="left">鼠标滚轮设置</el-divider>
-    <el-form-item label="启用鼠标滚轮">
-      <el-switch
-        v-model="option.scroll.enable"
-        @change="onChange"/>
-      <el-radio-group
-        style="margin-left: 20px"
-        v-model="option.scroll.mode"
-        :disabled="!option.scroll.enable"
-        @change="onChange">
-        <el-radio :label="0">鼠标滚轮缩放</el-radio>
-        <el-radio :label="1">鼠标滚轮翻页</el-radio>
-      </el-radio-group>
+    <el-form-item label="鼠标滚轮功能">
+      <el-tooltip effect="dark" content="Ctrl+滚轮使用另一项功能" placement="bottom">
+        <el-switch
+          v-model="option.scroll.mode"
+          style="margin-left: 20px"
+          inactive-text="鼠标滚轮翻页"
+          inactive-color="#13ce66"
+          :inactive-value="0"
+          active-text="鼠标滚轮缩放"
+          :active-value="1"
+          @change="onChange"/>
+      </el-tooltip>
     </el-form-item>
   </el-form>
 </template>
@@ -27,8 +27,7 @@ export default {
     return {
       option: {
         scroll: {
-          enable: true,
-          mode: 0 // 0:缩放-1:翻页
+          mode: 0 // 0-翻页:1-缩放
         }
       }
     }

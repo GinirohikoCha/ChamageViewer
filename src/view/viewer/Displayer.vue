@@ -193,17 +193,17 @@ export default {
       this.$emit('resize')
     },
     handleWheel (event) {
-      if (this.temp.keyCtrl) {
-        this.scaleImage(event.deltaY > 0)
-      } else {
-        if (this.image.attr.long) {
-          this.skimImage(event.deltaY)
+      if (this.image.attr.long) {
+        if (this.temp.keyCtrl) {
+          this.changeImage(event.deltaY > 0)
         } else {
-          if (event.deltaY > 0) {
-            this.nextImage()
-          } else {
-            this.preImage()
-          }
+          this.skimImage(event.deltaY)
+        }
+      } else {
+        if (this.temp.keyCtrl ^ this.config.habit.scroll.mode) {
+          this.scaleImage(event.deltaY > 0)
+        } else {
+          this.changeImage(event.deltaY > 0)
         }
       }
     },
@@ -235,6 +235,13 @@ export default {
       }
     },
     /// ///
+    changeImage (isNext) {
+      if (isNext) {
+        this.nextImage()
+      } else {
+        this.preImage()
+      }
+    },
     preImage () {
       this.$emit('preImage')
     },
