@@ -19,6 +19,7 @@
     @escape="toggleComic"/>
 
   <Header
+    v-if="!mode.comic"
     :title="title"
     :mode="mode" />
 </template>

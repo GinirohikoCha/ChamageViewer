@@ -7,6 +7,7 @@
     <ComicDisplayer
       :image-list="imageList"
       :mode="mode"
+      @fullscreen="$emit('fullscreen')"
       @escape="$emit('escape')"/>
   </div>
 </template>

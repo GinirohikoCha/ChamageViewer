@@ -1,5 +1,5 @@
 <template>
-  <div v-if="!mode.fullscreen && !mode.comic" class="app-header">
+  <div v-if="!mode.fullscreen" class="app-header">
     <i class="el-icon-picture-outline-round app-header-icon"></i>
     <div class="app-header-title">
       {{ title }}
@@ -56,6 +56,7 @@ export default {
   position: fixed;
   width: 100%;
   height: 30px;
+  background: white;
   -webkit-app-region: drag;
 }
 
@@ -91,7 +92,7 @@ export default {
 }
 
 .app-header .app-header-button:hover {
-  background: whitesmoke;
+  background: lightgray;
 }
 
 .app-header .app-header-close:hover {

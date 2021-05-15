@@ -29,7 +29,8 @@ export default {
     mode: Object
   },
   emits: {
-    escape: null
+    escape: null,
+    fullscreen: null
   },
   data () {
     return {
@@ -64,13 +65,15 @@ export default {
     }
   },
   mounted () {
+    window.addEventListener('mousedown', this.handleMouseDown)
     window.addEventListener('mousewheel', this.handleWheel)
     window.addEventListener('resize', this.handleResize)
-    window.addEventListener('keydown', this.handleKeyDwn)
+    window.addEventListener('keydown', this.handleKeyDown)
     window.addEventListener('keyup', this.handleKeyUp)
     console.log(TAG + 'mounted:监听已挂载')
   },
   unmounted () {
+    window.removeEventListener('mousedown', this.handleMouseDown)
     window.removeEventListener('mousewheel', this.handleWheel)
     window.removeEventListener('resize', this.handleResize)
     window.removeEventListener('keydown', this.handleKeyDown)
@@ -78,6 +81,14 @@ export default {
     console.log(TAG + 'unmounted:监听已卸载')
   },
   methods: {
+    handleMouseDown (event) {
+      switch (event.button) {
+        case 1:
+          event.preventDefault()
+          this.$emit('fullscreen')
+          break
+      }
+    },
     handleWheel (event) {
       if (this.temp.keyCtrl) {
         this.scaleImage(event.deltaY > 0)
@@ -89,6 +100,7 @@ export default {
       this.windowWidth = document.documentElement.clientWidth
     },
     handleKeyDown (event) {
+      console.log(event.code)
       switch (event.code) {
         case 'ControlLeft':
           this.temp.keyCtrl = true
