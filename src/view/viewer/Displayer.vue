@@ -195,7 +195,7 @@ export default {
     handleWheel (event) {
       if (this.image.attr.long) {
         if (this.temp.keyCtrl) {
-          this.changeImage(event.deltaY > 0)
+          this.scaleImage(event.deltaY > 0)
         } else {
           this.skimImage(event.deltaY)
         }

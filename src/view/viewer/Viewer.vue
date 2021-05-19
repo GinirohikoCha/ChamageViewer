@@ -21,6 +21,7 @@
   <Header
     v-if="!mode.comic"
     :title="title"
+    :title-sub="titleSub"
     :mode="mode" />
 </template>
 
@@ -41,6 +42,7 @@ export default {
   data () {
     return {
       title: 'ChamageViewer',
+      titleSub: '',
       // 默认设置
       config: {
         version: '0.0.0',
@@ -78,9 +80,11 @@ export default {
   methods: {
     setTitle (image) {
       if (image) {
-        this.title = image.name + ' - ' + image.data.width + '×' + image.data.height
+        this.title = image.name
+        this.titleSub = image.data.width + '×' + image.data.height
       } else {
         this.title = 'ChamageViewer'
+        this.titleSub = ''
       }
     },
     toggleFullScreen () {

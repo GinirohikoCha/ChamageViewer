@@ -2,7 +2,7 @@
   <div v-if="!mode.fullscreen" class="app-header">
     <i class="el-icon-picture-outline-round app-header-icon"></i>
     <div class="app-header-title">
-      {{ title }}
+      {{ displayTitle }}
     </div>
 
     <div class="app-header-button-group">
@@ -15,7 +15,7 @@
   <div v-if="mode.fullscreen" class="app-header-dark">
     <i class="el-icon-picture-outline-round app-header-icon"></i>
     <div class="app-header-title">
-      {{ title }}
+      {{ displayTitle }}
     </div>
 
     <i class="el-icon-cha-close app-header-close" @click="close"/>
@@ -29,11 +29,21 @@ export default {
   name: 'Header',
   props: {
     title: String,
+    titleSub: String,
     mode: Object
   },
   data () {
     return {
       maximized: false
+    }
+  },
+  computed: {
+    displayTitle: function () {
+      if (this.title.length <= 50) {
+        return this.title + ' - ' + this.titleSub
+      } else {
+        return this.title.substring(0, 50) + '... - ' + this.titleSub
+      }
     }
   },
   methods: {
@@ -61,27 +71,36 @@ export default {
 }
 
 .app-header .app-header-icon {
-  float: left;
+  position: absolute;
+  left: 0;
   width: 30px;
   height: 30px;
   line-height: 30px;
   text-align: center;
   color: black;
+  z-index: 10;
 }
 
 .app-header .app-header-title {
-  float: left;
+  position: absolute;
+  left: 30px;
   width: auto;
+  height: 30px;
   line-height: 30px;
   font-size: 12px;
   font-family: 微软雅黑, serif;
   color: black;
+  white-space: nowrap;
+  z-index: 10;
 }
 
 .app-header .app-header-button-group {
-  float: right;
+  position: absolute;
+  right: 0;
   height: 30px;
   -webkit-app-region: no-drag;
+  white-space: nowrap;
+  z-index: 100;
 }
 
 .app-header .app-header-button-group .app-header-button {

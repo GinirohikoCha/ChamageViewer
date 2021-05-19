@@ -114,6 +114,7 @@ async function createMainWindow () {
   mainWindow = new BrowserWindow({
     width: 800,
     height: 600,
+    minWidth: 138,
     webPreferences: {
       webSecurity: false,
       // Use pluginOptions.nodeIntegration, leave this alone
