@@ -71,6 +71,7 @@ export default {
       this.onKeyUp
     )
     this.listener.register()
+    // TODO 注销监听
     // 通信监听
     ipcRenderer.on('viewer', (e, msg) => {
       switch (msg.event) {
