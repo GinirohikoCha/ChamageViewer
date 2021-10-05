@@ -1,6 +1,6 @@
 <template>
   <el-image
-    :src="url"
+    :src="encodeURI(url)"
     :style="{
     'display':'block',
     'width':tweenWidth+'px',

@@ -41,6 +41,7 @@ export class Display {
       image.attr.scale = scale
       image.attr.left = left
       image.attr.top = top
+      image.attr.rotate = 0
     }
     return image
   }
