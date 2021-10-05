@@ -55,11 +55,18 @@ export default {
       // 切换图片初始化时禁止动画
       if (this.animation.width) {
         this.animation.width.kill()
+      }
+      if (this.animation.height) {
         this.animation.height.kill()
       }
       if (this.animation.left) {
         this.animation.left.kill()
+      }
+      if (this.animation.top) {
         this.animation.top.kill()
+      }
+      if (this.animation.rotate) {
+        this.animation.rotate.kill()
       }
       gsap.set(this.$data, {
         tweenWidth: this.width,
