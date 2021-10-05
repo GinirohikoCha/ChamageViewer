@@ -25,11 +25,13 @@ export class Image {
   loadImageList () {
     console.info('[image]正在查找文件夹中所有图片...')
     const that = this
+    let index = -1
     // 遍历图片
-    fs.readdirSync(this.dirUrl).forEach(function (item, index) {
+    fs.readdirSync(this.dirUrl).forEach(function (item) {
       try {
         const dimensions = sizeOf(that.dirUrl + item)
         console.info('[image]正在加载图片' + item)
+        index += 1
         if (that.imageName === item) {
           that.index = index
         }
