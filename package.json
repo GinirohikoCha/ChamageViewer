@@ -1,6 +1,8 @@
 {
   "name": "chamage-viewer",
-  "version": "0.1.0",
+  "author": "GinirohikoCha",
+  "version": "2.4.0",
+  "description": "猹图-干净多元的Electron+Vue开源图片查看器！",
   "private": true,
   "scripts": {
     "serve": "vue-cli-service serve",
