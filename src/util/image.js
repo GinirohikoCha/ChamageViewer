@@ -62,6 +62,6 @@ export class Image {
   }
 
   getImageList () {
-    return { 'index': this.index, 'images': this.imageList }
+    return { index: this.index, images: this.imageList }
   }
 }
