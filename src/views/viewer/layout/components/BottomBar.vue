@@ -9,7 +9,10 @@
             <i class="el-icon-reading bottom-toolbar-item"  @click="$emit('comic')"/>
           </el-tooltip>
           <el-tooltip effect="dark" content="原始尺寸" placement="top">
-            <i class="el-icon-c-scale-to-original bottom-toolbar-item" @click="$emit('scale', 1)" />
+            <i class="el-icon-c-scale-to-original bottom-toolbar-item" @click="$emit('scale')" />
+          </el-tooltip>
+          <el-tooltip effect="dark" content="放大图片" placement="top">
+            <i class="el-icon-zoom-out bottom-toolbar-item" @click="$emit('scaleDown')" />
           </el-tooltip>
           <el-tooltip effect="dark" content="放大图片" placement="top">
             <i class="el-icon-zoom-in bottom-toolbar-item" @click="$emit('scaleUp')" />
@@ -28,10 +31,10 @@
                @click="$emit('next')"/>
           </el-tooltip>
           <el-tooltip effect="dark" content="逆时针旋转90°" placement="top">
-            <i class="el-icon-refresh-left bottom-toolbar-item" @click="$emit('rotate', false)"/>
+            <i class="el-icon-refresh-left bottom-toolbar-item" @click="$emit('rotateL')"/>
           </el-tooltip>
           <el-tooltip effect="dark" content="顺时针旋转90°" placement="top">
-            <i class="el-icon-refresh-right bottom-toolbar-item" @click="$emit('rotate', true)"/>
+            <i class="el-icon-refresh-right bottom-toolbar-item" @click="$emit('rotateR')"/>
           </el-tooltip>
           <el-tooltip effect="dark" content="删除图片" placement="top">
             <i class="el-icon-delete bottom-toolbar-item" @click="$emit('delete')"/>
@@ -47,15 +50,17 @@
 export default {
   name: 'BottomBar',
   emits: {
-    comic: null,
-    scale: null,
-    scaleUp: null,
     pre: null,
     next: null,
-    rotate: null,
+    scale: null,
+    scaleUp: null,
+    scaleDown: null,
+    rotateL: null,
+    rotateR: null,
     delete: null,
     config: null,
-    fullscreen: null
+    fullscreen: null,
+    comic: null
   },
   data () {
     return {

@@ -88,9 +88,13 @@ export class Display {
     return image
   }
 
-  rotate (deltaR) {
+  rotate (isClockwise) {
     const image = this.images[this.index]
-    image.attr.rotate += deltaR
+    if (isClockwise) {
+      image.attr.rotate += 90
+    } else {
+      image.attr.rotate += -90
+    }
     return image
   }
 }

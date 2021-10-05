@@ -71,6 +71,32 @@ export default {
       this.onKeyUp
     )
     this.listener.register()
+    // 通信监听
+    ipcRenderer.on('viewer', (e, msg) => {
+      switch (msg.event) {
+        case 'pre':
+          this.temp = this.display.turn(false)
+          break
+        case 'next':
+          this.temp = this.display.turn(true)
+          break
+        case 'scale':
+          this.display.scaleTo(1)
+          break
+        case 'scaleUp':
+          this.display.scale(0.1)
+          break
+        case 'scaleDown':
+          this.display.scale(-0.1)
+          break
+        case 'rotateL':
+          this.display.rotate(false)
+          break
+        case 'rotateR':
+          this.display.rotate(true)
+          break
+      }
+    })
   },
   methods: {
     onResize (event) {

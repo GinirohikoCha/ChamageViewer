@@ -45,7 +45,8 @@ export default {
         width: null,
         height: null,
         left: null,
-        top: null
+        top: null,
+        rotate: null
       }
     }
   },
@@ -64,7 +65,8 @@ export default {
         tweenWidth: this.width,
         tweenHeight: this.height,
         tweenLeft: this.left,
-        tweenTop: this.top
+        tweenTop: this.top,
+        tweenRotate: this.rotate
       })
     },
     width (newValue) {
@@ -80,7 +82,7 @@ export default {
       this.animation.top = gsap.to(this.$data, { duration: 0.3, tweenTop: newValue })
     },
     rotate (newValue) {
-      gsap.to(this.$data, { duration: 0.3, tweenRotate: newValue })
+      this.animation.rotate = gsap.to(this.$data, { duration: 0.3, tweenRotate: newValue })
       const sign = newValue >= 0 ? 1 : -1
       switch (newValue % 360) {
         default:

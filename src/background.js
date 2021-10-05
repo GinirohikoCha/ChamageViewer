@@ -14,6 +14,7 @@ protocol.registerSchemesAsPrivileged([
 ])
 
 // 启动参数
+let win = null
 let processUrl = ''
 console.debug(process.env.WEBPACK_DEV_SERVER_URL)
 if (process.env.WEBPACK_DEV_SERVER_URL) {
@@ -26,7 +27,7 @@ if (process.env.WEBPACK_DEV_SERVER_URL) {
 }
 
 async function createWindow () {
-  const win = new BrowserWindow({
+  win = new BrowserWindow({
     width: 800,
     height: 600,
     minWidth: 138,
@@ -89,6 +90,9 @@ app.on('ready', async () => {
   // 通信监听
   ipcMain.on('load-images', function (event) {
     event.returnValue = imageUtil.getImageList()
+  })
+  ipcMain.on('viewer', function (event, message) {
+    win.webContents.send('viewer', message)
   })
 })
 
