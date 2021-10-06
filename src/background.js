@@ -37,7 +37,7 @@ async function createWindow () {
       nodeIntegration: process.env.ELECTRON_NODE_INTEGRATION,
       contextIsolation: !process.env.ELECTRON_NODE_INTEGRATION
     },
-    transparent: true,
+    // transparent: true,
     backgroundColor: '#FFFFFFFF',
     // frame: false,
     show: false

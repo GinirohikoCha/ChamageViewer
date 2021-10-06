@@ -1,12 +1,19 @@
 export class Listener {
-  mouseX = 0
-  mouseY = 0
-  hover = false
-  dragging = false
-  keyCtrl = false
+  static context = null
+
+  static mouseX = 0
+  static mouseY = 0
+  static hover = false
+  static dragging = false
+  static keyCtrl = false
 
   constructor (resizeHandler, wheelHandler, mouseDownHandler, mouseUpHandler, mouseMoveHandler,
     keyDownHandler, keyUpHandler) {
+    if (Listener.context == null) {
+      Listener.context = this
+    } else {
+      return Listener.context
+    }
     this.resizeHandler = resizeHandler
     this.wheelHandler = wheelHandler
     this.mouseDownHandler = mouseDownHandler
@@ -17,39 +24,34 @@ export class Listener {
   }
 
   register () {
-    const context = this
-    window.addEventListener('resize', (event) => {
-      context.handleResize(event)
-    })
-    window.addEventListener('mousewheel', (event) => {
-      context.handleWheel(event)
-    })
-    window.addEventListener('mousedown', (event) => {
-      context.handleMouseDown(event)
-    })
-    window.addEventListener('mouseup', (event) => {
-      context.handleMouseUp(event)
-    })
-    window.addEventListener('mousemove', (event) => {
-      context.handleMouseMove(event)
-    })
-    window.addEventListener('keydown', (event) => {
-      context.handleKeyDown(event)
-    })
-    window.addEventListener('keyup', (event) => {
-      context.handleKeyUp(event)
-    })
+    window.addEventListener('resize', this.handleResize)
+    window.addEventListener('mousewheel', this.handleWheel)
+    window.addEventListener('mousedown', this.handleMouseDown)
+    window.addEventListener('mouseup', this.handleMouseUp)
+    window.addEventListener('mousemove', this.handleMouseMove)
+    window.addEventListener('keydown', this.handleKeyDown)
+    window.addEventListener('keyup', this.handleKeyUp)
+  }
+
+  unRegister () {
+    window.removeEventListener('resize', this.handleResize)
+    window.removeEventListener('mousewheel', this.handleWheel)
+    window.removeEventListener('mousedown', this.handleMouseDown)
+    window.removeEventListener('mouseup', this.handleMouseUp)
+    window.removeEventListener('mousemove', this.handleMouseMove)
+    window.removeEventListener('keydown', this.handleKeyDown)
+    window.removeEventListener('keyup', this.handleKeyUp)
   }
 
   handleResize (event) {
-    this.resizeHandler(event)
+    Listener.context.resizeHandler(event)
   }
 
   handleWheel (event) {
-    this.wheelHandler(event, {
-      hover: this.hover,
-      mouseX: this.mouseX,
-      mouseY: this.mouseY
+    Listener.context.wheelHandler(event, {
+      hover: Listener.hover,
+      mouseX: Listener.mouseX,
+      mouseY: Listener.mouseY
     })
   }
 
@@ -57,10 +59,10 @@ export class Listener {
     switch (event.button) {
       case 0:
         console.debug('[listener]mousedown:left')
-        this.mouseX = event.clientX
-        this.mouseY = event.clientY
-        if (this.hover) {
-          this.setDragging(true)
+        Listener.mouseX = event.clientX
+        Listener.mouseY = event.clientY
+        if (Listener.hover) {
+          Listener.context.setDragging(true)
         }
         break
     }
@@ -68,16 +70,16 @@ export class Listener {
 
   handleMouseUp (event) {
     console.debug('[listener]mouseup')
-    this.setDragging(false)
+    Listener.context.setDragging(false)
   }
 
   handleMouseMove (event) {
-    if (this.dragging || this.hover) {
-      if (this.dragging) {
-        this.mouseMoveHandler(event.clientX - this.mouseX, event.clientY - this.mouseY)
+    if (Listener.dragging || Listener.hover) {
+      if (Listener.dragging) {
+        Listener.context.mouseMoveHandler(event.clientX - Listener.mouseX, event.clientY - Listener.mouseY)
       }
-      this.mouseX = event.clientX
-      this.mouseY = event.clientY
+      Listener.mouseX = event.clientX
+      Listener.mouseY = event.clientY
     }
   }
 
@@ -85,10 +87,10 @@ export class Listener {
     console.debug('[listener]keydown:' + event.code)
     switch (event.code) {
       case 'ControlLeft':
-        this.keyCtrl = true
+        Listener.keyCtrl = true
         break
       default:
-        this.keyDownHandler(event.code)
+        Listener.context.keyDownHandler(event.code)
         break
     }
   }
@@ -97,25 +99,25 @@ export class Listener {
     console.debug('[listener]keyup:' + event.code)
     switch (event.code) {
       case 'ControlLeft':
-        this.keyCtrl = false
+        Listener.keyCtrl = false
         break
       default:
-        this.keyUpHandler(event.code)
+        Listener.context.keyUpHandler(event.code)
         break
     }
   }
 
   setDragging (bool) {
-    this.dragging = bool
-    console.debug('[listener]dragging:' + this.dragging)
+    Listener.dragging = bool
+    console.debug('[listener]dragging:' + Listener.dragging)
   }
 
   setHover (bool) {
-    this.hover = bool
-    console.debug('[listener]hover:' + this.hover)
+    Listener.hover = bool
+    console.debug('[listener]hover:' + Listener.hover)
   }
 
   getKeyCtrl () {
-    return this.keyCtrl
+    return Listener.keyCtrl
   }
 }

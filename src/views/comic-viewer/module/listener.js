@@ -1,7 +1,14 @@
 export class Listener {
-  keyCtrl = false
+  static context = null
+
+  static keyCtrl = false
 
   constructor (resizeHandler, wheelHandler, keyDownHandler, keyUpHandler) {
+    if (Listener.context == null) {
+      Listener.context = this
+    } else {
+      return Listener.context
+    }
     this.resizeHandler = resizeHandler
     this.wheelHandler = wheelHandler
     this.keyDownHandler = keyDownHandler
@@ -9,37 +16,35 @@ export class Listener {
   }
 
   register () {
-    const context = this
-    window.addEventListener('resize', (event) => {
-      context.handleResize(event)
-    })
-    window.addEventListener('mousewheel', (event) => {
-      context.handleWheel(event)
-    })
-    window.addEventListener('keydown', (event) => {
-      context.handleKeyDown(event)
-    })
-    window.addEventListener('keyup', (event) => {
-      context.handleKeyUp(event)
-    })
+    window.addEventListener('resize', this.handleResize)
+    window.addEventListener('mousewheel', this.handleWheel)
+    window.addEventListener('keydown', this.handleKeyDown)
+    window.addEventListener('keyup', this.handleKeyUp)
+  }
+
+  unRegister () {
+    window.removeEventListener('resize', this.handleResize)
+    window.removeEventListener('mousewheel', this.handleWheel)
+    window.removeEventListener('keydown', this.handleKeyDown)
+    window.removeEventListener('keyup', this.handleKeyUp)
   }
 
   handleResize (event) {
-    this.resizeHandler(event)
+    Listener.context.resizeHandler(event)
   }
 
   handleWheel (event) {
-    this.wheelHandler(event, this.keyCtrl)
+    Listener.context.wheelHandler(event, Listener.keyCtrl)
   }
 
   handleKeyDown (event) {
     console.debug('[listener]keydown:' + event.code)
     switch (event.code) {
       case 'ControlLeft':
-        this.keyCtrl = true
+        Listener.keyCtrl = true
         break
       default:
-        this.keyDownHandler(event.code)
+        Listener.context.keyDownHandler(event.code)
         break
     }
   }
@@ -48,15 +53,15 @@ export class Listener {
     console.debug('[listener]keyup:' + event.code)
     switch (event.code) {
       case 'ControlLeft':
-        this.keyCtrl = false
+        Listener.keyCtrl = false
         break
       default:
-        this.keyUpHandler(event.code)
+        Listener.context.keyUpHandler(event.code)
         break
     }
   }
 
   getKeyCtrl () {
-    return this.keyCtrl
+    return Listener.keyCtrl
   }
 }

@@ -11,7 +11,13 @@
     'box-shadow':tweenShadowH+'px '+tweenShadowV+'px 12px rgba(0, 0, 0, 0.23), 0 3px 12px rgba(0, 0, 0, 0.16)'}"
     :draggable="false"
     v-on:mouseenter="$emit('enter')"
-    v-on:mouseleave="$emit('leave')"/>
+    v-on:mouseleave="$emit('leave')">
+    <template #error>
+      <div class="image-slot">
+        加载中...
+      </div>
+    </template>
+  </el-image>
 </template>
 
 <script>
@@ -116,4 +122,14 @@ export default {
 </script>
 
 <style scoped>
+.image-slot {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  width: 100%;
+  height: 100%;
+  background: #f5f7fa;
+  color: var(--el-text-color-secondary);
+  font-size: 14px;
+}
 </style>

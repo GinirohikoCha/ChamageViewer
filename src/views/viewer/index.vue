@@ -52,12 +52,12 @@ export default {
     }
   },
   mounted () {
+    // 初始化
     // 获取数据
     console.info('[viewer]加载图片列表')
     const data = ipcRenderer.sendSync('load-images')
     this.images = data.images
     this.display = new Display(data.index, this.images)
-    // 初始化
     console.info('[viewer]初始化图片')
     this.temp = this.display.init()
     // 事件监听
@@ -71,7 +71,6 @@ export default {
       this.onKeyUp
     )
     this.listener.register()
-    // TODO 注销监听
     // 通信监听
     ipcRenderer.on('viewer', (e, msg) => {
       switch (msg.event) {
@@ -98,6 +97,9 @@ export default {
           break
       }
     })
+  },
+  unmounted () {
+    this.listener.unRegister()
   },
   methods: {
     onResize (event) {
@@ -128,6 +130,25 @@ export default {
       }
     },
     onKeyUp (keyCode) {
+    },
+    init () {
+      this.temp = {
+        name: '',
+        data: {
+          url: '',
+          type: '',
+          width: 0,
+          height: 0
+        },
+        attr: {
+          longV: false,
+          longH: false,
+          scale: 0,
+          left: 0,
+          top: 0,
+          rotate: 0
+        }
+      }
     }
   }
 }

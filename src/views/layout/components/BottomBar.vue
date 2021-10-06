@@ -6,9 +6,7 @@
       <div v-show="display" class="bottom-toolbar material-shadow">
         <el-space class="item-wrapper">
           <el-tooltip effect="dark" content="漫画模式" placement="top">
-            <router-link to="comic">
-              <i class="el-icon-reading bottom-toolbar-item"/>
-            </router-link>
+            <i class="el-icon-reading bottom-toolbar-item" @click="this.$router.replace('/comic')"/>
           </el-tooltip>
           <el-tooltip effect="dark" content="原始尺寸" placement="top">
             <i class="el-icon-c-scale-to-original bottom-toolbar-item" @click="$emit('scale')" />

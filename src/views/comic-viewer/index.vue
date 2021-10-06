@@ -48,6 +48,7 @@ export default {
     }
   },
   mounted () {
+    // 初始化
     // 获取数据
     console.info('[comic-viewer]正在加载漫画')
     const data = ipcRenderer.sendSync('load-images')
@@ -60,6 +61,10 @@ export default {
       this.onKeyUp
     )
     this.listener.register()
+  },
+  unmounted () {
+    this.listener.unRegister()
+    this.$router.go(0)
   },
   methods: {
     onResize () {
@@ -87,7 +92,7 @@ export default {
           this.skim(100)
           break
         case 'Escape':
-          this.$router.push('/')
+          this.$router.replace('/')
           // TODO 禁用路由缓存
           break
       }
