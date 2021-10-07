@@ -1,14 +1,13 @@
-# ChamageViewer - 猹图 2.0
+# ChamageViewer - 猹图 更新2.4版本！代码进一步优化！
 
 ![图片展示](./img/showcase.png)
 
 一款Electron+Vue开源Windows图片查看器
 
-> 引言：Win10自带的图片查看器用起来非常不便， 而目前比较好用的几款又有流氓弹窗、付费解锁等等诸多问题。
-> 本着干净、多元、造轮子的基本思想，我倾注爱意使用Electron+Vue开发了这款开源图片猹看器。
-> 希望能改善图片浏览体验。
+> 引言：Win10自带的图片查看器用起来非常不便， 而目前比较好用的几款又有流氓弹窗、付费解锁等等诸多问题
+> 本着干净、多元、造轮子的基本思想，用Electron+Vue开发了这款开源图片猹看器 希望能改善图片浏览体验
 >
-> 目前这款软件依然在努力开发中，有诸多问题尚待解决优化，如有兴趣共同开发或提供意见建议的话欢迎联系邮箱rinkouatf@qq.com
+> 目前这款软件依然在努力开发中，有诸多问题尚待解决优化
 >
 > 感谢支持与热爱
 
@@ -26,8 +25,9 @@
 ```
 
 ## 项目计划
-+ ~~全屏模式~~
 + ~~漫画模式~~
++ 全屏模式
++ 文件夹穿透
 + 按键编辑
 + 优化速度
 + 图片处理
@@ -38,22 +38,22 @@
 
 ### Install Dependence
 ```
-yarn install
+npm install
 ```
 
 #### Compiles and hot-reloads for development
 ```
-yarn serve
+npm run electron:serve
 ```
 
 #### Compiles and minifies for production
 ```
-yarn build
+npm run electron:build
 ```
 
 #### Lints and fixes files
 ```
-yarn lint
+npm run lint
 ```
 
 #### Customize configuration
