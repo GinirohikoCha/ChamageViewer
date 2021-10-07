@@ -10,7 +10,8 @@
     @scaleUp="emitEvent({'event': 'scaleUp'})"
     @scaleDown="emitEvent({'event': 'scaleDown'})"
     @rotateL="emitEvent({'event': 'rotateL'})"
-    @rotateR="emitEvent({'event': 'rotateR'})"/>
+    @rotateR="emitEvent({'event': 'rotateR'})"
+    @delete="onDelete"/>
 </template>
 
 <script>
@@ -26,6 +27,15 @@ export default {
   methods: {
     emitEvent (message) {
       ipcRenderer.send('viewer', message)
+    },
+    onDelete () {
+      this.$confirm('此操作将永久删除该图片, 是否确定？', '提示', {
+        confirmButtonText: '确定',
+        cancelButtonText: '取消',
+        type: 'warning'
+      }).then(() => {
+        this.emitEvent({ event: 'delete' })
+      }).catch(() => {})
     }
   }
 }

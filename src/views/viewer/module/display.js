@@ -1,5 +1,16 @@
+import { ipcRenderer } from 'electron'
+
 export class Display {
+  static display = null
+
   constructor (index, images) {
+    if (Display.display == null) {
+      Display.display = this
+    } else {
+      Display.display.index = index
+      Display.display.images = images
+      return Display.display
+    }
     this.index = index
     this.images = images
   }
@@ -17,9 +28,11 @@ export class Display {
 
       if (image.attr.longV) { // 长图
         scale = (windowWidth * 0.6) / image.data.width
+        top = 0
         left = windowWidth * 0.2
       } else if (image.attr.longH) {
         scale = (windowHeight * 0.6) / image.data.height
+        left = 0
         top = windowHeight * 0.2
       } else { // 正常图片
         if (ratio >= windowWidth / windowHeight) {
@@ -52,6 +65,7 @@ export class Display {
     } else if (!isDown && this.index > 0) {
       this.index -= 1
     }
+    ipcRenderer.send('turn', this.index)
     return this.init()
   }
 

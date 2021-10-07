@@ -10,10 +10,9 @@ export class Image {
     console.info('[image]开始初始化加载')
     const slashIdx = imageUrl.lastIndexOf('/') + 1
     this.index = 0
-    this.imageUrl = imageUrl
+    this.imageUrl = ''
     this.imageName = imageUrl.substring(slashIdx)
     this.dirUrl = imageUrl.substring(0, slashIdx)
-    this.imageList = []
     console.info('[image]正在加载图片路径:' + this.imageUrl)
     console.info('[image]正在加载图片所在文件夹路径:' + this.dirUrl)
     this.loadImageList()
@@ -23,6 +22,7 @@ export class Image {
   }
 
   loadImageList () {
+    this.imageList = []
     console.info('[image]正在查找文件夹中所有图片...')
     const that = this
     let index = -1
@@ -31,10 +31,6 @@ export class Image {
       try {
         const dimensions = sizeOf(that.dirUrl + item)
         console.info('[image]正在加载图片' + item)
-        index += 1
-        if (that.imageName === item) {
-          that.index = index
-        }
         that.imageList.push({
           name: item,
           data: {
@@ -54,6 +50,10 @@ export class Image {
             rotate: 0
           }
         })
+        index += 1
+        if (that.imageName === item) {
+          that.setIndex(index)
+        }
       } catch (err) {}
     })
     console.info('[image]查找结束')
@@ -61,6 +61,35 @@ export class Image {
     console.info('[image]正在优化图片顺序...')
     // TODO
     console.info('[image]优化结束')
+  }
+
+  delete () {
+    if (this.imageList.length > 0) {
+      if (this.imageList.length === 1) {
+        this.setIndex(-1)
+        fs.unlinkSync(this.imageUrl)
+      } else {
+        // 删除最后项情况
+        if (this.index === this.imageList.length - 1) {
+          this.setIndex(0)
+        } else {
+          this.setIndex(this.index + 1)
+        }
+        fs.unlinkSync(this.imageUrl)
+      }
+      this.loadImageList()
+    }
+  }
+
+  setIndex (index) {
+    this.index = index
+    if (index === -1) {
+      this.imageUrl = ''
+      this.imageName = ''
+    } else {
+      this.imageUrl = this.imageList[index].data.url
+      this.imageName = this.imageList[index].data.name
+    }
   }
 
   getImageList () {

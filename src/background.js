@@ -18,7 +18,7 @@ let win = null
 let processUrl = ''
 console.debug(process.env.WEBPACK_DEV_SERVER_URL)
 if (process.env.WEBPACK_DEV_SERVER_URL) {
-  const debugUrl = 'F:/我的文件/D9llkdQU8AAnMsB.jpg'
+  const debugUrl = 'F:/图库/くっか.jpg'
   processUrl = debugUrl.replaceAll('\\', '/')
 } else {
   if (process.argv[1]) {
@@ -87,11 +87,21 @@ app.on('ready', async () => {
   createWindow()
 
   const imageUtil = new Image(processUrl)
+  // console.debug(imageUtil.getImageList())
   // 通信监听
   ipcMain.on('load-images', function (event) {
     event.returnValue = imageUtil.getImageList()
   })
+  ipcMain.on('turn', function (event, index) {
+    imageUtil.setIndex(index)
+  })
   ipcMain.on('viewer', function (event, message) {
+    switch (message.event) {
+      case 'delete':
+        imageUtil.delete()
+        message.data = imageUtil.getImageList()
+        break
+    }
     win.webContents.send('viewer', message)
   })
 })

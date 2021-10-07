@@ -39,7 +39,7 @@
           <el-tooltip effect="dark" content="删除图片" placement="top">
             <i class="el-icon-delete bottom-toolbar-item" @click="$emit('delete')"/>
           </el-tooltip>
-          <i class="el-icon-setting bottom-toolbar-item" @click="$emit('config')"/>
+<!--          <i class="el-icon-setting bottom-toolbar-item" @click="$emit('config')"/>-->
         </el-space>
       </div>
     </transition>

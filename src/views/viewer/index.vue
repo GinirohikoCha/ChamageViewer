@@ -72,6 +72,7 @@ export default {
     )
     this.listener.register()
     // 通信监听
+    // 其他组件触发事件通知调用
     ipcRenderer.on('viewer', (e, msg) => {
       switch (msg.event) {
         case 'pre':
@@ -94,6 +95,11 @@ export default {
           break
         case 'rotateR':
           this.display.rotate(true)
+          break
+        case 'delete':
+          this.images = msg.data.images
+          this.display = new Display(msg.data.index, this.images)
+          this.temp = this.display.init()
           break
       }
     })
