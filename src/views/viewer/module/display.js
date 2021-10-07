@@ -23,7 +23,7 @@ export class Display {
       // 计算长宽比，初始化缩放图片
       const ratio = image.data.width / image.data.height
       const windowWidth = window.innerWidth
-      const windowHeight = window.innerHeight
+      const windowHeight = window.innerHeight - 40
       let scale = 1
       let left = (windowWidth - image.data.width) / 2
       let top = (windowHeight - image.data.height) / 2
@@ -55,7 +55,7 @@ export class Display {
       }
       image.attr.scale = scale
       image.attr.left = left
-      image.attr.top = top
+      image.attr.top = top + 40
       image.attr.rotate = 0
       this.loaded = true
       ipcRenderer.send('viewer', {
