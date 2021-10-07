@@ -3,7 +3,9 @@ const sizeOf = require('image-size')
 
 export class Image {
   constructor (imageUrl) {
-    this.init(imageUrl)
+    if (imageUrl) {
+      this.init(imageUrl)
+    }
   }
 
   init (imageUrl) {

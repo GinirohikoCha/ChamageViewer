@@ -2,6 +2,7 @@ import { ipcRenderer } from 'electron'
 
 export class Display {
   static display = null
+  loaded = false
 
   constructor (index, images) {
     if (Display.display == null) {
@@ -9,10 +10,11 @@ export class Display {
     } else {
       Display.display.index = index
       Display.display.images = images
+      Display.display.loaded = false
       return Display.display
     }
     this.index = index
-    this.images = images
+    this.images = images || []
   }
 
   init (index = this.index) {
@@ -55,61 +57,92 @@ export class Display {
       image.attr.left = left
       image.attr.top = top
       image.attr.rotate = 0
+      this.loaded = true
+      ipcRenderer.send('viewer', { event: 'loaded' })
+      return image
+    } else {
+      ipcRenderer.send('viewer', { event: 'unloaded' })
+      return {
+        name: '',
+        data: {
+          url: '',
+          type: '',
+          width: 0,
+          height: 0
+        },
+        attr: {
+          longV: false,
+          longH: false,
+          scale: 0,
+          left: 0,
+          top: 0,
+          rotate: 0
+        }
+      }
     }
-    return image
   }
 
   turn (isDown) {
-    if (isDown && this.index < this.images.length - 1) {
-      this.index += 1
-    } else if (!isDown && this.index > 0) {
-      this.index -= 1
+    if (this.loaded) {
+      if (isDown && this.index < this.images.length - 1) {
+        this.index += 1
+      } else if (!isDown && this.index > 0) {
+        this.index -= 1
+      }
+      ipcRenderer.send('viewer', { event: 'turn', data: this.index })
+      return this.init()
     }
-    ipcRenderer.send('turn', this.index)
-    return this.init()
   }
 
   move (deltaX, deltaY) {
-    const image = this.images[this.index]
-    image.attr.left += deltaX
-    image.attr.top += deltaY
-    return image
+    if (this.loaded) {
+      const image = this.images[this.index]
+      image.attr.left += deltaX
+      image.attr.top += deltaY
+      return image
+    }
   }
 
   scale (deltaS, mouse) {
-    const image = this.images[this.index]
-    if (image.attr.scale + deltaS > 50) {
-      return this.scaleTo(500, mouse)
-    } else if (image.attr.scale + deltaS <= 0) {
-      return this.scaleTo(0.01, mouse)
-    } else {
-      return this.scaleTo(image.attr.scale + deltaS, mouse)
+    if (this.loaded) {
+      const image = this.images[this.index]
+      if (image.attr.scale + deltaS > 50) {
+        return this.scaleTo(500, mouse)
+      } else if (image.attr.scale + deltaS <= 0) {
+        return this.scaleTo(0.01, mouse)
+      } else {
+        return this.scaleTo(image.attr.scale + deltaS, mouse)
+      }
     }
   }
 
   scaleTo (newScale, mouse) {
-    const image = this.images[this.index]
-    console.debug('[display]newScale:' + newScale)
-    const deltaX = image.data.width * (newScale - image.attr.scale)
-    const deltaY = image.data.height * (newScale - image.attr.scale)
-    console.debug('[display]deltaX:' + deltaX + ',deltaY:' + deltaY)
-    if (mouse && mouse.hover) {
-      this.move(-deltaX * (mouse.mouseX - image.attr.left) / image.data.width / image.attr.scale,
-        -deltaY * (mouse.mouseY - image.attr.top) / image.data.width / image.attr.scale)
-    } else {
-      this.move(-deltaX / 2, -deltaY / 2)
+    if (this.loaded) {
+      const image = this.images[this.index]
+      console.debug('[display]newScale:' + newScale)
+      const deltaX = image.data.width * (newScale - image.attr.scale)
+      const deltaY = image.data.height * (newScale - image.attr.scale)
+      console.debug('[display]deltaX:' + deltaX + ',deltaY:' + deltaY)
+      if (mouse && mouse.hover) {
+        this.move(-deltaX * (mouse.mouseX - image.attr.left) / image.data.width / image.attr.scale,
+          -deltaY * (mouse.mouseY - image.attr.top) / image.data.width / image.attr.scale)
+      } else {
+        this.move(-deltaX / 2, -deltaY / 2)
+      }
+      image.attr.scale = newScale
+      return image
     }
-    image.attr.scale = newScale
-    return image
   }
 
   rotate (isClockwise) {
-    const image = this.images[this.index]
-    if (isClockwise) {
-      image.attr.rotate += 90
-    } else {
-      image.attr.rotate += -90
+    if (this.loaded) {
+      const image = this.images[this.index]
+      if (isClockwise) {
+        image.attr.rotate += 90
+      } else {
+        image.attr.rotate += -90
+      }
+      return image
     }
-    return image
   }
 }

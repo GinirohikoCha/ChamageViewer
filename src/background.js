@@ -1,6 +1,6 @@
 'use strict'
 
-import { app, protocol, BrowserWindow, ipcMain } from 'electron'
+import { app, protocol, BrowserWindow, ipcMain, dialog } from 'electron'
 import { createProtocol } from 'vue-cli-plugin-electron-builder/lib'
 import installExtension, { VUEJS3_DEVTOOLS } from 'electron-devtools-installer'
 
@@ -18,7 +18,7 @@ let win = null
 let processUrl = ''
 console.debug(process.env.WEBPACK_DEV_SERVER_URL)
 if (process.env.WEBPACK_DEV_SERVER_URL) {
-  const debugUrl = 'F:/图库/くっか.jpg'
+  const debugUrl = ''
   processUrl = debugUrl.replaceAll('\\', '/')
 } else {
   if (process.argv[1]) {
@@ -92,17 +92,44 @@ app.on('ready', async () => {
   ipcMain.on('load-images', function (event) {
     event.returnValue = imageUtil.getImageList()
   })
-  ipcMain.on('turn', function (event, index) {
-    imageUtil.setIndex(index)
+  ipcMain.on('layout', function (event, message) {
+    switch (message.event) {
+      case 'open':
+        processUrl = dialog.showOpenDialogSync(win, {
+          title: '打开图片',
+          filters: [
+            { name: 'Images', extensions: ['bmp', 'jpg', 'jpeg', 'png', 'gif', 'tif', 'svg', 'psd', 'ai', 'raw', 'webp'] }
+          ],
+          properties: ['openFile']
+        })[0].replaceAll('\\', '/')
+        imageUtil.init(processUrl)
+        message.event = 'reload'
+        message.data = imageUtil.getImageList()
+        win.webContents.send('viewer', message)
+        break
+      case 'delete':
+        imageUtil.delete()
+        message.event = 'reload'
+        message.data = imageUtil.getImageList()
+        win.webContents.send('viewer', message)
+        break
+      default:
+        win.webContents.send('viewer', message)
+        break
+    }
   })
   ipcMain.on('viewer', function (event, message) {
     switch (message.event) {
-      case 'delete':
-        imageUtil.delete()
-        message.data = imageUtil.getImageList()
+      case 'loaded':
+        win.webContents.send('layout', message)
+        break
+      case 'unloaded':
+        win.webContents.send('layout', message)
+        break
+      case 'turn':
+        imageUtil.setIndex(message.data)
         break
     }
-    win.webContents.send('viewer', message)
   })
 })
 
