@@ -58,7 +58,14 @@ export class Display {
       image.attr.top = top
       image.attr.rotate = 0
       this.loaded = true
-      ipcRenderer.send('viewer', { event: 'loaded' })
+      ipcRenderer.send('viewer', {
+        event: 'loaded',
+        data: {
+          name: image.name,
+          width: image.data.width,
+          height: image.data.height
+        }
+      })
       return image
     } else {
       ipcRenderer.send('viewer', { event: 'unloaded' })

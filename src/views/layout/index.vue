@@ -16,21 +16,26 @@
     @rotateL="emitEvent({event: 'rotateL'})"
     @rotateR="emitEvent({event: 'rotateR'})"
     @delete="onDelete"/>
+
+  <Header :title="title" :title-sub="titleSub"/>
 </template>
 
 <script>
-import { AppMain, BottomBar } from './components'
+import { AppMain, BottomBar, Header } from './components'
 import { ipcRenderer } from 'electron'
 
 export default {
   name: 'Layout',
   components: {
     BottomBar,
-    AppMain
+    AppMain,
+    Header
   },
   data () {
     return {
-      empty: true
+      empty: true,
+      title: '',
+      titleSub: ''
     }
   },
   mounted () {
@@ -38,9 +43,13 @@ export default {
       switch (msg.event) {
         case 'loaded':
           this.empty = false
+          this.title = msg.data.name
+          this.titleSub = msg.data.width + '×' + msg.data.height
           break
         case 'unloaded':
           this.empty = true
+          this.title = ''
+          this.titleSub = ''
           break
       }
     })

@@ -18,7 +18,7 @@ let win = null
 let processUrl = ''
 console.debug(process.env.WEBPACK_DEV_SERVER_URL)
 if (process.env.WEBPACK_DEV_SERVER_URL) {
-  const debugUrl = ''
+  const debugUrl = 'F:\\图库\\くっか.jpg'
   processUrl = debugUrl.replaceAll('\\', '/')
 } else {
   if (process.argv[1]) {
@@ -37,9 +37,9 @@ async function createWindow () {
       nodeIntegration: process.env.ELECTRON_NODE_INTEGRATION,
       contextIsolation: !process.env.ELECTRON_NODE_INTEGRATION
     },
-    // transparent: true,
+    transparent: true,
     backgroundColor: '#FFFFFFFF',
-    // frame: false,
+    frame: false,
     show: false
   })
 
@@ -89,23 +89,46 @@ app.on('ready', async () => {
   const imageUtil = new Image(processUrl)
   // console.debug(imageUtil.getImageList())
   // 通信监听
+  ipcMain.on('window', function (event, message) {
+    switch (message.event) {
+      case 'minimize':
+        win.minimize()
+        break
+      case 'maximize':
+        if (message.data) {
+          win.unmaximize()
+        } else {
+          win.maximize()
+        }
+        break
+      case 'fullscreen':
+        break
+      case 'close':
+        win.close()
+        break
+    }
+  })
   ipcMain.on('load-images', function (event) {
     event.returnValue = imageUtil.getImageList()
   })
   ipcMain.on('layout', function (event, message) {
     switch (message.event) {
       case 'open':
-        processUrl = dialog.showOpenDialogSync(win, {
+        // eslint-disable-next-line no-case-declarations
+        const result = dialog.showOpenDialogSync(win, {
           title: '打开图片',
           filters: [
             { name: 'Images', extensions: ['bmp', 'jpg', 'jpeg', 'png', 'gif', 'tif', 'svg', 'psd', 'ai', 'raw', 'webp'] }
           ],
           properties: ['openFile']
-        })[0].replaceAll('\\', '/')
-        imageUtil.init(processUrl)
-        message.event = 'reload'
-        message.data = imageUtil.getImageList()
-        win.webContents.send('viewer', message)
+        })
+        if (result) {
+          processUrl = result[0].replaceAll('\\', '/')
+          imageUtil.init(processUrl)
+          message.event = 'reload'
+          message.data = imageUtil.getImageList()
+          win.webContents.send('viewer', message)
+        }
         break
       case 'delete':
         imageUtil.delete()
