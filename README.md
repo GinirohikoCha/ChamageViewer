@@ -20,6 +20,7 @@
 ![图片展示](./img/showcase-gif.gif)
 
 ## 如何使用
+下载地址：[国外源](https://github.com/GinirohikoCha/ChamageViewer/releases) [国内源](https://gitee.com/GinirohikoCha/ChamageViewer/releases)
 ```
 设置为默认应用或直接将图片拖至图标上
 ```
