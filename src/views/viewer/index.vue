@@ -115,7 +115,11 @@ export default {
       if (this.listener.getKeyCtrl()) {
         this.display.scale(event.deltaY > 0 ? -0.1 : 0.1, mouse)
       } else {
-        this.temp = this.display.turn(event.deltaY > 0)
+        if (this.temp.attr.longV) {
+          this.display.skim(event.deltaY, true)
+        } else {
+          this.temp = this.display.turn(event.deltaY > 0)
+        }
       }
     },
     onMouseDown () {},
@@ -126,12 +130,32 @@ export default {
     onKeyDown (keyCode) {
       switch (keyCode) {
         case 'ArrowUp':
+          if (this.temp.attr.longV) {
+            this.display.skim(-50, true)
+          } else {
+            this.temp = this.display.turn(false)
+          }
+          break
         case 'ArrowLeft':
-          this.temp = this.display.turn(false)
+          if (this.temp.attr.longH) {
+            this.display.skim(-50, false)
+          } else {
+            this.temp = this.display.turn(false)
+          }
           break
         case 'ArrowDown':
+          if (this.temp.attr.longV) {
+            this.display.skim(50, true)
+          } else {
+            this.temp = this.display.turn(true)
+          }
+          break
         case 'ArrowRight':
-          this.temp = this.display.turn(true)
+          if (this.temp.attr.longH) {
+            this.display.skim(-50, false)
+          } else {
+            this.temp = this.display.turn(true)
+          }
           break
       }
     },
