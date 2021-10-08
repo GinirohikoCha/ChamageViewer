@@ -96,7 +96,7 @@ export default {
         case 'rotateR':
           this.display.rotate(true)
           break
-        case 'delete':
+        case 'reload':
           this.images = msg.data.images
           this.display = new Display(msg.data.index, this.images)
           this.temp = this.display.init()
@@ -136,25 +136,6 @@ export default {
       }
     },
     onKeyUp (keyCode) {
-    },
-    init () {
-      this.temp = {
-        name: '',
-        data: {
-          url: '',
-          type: '',
-          width: 0,
-          height: 0
-        },
-        attr: {
-          longV: false,
-          longH: false,
-          scale: 0,
-          left: 0,
-          top: 0,
-          rotate: 0
-        }
-      }
     }
   }
 }

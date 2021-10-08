@@ -1,0 +1,41 @@
+@font-face {
+  font-family: "iconfont"; /* Project id 2531596 */
+  src: url('iconfont.woff2?t=1620366377977') format('woff2'),
+       url('iconfont.woff?t=1620366377977') format('woff'),
+       url('iconfont.ttf?t=1620366377977') format('truetype');
+}
+
+.iconfont {
+  font-family: "iconfont" !important;
+  font-size: 16px;
+  font-style: normal;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+}
+
+[class^="el-icon-cha-"],
+[class*=" el-icon-cha-"]/*这里有空格*/
+{
+  font-family: "iconfont" !important;
+  font-size: 16px;
+  font-style: normal;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+}
+
+.el-icon-cha-close:before {
+  content: "\e617";
+}
+
+.el-icon-cha-maximize:before {
+  content: "\e618";
+}
+
+.el-icon-cha-minimize:before {
+  content: "\e619";
+}
+
+.el-icon-cha-restore:before {
+  content: "\e61a";
+}
+
