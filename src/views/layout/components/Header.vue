@@ -1,5 +1,5 @@
 <template>
-  <div class="app-header">
+  <div v-if="!fullscreen" class="app-header">
     <i class="el-icon-picture-outline-round app-header-icon"></i>
     <div class="app-header-title">
       {{ displayTitle }}
@@ -11,6 +11,12 @@
       <i class="el-icon-cha-close app-header-button app-header-close" @click="close"/>
     </div>
   </div>
+
+  <div v-if="fullscreen" class="app-header-dark">
+    <div class="app-header-button-group">
+      <i class="el-icon-cha-close app-header-button app-header-close" @click="close"/>
+    </div>
+  </div>
 </template>
 
 <script>
@@ -19,6 +25,7 @@ import { ipcRenderer } from 'electron'
 export default {
   name: 'Header',
   props: {
+    fullscreen: Boolean,
     title: String,
     titleSub: String
   },
@@ -133,6 +140,15 @@ export default {
   font-size: 12px;
   font-family: 微软雅黑, serif;
   color: white;
+}
+
+.app-header-dark .app-header-button-group {
+  position: absolute;
+  right: 0;
+  height: 30px;
+  -webkit-app-region: no-drag;
+  white-space: nowrap;
+  z-index: 100;
 }
 
 .app-header-dark .app-header-close{

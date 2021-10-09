@@ -65,6 +65,10 @@ export class Listener {
           Listener.context.setDragging(true)
         }
         break
+      case 1:
+        console.debug('[listener]mousedown:middle')
+        Listener.context.mouseDownHandler(event)
+        break
     }
   }
 

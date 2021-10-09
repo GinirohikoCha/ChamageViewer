@@ -8,6 +8,7 @@
   </div>
 
   <bottom-bar
+    :fullscreen="fullscreen"
     @pre="emitEvent({event: 'pre'})"
     @next="emitEvent({event: 'next'})"
     @scale="emitEvent({event: 'scale'})"
@@ -15,9 +16,10 @@
     @scaleDown="emitEvent({event: 'scaleDown'})"
     @rotateL="emitEvent({event: 'rotateL'})"
     @rotateR="emitEvent({event: 'rotateR'})"
-    @delete="onDelete"/>
+    @delete="onDelete"
+    @fullscreen="emitWindow({event: 'fullscreen'})"/>
 
-  <Header :title="title" :title-sub="titleSub"/>
+  <Header :fullscreen="fullscreen" :title="title" :title-sub="titleSub"/>
 </template>
 
 <script>
@@ -34,6 +36,7 @@ export default {
   data () {
     return {
       empty: true,
+      fullscreen: false,
       title: '',
       titleSub: ''
     }
@@ -51,12 +54,18 @@ export default {
           this.title = ''
           this.titleSub = ''
           break
+        case 'fullscreen':
+          this.fullscreen = msg.data
+          break
       }
     })
   },
   methods: {
     emitEvent (message) {
       ipcRenderer.send('layout', message)
+    },
+    emitWindow (message) {
+      ipcRenderer.send('window', message)
     },
     onOpen () {
       this.emitEvent({ event: 'open' })

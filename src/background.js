@@ -18,13 +18,15 @@ let win = null
 let processUrl = ''
 console.debug(process.env.WEBPACK_DEV_SERVER_URL)
 if (process.env.WEBPACK_DEV_SERVER_URL) {
-  const debugUrl = 'F:\\图库\\くっか.jpg'
+  const debugUrl = ''
   processUrl = debugUrl.replaceAll('\\', '/')
 } else {
   if (process.argv[1]) {
     processUrl = process.argv[1].replaceAll('\\', '/')
   }
 }
+
+let fullscreen = false
 
 async function createWindow () {
   win = new BrowserWindow({
@@ -102,6 +104,13 @@ app.on('ready', async () => {
         }
         break
       case 'fullscreen':
+        // ISSUE isFullScreen() 无法正确 识别状态
+        // console.log(target.isFullScreen())
+        fullscreen = !fullscreen
+        win.setBackgroundColor(fullscreen ? '#DF000000' : '#FFFFFFFF')
+        win.setFullScreen(fullscreen)
+        win.setResizable(!fullscreen)
+        win.webContents.send('layout', { event: 'fullscreen', data: fullscreen })
         break
       case 'close':
         win.close()

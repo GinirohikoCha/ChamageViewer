@@ -122,7 +122,13 @@ export default {
         }
       }
     },
-    onMouseDown () {},
+    onMouseDown (event) {
+      switch (event.button) {
+        case 1:
+          ipcRenderer.send('window', { event: 'fullscreen' })
+          break
+      }
+    },
     onMouseUp () {},
     onMouseMove (deltaX, deltaY) {
       this.display.move(deltaX, deltaY)
