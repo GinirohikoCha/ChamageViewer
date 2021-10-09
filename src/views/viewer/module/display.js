@@ -131,8 +131,14 @@ export class Display {
       const deltaY = image.data.height * (newScale - image.attr.scale)
       console.debug('[display]deltaX:' + deltaX + ',deltaY:' + deltaY)
       if (mouse && mouse.hover) {
-        this.move(-deltaX * (mouse.mouseX - image.attr.left) / image.data.width / image.attr.scale,
-          -deltaY * (mouse.mouseY - image.attr.top) / image.data.width / image.attr.scale)
+        if (image.attr.longV) {
+          this.move(-deltaX / 2, -deltaY * (mouse.mouseY - image.attr.top) / image.data.height / image.attr.scale)
+        } else if (image.attr.longH) {
+          this.move(-deltaX * (mouse.mouseX - image.attr.left) / image.data.width / image.attr.scale, -deltaY / 2)
+        } else {
+          this.move(-deltaX * (mouse.mouseX - image.attr.left) / image.data.width / image.attr.scale,
+            -deltaY * (mouse.mouseY - image.attr.top) / image.data.height / image.attr.scale)
+        }
       } else {
         this.move(-deltaX / 2, -deltaY / 2)
       }
@@ -150,6 +156,23 @@ export class Display {
         image.attr.rotate += -90
       }
       return image
+    }
+  }
+
+  skim (offset, vertical) {
+    if (this.loaded) {
+      const image = this.images[this.index]
+      if (vertical) {
+        if ((offset < 0 && image.attr.top < 0) ||
+          (offset > 0 && image.attr.top > -image.data.height * image.attr.scale + window.innerHeight)) {
+          return this.move(0, -offset)
+        }
+      } else {
+        if ((offset < 0 && image.attr.left < 0) ||
+          (offset > 0 && image.attr.left > -image.data.width * image.attr.scale + window.innerWidth)) {
+          return this.move(-offset, 0)
+        }
+      }
     }
   }
 }

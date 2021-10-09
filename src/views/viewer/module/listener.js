@@ -58,12 +58,16 @@ export class Listener {
   handleMouseDown (event) {
     switch (event.button) {
       case 0:
-        console.debug('[listener]mousedown:left')
+        console.debug('[listener]mousedown:left ' + event.clientX + ', ' + event.clientY)
         Listener.mouseX = event.clientX
         Listener.mouseY = event.clientY
         if (Listener.hover) {
           Listener.context.setDragging(true)
         }
+        break
+      case 1:
+        console.debug('[listener]mousedown:middle')
+        Listener.context.mouseDownHandler(event)
         break
     }
   }
