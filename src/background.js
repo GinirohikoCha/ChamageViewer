@@ -1,10 +1,8 @@
 'use strict'
 
-import { app, protocol, BrowserWindow, ipcMain, dialog } from 'electron'
-import { createProtocol } from 'vue-cli-plugin-electron-builder/lib'
+import { app, protocol, BrowserWindow, ipcMain } from 'electron'
 import installExtension, { VUEJS3_DEVTOOLS } from 'electron-devtools-installer'
-
-import { Image } from '@/util/image'
+import { Window } from '@/components/window'
 
 const isDevelopment = process.env.NODE_ENV !== 'production'
 
@@ -12,13 +10,11 @@ const isDevelopment = process.env.NODE_ENV !== 'production'
 protocol.registerSchemesAsPrivileged([
   { scheme: 'app', privileges: { secure: true, standard: true } }
 ])
-
 // 启动参数
-let win = null
 let processUrl = ''
 console.debug(process.env.WEBPACK_DEV_SERVER_URL)
 if (process.env.WEBPACK_DEV_SERVER_URL) {
-  const debugUrl = ''
+  const debugUrl = 'D:\\半岛冰茶电子版\\本宣\\01.jpg'
   processUrl = debugUrl.replaceAll('\\', '/')
 } else {
   if (process.argv[1]) {
@@ -26,37 +22,7 @@ if (process.env.WEBPACK_DEV_SERVER_URL) {
   }
 }
 
-let fullscreen = false
-
-async function createWindow () {
-  win = new BrowserWindow({
-    width: 800,
-    height: 600,
-    minWidth: 138,
-    minHeight: 200,
-    webPreferences: {
-      webSecurity: false,
-      nodeIntegration: process.env.ELECTRON_NODE_INTEGRATION,
-      contextIsolation: !process.env.ELECTRON_NODE_INTEGRATION
-    },
-    transparent: true,
-    backgroundColor: '#FFFFFFFF',
-    frame: false,
-    show: false
-  })
-
-  if (process.env.WEBPACK_DEV_SERVER_URL) {
-    await win.loadURL(process.env.WEBPACK_DEV_SERVER_URL)
-    if (!process.env.IS_TEST) win.webContents.openDevTools()
-  } else {
-    createProtocol('app')
-    win.loadURL('app://./index.html')
-  }
-
-  win.once('ready-to-show', () => {
-    win.show()
-  })
-}
+const window = new Window(processUrl)
 
 app.on('window-all-closed', () => {
   // On macOS it is common for applications and their menu bar
@@ -69,7 +35,7 @@ app.on('window-all-closed', () => {
 app.on('activate', () => {
   // On macOS it's common to re-create a window in the app when the
   // dock icon is clicked and there are no other windows open.
-  if (BrowserWindow.getAllWindows().length === 0) createWindow()
+  if (BrowserWindow.getAllWindows().length === 0) window.createMainWindow(processUrl).then(r => {})
 })
 
 app.on('ready', async () => {
@@ -86,83 +52,8 @@ app.on('ready', async () => {
       console.error('Vue Devtools failed to install:', e.toString())
     }
   }
-  createWindow()
 
-  const imageUtil = new Image(processUrl)
-  // console.debug(imageUtil.getImageList())
-  // 通信监听
-  ipcMain.on('window', function (event, message) {
-    switch (message.event) {
-      case 'minimize':
-        win.minimize()
-        break
-      case 'maximize':
-        if (message.data) {
-          win.unmaximize()
-        } else {
-          win.maximize()
-        }
-        break
-      case 'fullscreen':
-        // ISSUE isFullScreen() 无法正确 识别状态
-        // console.log(target.isFullScreen())
-        fullscreen = !fullscreen
-        win.setBackgroundColor(fullscreen ? '#DF000000' : '#FFFFFFFF')
-        win.setFullScreen(fullscreen)
-        win.setResizable(!fullscreen)
-        win.webContents.send('layout', { event: 'fullscreen', data: fullscreen })
-        break
-      case 'close':
-        win.close()
-        break
-    }
-  })
-  ipcMain.on('load-images', function (event) {
-    event.returnValue = imageUtil.getImageList()
-  })
-  ipcMain.on('layout', function (event, message) {
-    switch (message.event) {
-      case 'open':
-        // eslint-disable-next-line no-case-declarations
-        const result = dialog.showOpenDialogSync(win, {
-          title: '打开图片',
-          filters: [
-            { name: 'Images', extensions: ['bmp', 'jpg', 'jpeg', 'png', 'gif', 'tif', 'svg', 'psd', 'ai', 'raw', 'webp'] }
-          ],
-          properties: ['openFile']
-        })
-        if (result) {
-          processUrl = result[0].replaceAll('\\', '/')
-          imageUtil.init(processUrl)
-          message.event = 'reload'
-          message.data = imageUtil.getImageList()
-          win.webContents.send('viewer', message)
-        }
-        break
-      case 'delete':
-        imageUtil.delete()
-        message.event = 'reload'
-        message.data = imageUtil.getImageList()
-        win.webContents.send('viewer', message)
-        break
-      default:
-        win.webContents.send('viewer', message)
-        break
-    }
-  })
-  ipcMain.on('viewer', function (event, message) {
-    switch (message.event) {
-      case 'loaded':
-        win.webContents.send('layout', message)
-        break
-      case 'unloaded':
-        win.webContents.send('layout', message)
-        break
-      case 'turn':
-        imageUtil.setIndex(message.data)
-        break
-    }
-  })
+  await window.createMainWindow(processUrl)
 })
 
 if (isDevelopment) {

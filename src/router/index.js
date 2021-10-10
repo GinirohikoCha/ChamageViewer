@@ -16,6 +16,16 @@ const routes = [
         name: 'ComicViewer'
       }
     ]
+  },
+  {
+    path: '/setting',
+    component: () => import('@/views/setting'),
+    children: [
+      {
+        path: '',
+        name: 'Setting'
+      }
+    ]
   }
 ]
 
