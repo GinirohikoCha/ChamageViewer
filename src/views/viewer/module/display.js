@@ -6,7 +6,7 @@ export class Display {
   loaded = false
   message = null
 
-  constructor (index, images) {
+  constructor (index, images, refreshHandler) {
     if (Display.display == null) {
       Display.display = this
     } else {
@@ -15,6 +15,7 @@ export class Display {
       Display.display.loaded = false
       return Display.display
     }
+    this.refreshHandler = refreshHandler
     this.images = images || []
     this.setIndex(index)
   }
@@ -97,6 +98,10 @@ export class Display {
         this.setIndex(this.index + 1)
       } else if (!isDown && this.index > 0) {
         this.setIndex(this.index - 1)
+      } else if (isDown && this.index === this.images.length - 1) { // 文件夹穿透
+        // TODO
+      } else if (!isDown && this.index === 0) { // 文件夹穿透
+        // TODO
       }
       ipcRenderer.send('viewer', { event: 'turn', data: this.index })
       return this.init()
@@ -180,13 +185,10 @@ export class Display {
 
   setIndex (index) {
     this.index = index
-    switch (this.index) {
-      case 0:
-        this.showMessage('正在浏览第一张图片')
-        break
-      case this.images.length - 1:
-        this.showMessage('正在浏览最后一张图片')
-        break
+    if (this.index === 0) {
+      this.showMessage('正在浏览第一张图片')
+    } else if (this.index === this.images.length - 1) {
+      this.showMessage('正在浏览最后一张图片')
     }
   }
 

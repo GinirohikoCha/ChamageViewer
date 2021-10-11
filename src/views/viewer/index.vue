@@ -53,7 +53,7 @@ export default {
   },
   mounted () {
     // 初始化
-    this.onRefresh()
+    this.refresh()
     // 事件监听
     this.listener = new Listener(
       this.onResize,
@@ -91,9 +91,7 @@ export default {
           this.display.rotate(true)
           break
         case 'reload':
-          this.images = msg.data.images
-          this.display = new Display(msg.data.index, this.images)
-          this.temp = this.display.init()
+          this.refresh()
           break
       }
     })
@@ -161,12 +159,12 @@ export default {
     },
     onKeyUp (keyCode) {
     },
-    onRefresh () {
+    refresh () {
       // 获取数据
       console.info('[viewer]加载图片列表')
       const data = ipcRenderer.sendSync('load-images')
       this.images = data.images
-      this.display = new Display(data.index, this.images)
+      this.display = new Display(data.index, this.images, this.refresh)
       console.info('[viewer]初始化图片')
       this.temp = this.display.init()
     }

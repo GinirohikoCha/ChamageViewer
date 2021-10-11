@@ -60,16 +60,12 @@ export class Listener {
           if (result) {
             context.processUrl = result[0].replaceAll('\\', '/')
             context.imageUtil.init(context.processUrl)
-            message.event = 'reload'
-            message.data = context.imageUtil.getImageList()
-            context.window.mainWindow.webContents.send('viewer', message)
+            context.window.mainWindow.webContents.send('viewer', { event: 'reload' })
           }
           break
         case 'delete':
           context.imageUtil.delete()
-          message.event = 'reload'
-          message.data = context.imageUtil.getImageList()
-          context.window.mainWindow.webContents.send('viewer', message)
+          context.window.mainWindow.webContents.send('viewer', { event: 'reload' })
           break
         default:
           context.window.mainWindow.webContents.send('viewer', message)
