@@ -10,13 +10,13 @@ export class Display {
     if (Display.display == null) {
       Display.display = this
     } else {
-      Display.display.index = index
       Display.display.images = images
+      Display.display.setIndex(index)
       Display.display.loaded = false
       return Display.display
     }
-    this.index = index
     this.images = images || []
+    this.setIndex(index)
   }
 
   init (index = this.index) {
@@ -25,7 +25,7 @@ export class Display {
       // 计算长宽比，初始化缩放图片
       const ratio = image.data.width / image.data.height
       const windowWidth = window.innerWidth
-      const windowHeight = window.innerHeight - 40
+      const windowHeight = window.innerHeight
       let scale = 1
       let left = (windowWidth - image.data.width) / 2
       let top = (windowHeight - image.data.height) / 2
@@ -57,7 +57,7 @@ export class Display {
       }
       image.attr.scale = scale
       image.attr.left = left
-      image.attr.top = top + 40
+      image.attr.top = top
       image.attr.rotate = 0
       this.loaded = true
       ipcRenderer.send('viewer', {
@@ -94,18 +94,9 @@ export class Display {
   turn (isDown) {
     if (this.loaded) {
       if (isDown && this.index < this.images.length - 1) {
-        this.index += 1
+        this.setIndex(this.index + 1)
       } else if (!isDown && this.index > 0) {
-        this.index -= 1
-      }
-
-      switch (this.index) {
-        case 0:
-          this.showMessage('正在浏览第一张图片')
-          break
-        case this.images.length - 1:
-          this.showMessage('正在浏览最后一张图片')
-          break
+        this.setIndex(this.index - 1)
       }
       ipcRenderer.send('viewer', { event: 'turn', data: this.index })
       return this.init()
@@ -187,6 +178,18 @@ export class Display {
     }
   }
 
+  setIndex (index) {
+    this.index = index
+    switch (this.index) {
+      case 0:
+        this.showMessage('正在浏览第一张图片')
+        break
+      case this.images.length - 1:
+        this.showMessage('正在浏览最后一张图片')
+        break
+    }
+  }
+
   showMessage (content) {
     if (this.message != null) {
       this.message.close()
@@ -196,7 +199,6 @@ export class Display {
       message: content,
       center: true,
       duration: 1500
-      // offset: 1
     })
   }
 }

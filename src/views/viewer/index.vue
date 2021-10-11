@@ -53,13 +53,7 @@ export default {
   },
   mounted () {
     // 初始化
-    // 获取数据
-    console.info('[viewer]加载图片列表')
-    const data = ipcRenderer.sendSync('load-images')
-    this.images = data.images
-    this.display = new Display(data.index, this.images)
-    console.info('[viewer]初始化图片')
-    this.temp = this.display.init()
+    this.onRefresh()
     // 事件监听
     this.listener = new Listener(
       this.onResize,
@@ -166,6 +160,15 @@ export default {
       }
     },
     onKeyUp (keyCode) {
+    },
+    onRefresh () {
+      // 获取数据
+      console.info('[viewer]加载图片列表')
+      const data = ipcRenderer.sendSync('load-images')
+      this.images = data.images
+      this.display = new Display(data.index, this.images)
+      console.info('[viewer]初始化图片')
+      this.temp = this.display.init()
     }
   }
 }
