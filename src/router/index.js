@@ -19,13 +19,13 @@ const routes = [
   },
   {
     path: '/setting',
-    component: () => import('@/views/setting'),
-    children: [
-      {
-        path: '',
-        name: 'Setting'
-      }
-    ]
+    component: () => import('@/views/setting')
+    // children: [
+    //   {
+    //     path: '',
+    //     name: 'Setting'
+    //   }
+    // ]
   }
 ]
 

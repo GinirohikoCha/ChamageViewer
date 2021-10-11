@@ -33,7 +33,7 @@ export class Listener {
           // ISSUE isFullScreen() 无法正确 识别状态
           // console.log(target.isFullScreen())
           context.fullscreen = !context.fullscreen
-          context.window.mainWindow.setBackgroundColor(context.fullscreen ? '#DF000000' : '#FFFFFFFF')
+          context.window.mainWindow.setBackgroundColor(context.fullscreen ? '#D0000000' : '#FFFFFFFF')
           context.window.mainWindow.setFullScreen(context.fullscreen)
           context.window.mainWindow.setResizable(!context.fullscreen)
           context.window.mainWindow.webContents.send('layout', { event: 'fullscreen', data: context.fullscreen })

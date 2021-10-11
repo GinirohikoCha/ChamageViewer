@@ -50,7 +50,8 @@ export class Window {
         resizable: false,
         webPreferences: {
           webSecurity: false,
-          nodeIntegration: process.env.ELECTRON_NODE_INTEGRATION
+          nodeIntegration: process.env.ELECTRON_NODE_INTEGRATION,
+          contextIsolation: !process.env.ELECTRON_NODE_INTEGRATION
         },
         show: false
       })

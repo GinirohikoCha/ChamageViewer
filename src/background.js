@@ -1,6 +1,6 @@
 'use strict'
 
-import { app, protocol, BrowserWindow, ipcMain } from 'electron'
+import { app, protocol, BrowserWindow } from 'electron'
 import installExtension, { VUEJS3_DEVTOOLS } from 'electron-devtools-installer'
 import { Window } from '@/components/window'
 
@@ -14,7 +14,7 @@ protocol.registerSchemesAsPrivileged([
 let processUrl = ''
 console.debug(process.env.WEBPACK_DEV_SERVER_URL)
 if (process.env.WEBPACK_DEV_SERVER_URL) {
-  const debugUrl = 'D:\\半岛冰茶电子版\\本宣\\01.jpg'
+  const debugUrl = ''
   processUrl = debugUrl.replaceAll('\\', '/')
 } else {
   if (process.argv[1]) {

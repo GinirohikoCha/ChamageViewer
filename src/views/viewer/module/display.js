@@ -1,8 +1,10 @@
 import { ipcRenderer } from 'electron'
+import { ElMessage } from 'element-plus'
 
 export class Display {
   static display = null
   loaded = false
+  message = null
 
   constructor (index, images) {
     if (Display.display == null) {
@@ -96,6 +98,15 @@ export class Display {
       } else if (!isDown && this.index > 0) {
         this.index -= 1
       }
+
+      switch (this.index) {
+        case 0:
+          this.showMessage('正在浏览第一张图片')
+          break
+        case this.images.length - 1:
+          this.showMessage('正在浏览最后一张图片')
+          break
+      }
       ipcRenderer.send('viewer', { event: 'turn', data: this.index })
       return this.init()
     }
@@ -174,5 +185,18 @@ export class Display {
         }
       }
     }
+  }
+
+  showMessage (content) {
+    if (this.message != null) {
+      this.message.close()
+      this.message = null
+    }
+    this.message = ElMessage({
+      message: content,
+      center: true,
+      duration: 1500
+      // offset: 1
+    })
   }
 }
