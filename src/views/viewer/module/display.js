@@ -92,18 +92,24 @@ export class Display {
     }
   }
 
-  turn (isDown) {
+  turn (isNext) {
     if (this.loaded) {
-      if (isDown && this.index < this.images.length - 1) {
+      const context = this
+      if (isNext && this.index < this.images.length - 1) {
         this.setIndex(this.index + 1)
-      } else if (!isDown && this.index > 0) {
+        ipcRenderer.send('viewer', { event: 'turn', data: this.index })
+      } else if (!isNext && this.index > 0) {
         this.setIndex(this.index - 1)
-      } else if (isDown && this.index === this.images.length - 1) { // 文件夹穿透
-        // TODO
-      } else if (!isDown && this.index === 0) { // 文件夹穿透
-        // TODO
+        ipcRenderer.send('viewer', { event: 'turn', data: this.index })
+      } else if (isNext && this.index === this.images.length - 1) { // 文件夹穿透
+        const dirName = ipcRenderer.sendSync('viewer', { event: 'penetrate', data: true })
+        this.refreshHandler()
+        setTimeout(function () { context.showMessage('正在浏览文件夹：' + dirName) }, 200)
+      } else if (!isNext && this.index === 0) { // 文件夹穿透
+        const dirName = ipcRenderer.sendSync('viewer', { event: 'penetrate', data: false })
+        this.refreshHandler()
+        setTimeout(function () { context.showMessage('正在浏览文件夹：' + dirName) }, 200)
       }
-      ipcRenderer.send('viewer', { event: 'turn', data: this.index })
       return this.init()
     }
   }

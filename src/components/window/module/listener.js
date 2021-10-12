@@ -89,6 +89,9 @@ export class Listener {
         case 'turn':
           context.imageUtil.setIndex(message.data)
           break
+        case 'penetrate': // 文件夹穿透
+          event.returnValue = context.imageUtil.penetrate(message.data)
+          break
       }
     })
   }

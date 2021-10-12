@@ -10,12 +10,13 @@ export class Image {
 
   init (imageUrl) {
     console.info('[image]开始初始化加载')
-    const slashIdx = imageUrl.lastIndexOf('/') + 1
+    const slashIdx = imageUrl.lastIndexOf('/')
     this.index = 0
     this.imageUrl = ''
-    this.imageName = imageUrl.substring(slashIdx)
+    this.imageName = imageUrl.substring(slashIdx + 1)
     this.dirUrl = imageUrl.substring(0, slashIdx)
-    console.info('[image]正在加载图片路径:' + this.imageUrl)
+    console.info('[image]正在加载图片路径:' + imageUrl)
+    console.info('[image]正在加载图片:' + this.imageName)
     console.info('[image]正在加载图片所在文件夹路径:' + this.dirUrl)
     this.loadImageList()
     // console.info('[image]正在加载初始图片...')
@@ -32,12 +33,12 @@ export class Image {
     try {
       fs.readdirSync(this.dirUrl).forEach(function (item) {
         try {
-          const dimensions = sizeOf(that.dirUrl + item)
+          const dimensions = sizeOf(that.dirUrl + '/' + item)
           console.info('[image]正在加载图片' + item)
           that.imageList.push({
             name: item,
             data: {
-              url: that.dirUrl + item,
+              url: that.dirUrl + '/' + item,
               type: dimensions.type,
               width: dimensions.width,
               height: dimensions.height
@@ -67,6 +68,39 @@ export class Image {
     console.info('[image]正在优化图片顺序...')
     // TODO
     console.info('[image]优化结束')
+  }
+
+  penetrate (isNext) {
+    const that = this
+    const parentDir = this.dirUrl.substring(0, this.dirUrl.lastIndexOf('/'))
+    console.log('[image]父文件夹' + parentDir)
+    let index = -1
+    let dirIndex = -1
+    const dirList = []
+    fs.readdirSync(parentDir).forEach(function (item) {
+      console.debug('[image]检查文件' + parentDir + '/' + item)
+      const dirPath = parentDir + '/' + item
+      const info = fs.statSync(dirPath)
+      if (!info.isFile()) {
+        dirList.push(dirPath)
+        index += 1
+        if (dirPath === that.dirUrl) {
+          dirIndex = index
+        }
+      }
+    })
+    console.log('[image]读取所有子文件夹，当前文件夹序号：' + dirIndex)
+    console.log(dirList)
+    if (isNext) {
+      this.dirUrl = dirList[dirIndex === dirList.length - 1 ? 0 : dirIndex + 1]
+      this.loadImageList()
+      this.setIndex(0)
+    } else {
+      this.dirUrl = dirList[dirIndex === 0 ? dirList.length - 1 : dirIndex - 1]
+      this.loadImageList()
+      this.setIndex(this.imageList.length - 1)
+    }
+    return this.dirUrl.substring(this.dirUrl.lastIndexOf('/') + 1)
   }
 
   delete () {
