@@ -23,7 +23,7 @@ export class Window {
       transparent: true,
       backgroundColor: '#FFFFFFFF',
       frame: false,
-      show: false
+      show: true
     })
 
     if (process.env.WEBPACK_DEV_SERVER_URL) {
