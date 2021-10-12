@@ -1,20 +1,23 @@
 import { ipcRenderer } from 'electron'
+import { ElMessage } from 'element-plus'
 
 export class Display {
   static display = null
   loaded = false
+  message = null
 
-  constructor (index, images) {
+  constructor (index, images, refreshHandler) {
     if (Display.display == null) {
       Display.display = this
     } else {
-      Display.display.index = index
       Display.display.images = images
+      Display.display.setIndex(index)
       Display.display.loaded = false
       return Display.display
     }
-    this.index = index
+    this.refreshHandler = refreshHandler
     this.images = images || []
+    this.setIndex(index)
   }
 
   init (index = this.index) {
@@ -23,7 +26,7 @@ export class Display {
       // 计算长宽比，初始化缩放图片
       const ratio = image.data.width / image.data.height
       const windowWidth = window.innerWidth
-      const windowHeight = window.innerHeight - 40
+      const windowHeight = window.innerHeight
       let scale = 1
       let left = (windowWidth - image.data.width) / 2
       let top = (windowHeight - image.data.height) / 2
@@ -55,7 +58,7 @@ export class Display {
       }
       image.attr.scale = scale
       image.attr.left = left
-      image.attr.top = top + 40
+      image.attr.top = top
       image.attr.rotate = 0
       this.loaded = true
       ipcRenderer.send('viewer', {
@@ -89,14 +92,24 @@ export class Display {
     }
   }
 
-  turn (isDown) {
+  turn (isNext) {
     if (this.loaded) {
-      if (isDown && this.index < this.images.length - 1) {
-        this.index += 1
-      } else if (!isDown && this.index > 0) {
-        this.index -= 1
+      const context = this
+      if (isNext && this.index < this.images.length - 1) {
+        this.setIndex(this.index + 1)
+        ipcRenderer.send('viewer', { event: 'turn', data: this.index })
+      } else if (!isNext && this.index > 0) {
+        this.setIndex(this.index - 1)
+        ipcRenderer.send('viewer', { event: 'turn', data: this.index })
+      } else if (isNext && this.index === this.images.length - 1) { // 文件夹穿透
+        const dirName = ipcRenderer.sendSync('viewer', { event: 'penetrate', data: true })
+        this.refreshHandler()
+        setTimeout(function () { context.showMessage('正在浏览文件夹：' + dirName) }, 200)
+      } else if (!isNext && this.index === 0) { // 文件夹穿透
+        const dirName = ipcRenderer.sendSync('viewer', { event: 'penetrate', data: false })
+        this.refreshHandler()
+        setTimeout(function () { context.showMessage('正在浏览文件夹：' + dirName) }, 200)
       }
-      ipcRenderer.send('viewer', { event: 'turn', data: this.index })
       return this.init()
     }
   }
@@ -174,5 +187,26 @@ export class Display {
         }
       }
     }
+  }
+
+  setIndex (index) {
+    this.index = index
+    if (this.index === 0) {
+      this.showMessage('正在浏览第一张图片')
+    } else if (this.index === this.images.length - 1) {
+      this.showMessage('正在浏览最后一张图片')
+    }
+  }
+
+  showMessage (content) {
+    if (this.message != null) {
+      this.message.close()
+      this.message = null
+    }
+    this.message = ElMessage({
+      message: content,
+      center: true,
+      duration: 1500
+    })
   }
 }

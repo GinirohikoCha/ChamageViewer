@@ -67,6 +67,7 @@ export default {
   height: 30px;
   background: white;
   -webkit-app-region: drag;
+  opacity: 0.9;
 }
 
 .app-header .app-header-icon {

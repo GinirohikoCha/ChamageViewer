@@ -17,7 +17,8 @@
     @rotateL="emitEvent({event: 'rotateL'})"
     @rotateR="emitEvent({event: 'rotateR'})"
     @delete="onDelete"
-    @fullscreen="emitWindow({event: 'fullscreen'})"/>
+    @fullscreen="emitWindow({event: 'fullscreen'})"
+    @config="emitConfig({event: 'open'})"/>
 
   <Header :fullscreen="fullscreen" :title="title" :title-sub="titleSub"/>
 </template>
@@ -66,6 +67,9 @@ export default {
     },
     emitWindow (message) {
       ipcRenderer.send('window', message)
+    },
+    emitConfig (message) {
+      ipcRenderer.send('setting', message)
     },
     onOpen () {
       this.emitEvent({ event: 'open' })
