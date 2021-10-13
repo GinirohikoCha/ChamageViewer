@@ -3,8 +3,22 @@ import { ElMessage } from 'element-plus'
 
 export class Display {
   static display = null
+
   loaded = false
   message = null
+
+  config = {
+    common: {
+      interface: {
+        enableChangePageBtn: true,
+        enableScaleInfo: true,
+        enableBottomToolBar: true
+      }
+    },
+    function: {
+      penetrate: true
+    }
+  }
 
   constructor (index, images, refreshHandler) {
     if (Display.display == null) {
@@ -101,14 +115,18 @@ export class Display {
       } else if (!isNext && this.index > 0) {
         this.setIndex(this.index - 1)
         ipcRenderer.send('viewer', { event: 'turn', data: this.index })
-      } else if (isNext && this.index === this.images.length - 1) { // 文件夹穿透
-        const dirName = ipcRenderer.sendSync('viewer', { event: 'penetrate', data: true })
-        this.refreshHandler()
-        setTimeout(function () { context.showMessage('正在浏览文件夹：' + dirName) }, 200)
-      } else if (!isNext && this.index === 0) { // 文件夹穿透
-        const dirName = ipcRenderer.sendSync('viewer', { event: 'penetrate', data: false })
-        this.refreshHandler()
-        setTimeout(function () { context.showMessage('正在浏览文件夹：' + dirName) }, 200)
+      } else {
+        if (this.config.function.penetrate) {
+          if (isNext && this.index === this.images.length - 1) { // 文件夹穿透
+            const dirName = ipcRenderer.sendSync('viewer', { event: 'penetrate', data: true })
+            this.refreshHandler()
+            setTimeout(function () { context.showMessage('正在浏览文件夹：' + dirName) }, 200)
+          } else if (!isNext && this.index === 0) { // 文件夹穿透
+            const dirName = ipcRenderer.sendSync('viewer', { event: 'penetrate', data: false })
+            this.refreshHandler()
+            setTimeout(function () { context.showMessage('正在浏览文件夹：' + dirName) }, 200)
+          }
+        }
       }
       return this.init()
     }
@@ -196,6 +214,10 @@ export class Display {
     } else if (this.index === this.images.length - 1) {
       this.showMessage('正在浏览最后一张图片')
     }
+  }
+
+  setConfig (config) {
+    this.config = config
   }
 
   showMessage (content) {

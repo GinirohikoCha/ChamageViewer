@@ -2,6 +2,8 @@
 import { dialog, ipcMain } from 'electron'
 import { Image } from '@/util/image'
 
+const Setting = require('@/util/setting')
+
 export class Listener {
   constructor (window, processUrl) {
     this.window = window
@@ -101,6 +103,13 @@ export class Listener {
       switch (message.event) {
         case 'open':
           context.window.createSettingWindow().then(r => {})
+          break
+        case 'load':
+          event.returnValue = Setting.getConfig()
+          break
+        case 'save':
+          Setting.updateConfig(message.config)
+          context.window.mainWindow.webContents.send('viewer', { event: 'reloadConfig' })
           break
       }
     })

@@ -48,12 +48,25 @@ export default {
       },
       images: [],
       display: null,
-      listener: null
+      listener: null,
+      config: {
+        common: {
+          interface: {
+            enableChangePageBtn: true,
+            enableScaleInfo: true,
+            enableBottomToolBar: true
+          }
+        },
+        function: {
+          penetrate: true
+        }
+      }
     }
   },
   mounted () {
     // 初始化
     this.refresh()
+    this.refreshConfig()
     // 事件监听
     this.listener = new Listener(
       this.onResize,
@@ -92,6 +105,9 @@ export default {
           break
         case 'reload':
           this.refresh()
+          break
+        case 'reloadConfig':
+          this.refreshConfig()
           break
       }
     })
@@ -167,6 +183,10 @@ export default {
       this.display = new Display(data.index, this.images, this.refresh)
       console.info('[viewer]初始化图片')
       this.temp = this.display.init()
+    },
+    refreshConfig () {
+      this.config = ipcRenderer.sendSync('setting', { event: 'load' })
+      this.display.setConfig(this.config)
     }
   }
 }
