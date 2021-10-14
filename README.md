@@ -38,7 +38,12 @@
 
 ## 项目构建
 
-### Install Dependence
+### 开发环境
+```
+Node.js@8.0.0
+```
+
+#### Install Dependence
 ```
 npm install
 ```
