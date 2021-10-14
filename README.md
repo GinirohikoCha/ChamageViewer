@@ -40,7 +40,7 @@
 
 ### 开发环境
 ```
-Node.js@8.0.0
+Node.js@16.11.1
 ```
 
 #### Install Dependence
