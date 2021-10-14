@@ -12,18 +12,24 @@
   </div>
 
   <scale-info :scale="temp.attr.scale"/>
+
+  <page-button
+    @pageUp="this.temp = this.display.turn(false)"
+    @pageDn="this.temp = this.display.turn(true)"/>
 </template>
 
 <script>
 import { ipcRenderer } from 'electron'
 import AnimatedImage from '@/views/viewer/components/AnimatedImage'
 import ScaleInfo from '@/views/viewer/components/ScaleInfo'
+import PageButton from './components/PageButton'
 import { Listener } from '@/views/viewer/module/listener'
 import { Display } from '@/views/viewer/module/display'
 
 export default {
   name: 'Viewer',
   components: {
+    PageButton,
     AnimatedImage,
     ScaleInfo
   },
