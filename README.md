@@ -38,7 +38,12 @@
 
 ## 项目构建
 
-### Install Dependence
+### 开发环境
+```
+Node.js@16.11.1
+```
+
+#### Install Dependence
 ```
 npm install
 ```
