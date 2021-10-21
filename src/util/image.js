@@ -82,10 +82,26 @@ export class Image {
       const dirPath = parentDir + '/' + item
       const info = fs.statSync(dirPath)
       if (!info.isFile()) {
-        dirList.push(dirPath)
-        index += 1
-        if (dirPath === that.dirUrl) {
-          dirIndex = index
+        // 判断文件夹内是否有图片
+        let hasImage = false
+        try {
+          fs.readdirSync(dirPath).forEach(function (item) {
+            try {
+              sizeOf(that.dirUrl + '/' + item)
+              hasImage = true
+            } catch (err) {}
+            if (hasImage) {
+              throw new Error('EndIterative')
+            }
+          })
+        } catch (err) {}
+        // 有图片才加入到列表中
+        if (hasImage) {
+          dirList.push(dirPath)
+          index += 1
+          if (dirPath === that.dirUrl) {
+            dirIndex = index
+          }
         }
       }
     })
@@ -123,7 +139,7 @@ export class Image {
 
   setIndex (index) {
     this.index = index
-    if (index === -1) {
+    if (index === -1 || !this.imageList[index]) {
       this.imageUrl = ''
       this.imageName = ''
     } else {
