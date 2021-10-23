@@ -40,8 +40,8 @@ export class Image {
             data: {
               url: that.dirUrl + '/' + item,
               type: dimensions.type,
-              width: dimensions.width,
-              height: dimensions.height
+              width: dimensions.orientation === 6 ? dimensions.height : dimensions.width,
+              height: dimensions.orientation === 6 ? dimensions.width : dimensions.height
             },
             attr: {
               // 是否为长图（垂直）
