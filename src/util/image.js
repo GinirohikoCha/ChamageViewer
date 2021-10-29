@@ -78,7 +78,7 @@ export class Image {
     let dirIndex = -1
     const dirList = []
     fs.readdirSync(parentDir).forEach(function (item) {
-      console.debug('[image]检查文件' + parentDir + '/' + item)
+      console.debug('[image]检查文件夹' + parentDir + '/' + item)
       const dirPath = parentDir + '/' + item
       const info = fs.statSync(dirPath)
       if (!info.isFile()) {
@@ -87,15 +87,17 @@ export class Image {
         try {
           fs.readdirSync(dirPath).forEach(function (item) {
             try {
-              sizeOf(that.dirUrl + '/' + item)
+              sizeOf(dirPath + '/' + item)
               hasImage = true
-            } catch (err) {}
+            } catch (err) {
+              console.error('[image]' + err)
+            }
             if (hasImage) {
               throw new Error('EndIterative')
             }
           })
         } catch (err) {}
-        // 有图片才加入到列表中
+        // 文件夹中存在图片
         if (hasImage) {
           dirList.push(dirPath)
           index += 1
