@@ -6,7 +6,7 @@
       <div v-show="display" class="material-shadow" :class="barClass">
         <el-space class="item-wrapper">
           <el-tooltip effect="dark" content="漫画模式" placement="top">
-            <i class="el-icon-reading" :class="itemClass" @click="this.$router.replace('/comic')"/>
+            <i class="el-icon-reading" :class="itemClass" @click="$emit('comic')"/>
           </el-tooltip>
           <el-tooltip effect="dark" content="原始尺寸" placement="top">
             <i class="el-icon-c-scale-to-original" :class="itemClass" @click="$emit('scale')" />
