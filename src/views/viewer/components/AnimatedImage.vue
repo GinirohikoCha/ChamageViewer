@@ -26,6 +26,7 @@ import { gsap } from 'gsap'
 export default {
   name: 'ImageDisplay',
   props: {
+    config: Object,
     url: String,
     width: Number,
     height: Number,
@@ -89,10 +90,18 @@ export default {
       this.animation.height = gsap.to(this.$data, { duration: 0.3, tweenHeight: newValue })
     },
     left (newValue) {
-      this.animation.left = gsap.to(this.$data, { duration: 0.3, tweenLeft: newValue })
+      if (this.config.common.animation.move) {
+        this.animation.left = gsap.to(this.$data, { duration: 0.3, tweenLeft: newValue })
+      } else {
+        this.tweenLeft = newValue
+      }
     },
     top (newValue) {
-      this.animation.top = gsap.to(this.$data, { duration: 0.3, tweenTop: newValue })
+      if (this.config.common.animation.move) {
+        this.animation.top = gsap.to(this.$data, { duration: 0.3, tweenTop: newValue })
+      } else {
+        this.tweenTop = newValue
+      }
     },
     rotate (newValue) {
       this.animation.rotate = gsap.to(this.$data, { duration: 0.3, tweenRotate: newValue })

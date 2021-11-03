@@ -10,6 +10,15 @@
             saveChange()
           }"/>
       </el-col>
+      <el-col :span="6">
+        <SettingCard
+          :title="'拖拽阻尼效果'"
+          :status="config.common.animation.move"
+          @change="function (v) {
+            config.common.animation.move = v
+            saveChange()
+          }"/>
+      </el-col>
     </el-row>
   </div>
 </template>
@@ -25,12 +34,15 @@ export default {
   },
   data () {
     return {
-      config: {
+      config: { // 默认配置
         common: {
           interface: {
             enableChangePageBtn: true,
             enableScaleInfo: true,
             enableBottomToolBar: true
+          },
+          animation: {
+            move: true
           }
         },
         function: {

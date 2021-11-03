@@ -1,6 +1,7 @@
 <template>
   <div class="viewer-wrapper">
     <animated-image
+      :config="config"
       :url="temp.data.url"
       :width="temp.attr.scale * temp.data.width"
       :height="temp.attr.scale * temp.data.height"
@@ -55,12 +56,15 @@ export default {
       images: [],
       display: null,
       listener: null,
-      config: {
+      config: { // 默认配置
         common: {
           interface: {
             enableChangePageBtn: true,
             enableScaleInfo: true,
             enableBottomToolBar: true
+          },
+          animation: {
+            move: true
           }
         },
         function: {

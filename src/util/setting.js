@@ -6,12 +6,15 @@ const exePath = process.argv[0].replaceAll('\\', '/')
 const configPath = exePath.substring(0, exePath.lastIndexOf('/') + 1) + 'config'
 
 const defaultConfig = {
-  version: '2.4.0',
+  version: '2.4.0.1',
   common: {
     interface: {
       enableChangePageBtn: true,
       enableScaleInfo: true,
       enableBottomToolBar: true
+    },
+    animation: {
+      move: true
     }
   },
   function: {
