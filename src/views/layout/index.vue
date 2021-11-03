@@ -62,6 +62,8 @@ export default {
           break
       }
     })
+
+    window.addEventListener('keydown', this.handleKeyDown)
   },
   methods: {
     emitEvent (message) {
@@ -92,6 +94,14 @@ export default {
         this.$router.replace('/comic')
       }
       this.comic = !this.comic
+    },
+    handleKeyDown (event) {
+      console.debug('[layout]keydown:' + event.code)
+      switch (event.code) {
+        case 'KeyO':
+          this.emitConfig({ event: 'open' })
+          break
+      }
     }
   }
 }

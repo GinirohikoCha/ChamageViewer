@@ -12,9 +12,12 @@
       @leave="listener.setHover(false)"/>
   </div>
 
-  <scale-info :scale="temp.attr.scale"/>
+  <scale-info
+    v-if="config.common.interface.enableScaleInfo"
+    :scale="temp.attr.scale"/>
 
   <page-button
+    v-if="config.common.interface.enableChangePageBtn"
     @pageUp="this.temp = this.display.turn(false)"
     @pageDn="this.temp = this.display.turn(true)"/>
 </template>
@@ -56,7 +59,7 @@ export default {
       images: [],
       display: null,
       listener: null,
-      config: { // 默认配置
+      config: {
         common: {
           interface: {
             enableChangePageBtn: true,
