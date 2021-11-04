@@ -10,6 +10,45 @@
             saveChange()
           }"/>
       </el-col>
+      <el-col :span="6">
+        <SettingCard
+          :title="'拖拽阻尼效果'"
+          :status="config.common.animation.move"
+          @change="function (v) {
+            config.common.animation.move = v
+            saveChange()
+          }"/>
+      </el-col>
+    </el-row>
+
+    <el-row :gutter="20">
+      <el-col :span="6">
+        <SettingCard
+          :title="'启用换页按钮'"
+          :status="config.common.interface.enableChangePageBtn"
+          @change="function (v) {
+            config.common.interface.enableChangePageBtn = v
+            saveChange()
+          }"/>
+      </el-col>
+      <el-col :span="6">
+        <SettingCard
+          :title="'启用缩放提示'"
+          :status="config.common.interface.enableScaleInfo"
+          @change="function (v) {
+            config.common.interface.enableScaleInfo = v
+            saveChange()
+          }"/>
+      </el-col>
+<!--      <el-col :span="6">-->
+<!--        <SettingCard-->
+<!--          :title="'启用底部按钮'"-->
+<!--          :status="config.common.interface.enableBottomToolBar"-->
+<!--          @change="function (v) {-->
+<!--            config.common.interface.enableBottomToolBar = v-->
+<!--            saveChange()-->
+<!--          }"/>-->
+<!--      </el-col>-->
     </el-row>
   </div>
 </template>
@@ -25,12 +64,15 @@ export default {
   },
   data () {
     return {
-      config: {
+      config: { // 默认配置
         common: {
           interface: {
             enableChangePageBtn: true,
             enableScaleInfo: true,
             enableBottomToolBar: true
+          },
+          animation: {
+            move: true
           }
         },
         function: {

@@ -18,6 +18,7 @@
     @rotateR="emitEvent({event: 'rotateR'})"
     @delete="onDelete"
     @fullscreen="emitWindow({event: 'fullscreen'})"
+    @comic="onComic"
     @config="emitConfig({event: 'open'})"/>
 
   <Header :fullscreen="fullscreen" :title="title" :title-sub="titleSub"/>
@@ -38,6 +39,7 @@ export default {
     return {
       empty: true,
       fullscreen: false,
+      comic: false,
       title: '',
       titleSub: ''
     }
@@ -60,6 +62,8 @@ export default {
           break
       }
     })
+
+    window.addEventListener('keydown', this.handleKeyDown)
   },
   methods: {
     emitEvent (message) {
@@ -82,6 +86,22 @@ export default {
       }).then(() => {
         this.emitEvent({ event: 'delete' })
       }).catch(() => {})
+    },
+    onComic () {
+      if (this.comic) {
+        this.$router.replace('/')
+      } else {
+        this.$router.replace('/comic')
+      }
+      this.comic = !this.comic
+    },
+    handleKeyDown (event) {
+      console.debug('[layout]keydown:' + event.code)
+      switch (event.code) {
+        case 'KeyO':
+          this.emitConfig({ event: 'open' })
+          break
+      }
     }
   }
 }

@@ -1,6 +1,7 @@
 <template>
   <div class="viewer-wrapper">
     <animated-image
+      :config="config"
       :url="temp.data.url"
       :width="temp.attr.scale * temp.data.width"
       :height="temp.attr.scale * temp.data.height"
@@ -11,9 +12,12 @@
       @leave="listener.setHover(false)"/>
   </div>
 
-  <scale-info :scale="temp.attr.scale"/>
+  <scale-info
+    v-if="config.common.interface.enableScaleInfo"
+    :scale="temp.attr.scale"/>
 
   <page-button
+    v-if="config.common.interface.enableChangePageBtn"
     @pageUp="this.temp = this.display.turn(false)"
     @pageDn="this.temp = this.display.turn(true)"/>
 </template>
@@ -61,6 +65,9 @@ export default {
             enableChangePageBtn: true,
             enableScaleInfo: true,
             enableBottomToolBar: true
+          },
+          animation: {
+            move: true
           }
         },
         function: {

@@ -19,8 +19,6 @@ export class Image {
     console.info('[image]正在加载图片:' + this.imageName)
     console.info('[image]正在加载图片所在文件夹路径:' + this.dirUrl)
     this.loadImageList()
-    // console.info('[image]正在加载初始图片...')
-    // this.loadImage()
     console.info('[image]初始化加载结束')
   }
 
@@ -40,14 +38,15 @@ export class Image {
             data: {
               url: that.dirUrl + '/' + item,
               type: dimensions.type,
-              width: dimensions.width,
-              height: dimensions.height
+              width: dimensions.orientation === 6 ? dimensions.height : dimensions.width,
+              height: dimensions.orientation === 6 ? dimensions.width : dimensions.height
             },
             attr: {
               // 是否为长图（垂直）
-              longV: dimensions.width / dimensions.height <= 0.4,
+              // 新增阈值，解决像素图素材被识别成长图错误放大的问题，高大于1024像素才会被判断为长图
+              longV: dimensions.height > 1024 && dimensions.width / dimensions.height <= 0.4,
               // 是否为长图（水平）
-              longH: dimensions.height / dimensions.width <= 0.4,
+              longH: dimensions.width > 1024 && dimensions.height / dimensions.width <= 0.4,
               scale: 0,
               left: 0,
               top: 0,
@@ -66,11 +65,12 @@ export class Image {
     console.info('[image]查找结束')
     console.info('[image]初始图片序号' + this.index)
     console.info('[image]正在优化图片顺序...')
-    // TODO
+    // TODO 优化中文排序
     console.info('[image]优化结束')
   }
 
   penetrate (isNext) {
+    // TODO 不再每次穿透时重复读取
     const that = this
     const parentDir = this.dirUrl.substring(0, this.dirUrl.lastIndexOf('/'))
     console.log('[image]父文件夹' + parentDir)
@@ -78,14 +78,32 @@ export class Image {
     let dirIndex = -1
     const dirList = []
     fs.readdirSync(parentDir).forEach(function (item) {
-      console.debug('[image]检查文件' + parentDir + '/' + item)
+      console.debug('[image]检查文件夹' + parentDir + '/' + item)
       const dirPath = parentDir + '/' + item
       const info = fs.statSync(dirPath)
       if (!info.isFile()) {
-        dirList.push(dirPath)
-        index += 1
-        if (dirPath === that.dirUrl) {
-          dirIndex = index
+        // 判断文件夹内是否有图片
+        let hasImage = false
+        try {
+          fs.readdirSync(dirPath).forEach(function (item) {
+            try {
+              sizeOf(dirPath + '/' + item)
+              hasImage = true
+            } catch (err) {
+              console.error('[image]' + err)
+            }
+            if (hasImage) {
+              throw new Error('EndIterative')
+            }
+          })
+        } catch (err) {}
+        // 文件夹中存在图片
+        if (hasImage) {
+          dirList.push(dirPath)
+          index += 1
+          if (dirPath === that.dirUrl) {
+            dirIndex = index
+          }
         }
       }
     })
@@ -123,7 +141,7 @@ export class Image {
 
   setIndex (index) {
     this.index = index
-    if (index === -1) {
+    if (index === -1 || !this.imageList[index]) {
       this.imageUrl = ''
       this.imageName = ''
     } else {
